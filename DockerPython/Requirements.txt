@@ -1,0 +1,8 @@
+anaconda::django==4.1
+anaconda::pandas>=2.1
+conda-forge::djangorestframework==3.14.0
+conda-forge::django-filter==23.5
+conda-forge::markdown==3.5.2
+conda-forge::django-allauth
+conda-forge::django-rest-auth
+conda-forge::psycopg2-binary

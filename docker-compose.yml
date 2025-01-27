@@ -1,0 +1,30 @@
+version: '3.8'
+services:
+  db:
+    image: postgres:15
+    environment:
+      - POSTGRES_USER=myuser
+      - POSTGRES_PASSWORD=mypassword
+      - POSTGRES_DB=mydatabase
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+  web:
+    build: ./App
+    container_name: qr_web
+    volumes:
+      - ./App:/codigo
+    command: bash -c "source activate myenv  && python manage.py runserver 0.0.0.0:8000"
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+
+  redis:
+    restart: always
+    image: redis:6.2
+    volumes:
+      - redisdata:/data
+
+volumes:
+  postgres_data:
+  redisdata:
