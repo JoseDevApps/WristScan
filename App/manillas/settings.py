@@ -33,6 +33,7 @@ ALLOWED_IPS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
+    'registration',
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -136,3 +137,22 @@ STATICFILES_DIRS = [
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+LOGIN_REDIRECT_URL = 'dashboard:inicio'
+LOGOUT_REDIRECT_URL = 'login'
+
+# SMTP Config
+DEFAULT_FROM_EMAIL = 'minusmaya@zohomail.com'
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.zoho.com'
+EMAIL_USE_SSL = True  # Enable SSL
+EMAIL_USE_TLS = False
+EMAIL_PORT = 465
+EMAIL_HOST_USER = 'minusmaya@zohomail.com'
+EMAIL_HOST_PASSWORD = 'kUyRVUsKBJ9C'
+
+
+PASSWORD_RESET_TIMEOUT = 3600
+MY_SITE_DOMAIN = "82.180.132.202/"
+MY_SITE_PROTOCOL = "http"  # Change to "http" if not using HTTPS
