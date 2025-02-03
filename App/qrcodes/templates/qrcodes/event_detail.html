@@ -1,0 +1,26 @@
+<div class="container">
+    <h2>{{ event.name }}</h2>
+    <p><strong>Description:</strong> {{ event.description }}</p>
+    <p><strong>Date:</strong> {{ event.date }}</p>
+    <p><strong>Created by:</strong> {{ event.created_by.username }}</p>
+
+    <h3>Assigned Users</h3>
+    <ul>
+        {% for role in event_roles %}
+            <li>{{ role.user.username }} - {{ role.get_role_display }}</li>
+        {% empty %}
+            <li>No users assigned yet.</li>
+        {% endfor %}
+    </ul>
+
+    <h3>QR Codes</h3>
+    <div class="qr-codes">
+        {% for qr in qr_codes %}
+            <img src="{{ qr.image.url }}" alt="QR Code {{ qr.data }}" width="100">
+        {% empty %}
+            <p>No QR codes available.</p>
+        {% endfor %}
+    </div>
+
+    <a href="{% url 'create_event' %}" class="button">Create New Event</a>
+</div>

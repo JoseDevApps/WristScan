@@ -14,3 +14,4 @@ class UserCreationFormWithEmail(UserCreationForm):
         if User.objects.filter(email=email).exists():
             raise forms.ValidationError("El email ya está registrado, prueba con otro.")
         return email 
+    

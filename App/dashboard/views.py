@@ -1,8 +1,10 @@
 from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
 
 ################################################
 #   Pagina de bienvenida
 ################################################
+@login_required
 def inicio(request):
     template = 'dashboard/index.html' 
     context = {}

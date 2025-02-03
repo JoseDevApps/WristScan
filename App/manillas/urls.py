@@ -17,6 +17,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from django.shortcuts import redirect
+from django.conf import settings
+
 
 
 urlpatterns = [ 
@@ -24,6 +26,10 @@ urlpatterns = [
     path('dashboard/', include('dashboard.urls')),
     path('accounts/', include('django.contrib.auth.urls')),
     path('accounts/', include('registration.urls')),
-    path('', lambda request: redirect('/accounts/login/', permanent=True))
-
+    path('', lambda request: redirect('/accounts/login/', permanent=True)),
+    path('create/', include('qrcodes.urls'))
 ]
+
+if settings.DEBUG:  # Serve media files in development
+    from django.conf.urls.static import static
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
