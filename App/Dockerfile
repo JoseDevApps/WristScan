@@ -12,6 +12,12 @@ RUN apt-get update && apt-get install -y \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
+# Install stripe
+RUN wget https://github.com/stripe/stripe-cli/releases/download/v1.23.10/stripe_1.23.10_linux_x86_64.tar.gz
+RUN tar -xvf stripe_1.23.10_linux_x86_64.tar.gz
+RUN mv ./stripe /usr/local/bin/
+
+
 # Download and install Anaconda
 RUN wget https://repo.anaconda.com/archive/Anaconda3-2024.06-1-Linux-x86_64.sh -O ~/anaconda.sh && \
     bash ~/anaconda.sh -b -p $CONDA_DIR && \
