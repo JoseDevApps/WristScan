@@ -1,15 +1,16 @@
 {% extends 'base.html' %}
 {% block title %}Manillas Bolivia{% endblock %}
 {% load static %}
+
+
 {% block content %}
 <div class="wrapper">
   <!-- Sidebar -->
-  <div class="sidebar" data-background-color="dark">
+  <div class="sidebar" data-background-color="white">
     <!-- *************** -->
     <!-- CABECERA INICIO -->
     <!-- *************** -->
-<div class="sidebar">
-  <div class="sidebar-logo">
+  <div class="sidebar-logo" >
     <!-- Logo Header -->
     <div class="logo-header" data-background-color="white">
       <a href="{% url 'dashboard:inicio' %}" class="logo">
@@ -48,14 +49,15 @@
             <i class="fas fa-bars"></i>
             <p>Home</p>
           </a>
+          
         </li>
 
 
-        <li class="nav-item">
+        <li class="nav-item ">
           <a
             href="{% url 'dashboard:qrgen' %}"
             class="collapsed"
-            aria-expanded="true"
+            aria-expanded="false"
           >
             <i class="fas fa-qrcode"></i>
             <p>QR Generator</p>
@@ -63,14 +65,14 @@
         </li>
 
         <li class="nav-item active">
-          <a href="{% url 'dashboard:qrscan' %}l">
+          <a href="{% url 'dashboard:qrscan' %}">
             <i class="fas fa-qrcode"></i>
             <p>QR Scanner</p>
           </a>
         </li>
         
         <li class="nav-item">
-          <a data-bs-toggle="collapse" href="">
+          <a data-bs-toggle="collapse" href="#forms">
             <i class="fas fa-pen-square"></i>
             <p>Create Event</p>
             <span class="caret"></span>
@@ -181,8 +183,8 @@
         class="navbar navbar-header-left navbar-expand-lg navbar-form nav-search p-0 d-none d-lg-flex"
       >
       <div>
-        <h4 class="fw-bold mb-6">
-          Manillas APP
+        <h4 class="text-primary fw-bold mb-12">
+          WristScan
         </h4>
       </div>
       </nav>
@@ -230,13 +232,106 @@
   </nav>
   <!-- End Navbar -->
   </div>
-</div>
-<!-- ************** -->
-<!-- CABECERA FINAL -->
-<!-- ************** -->
+
+  <div class="container">
 
 
 
+    <h1>QR Code Scanner 2</h1>
+    <div id="qr-reader" style="width: 500px;"></div>
+    <div id="qr-reader-results"></div>
+
+    <!-- Modal HTML -->
+    <div id="qrModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>QR Code Scanned!</h2>
+            <p id="qrCodeText"></p>
+        </div>
     </div>
-</div> 
+    <audio id="beepSound" src="{% static 'dashboard/sounds/beep.wav' %}"></audio>
+    <button id="stopButton" style="display:none;">Stop Scanning</button>
+    
+    
+  </div>
+
+  <script>
+    // Get the audio element
+    const beepSound = document.getElementById('beepSound');
+
+    var resultContainer = document.getElementById('qr-reader-results');
+    const socket = new WebSocket('ws://127.0.0.1:80/ws/qr/');
+    let isSocketOpen = false;
+
+    socket.onopen = function(event) {
+        console.log('WebSocket connection opened.');
+        isSocketOpen = true;
+    };
+
+    socket.onmessage = function(event) {
+        const data = JSON.parse(event.data);
+        console.log('Message from server:', data.message);
+    };
+
+    socket.onclose = function(event) {
+        console.log('WebSocket connection closed.');
+        isSocketOpen = false;
+    };
+
+    function sendQrCode(qr_code) {
+        if (isSocketOpen) {
+            socket.send(JSON.stringify({
+                'qr_code': qr_code
+            }));
+        } else {
+            console.log('WebSocket connection is not open. Cannot send message.');
+        }
+    }
+
+
+    // Function to show the modal
+    function showModal(qr_code) {
+        document.getElementById("qrCodeText").innerText = qr_code; // Set the QR code text
+        document.getElementById("qrModal").style.display = "block"; // Show the modal
+    }
+
+    // Function to close the modal
+    function closeModal() {
+        document.getElementById("qrModal").style.display = "none"; // Hide the modal
+        html5QrcodeScanner.resume();
+    }
+
+    function onScanSuccess(decodedText, decodedResult) {
+        // Handle on success condition with the decoded text or result.
+        console.log(`Scan result: ${decodedText}`, decodedResult);
+        sendQrCode(decodedResult)
+        beepSound.play();
+        html5QrcodeScanner.pause();
+        showModal(decodedText);
+        // setTimeout(() => {
+        //         console.log('Restarting QR Code scanning...');
+        //         html5QrcodeScanner.resume();
+        // }, 2000); // 2000 milliseconds = 2 seconds
+        
+    }
+    // Close the modal when the user clicks on <span> (x)
+        document.querySelector('.close').onclick = closeModal;
+
+        // Close the modal when the user clicks anywhere outside of the modal
+        window.onclick = function(event) {
+            const modal = document.getElementById("qrModal");
+            if (event.target === modal) {
+                closeModal();
+            }
+        };
+
+    var html5QrcodeScanner = new Html5QrcodeScanner(
+        "qr-reader", { fps: 10, qrbox: 250 });
+    html5QrcodeScanner.render(onScanSuccess);
+    // 
+    
+</script>
+
+
+
 {% endblock %}

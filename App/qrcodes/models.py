@@ -2,19 +2,25 @@ from django.db import models
 from django.contrib.auth.models import User
 import qrcode
 from io import BytesIO
+import string
+import random
 from django.core.files.base import ContentFile
-
+#**********************************************
+#   Generacion de codigos Plan 1
+#**********************************************
 class Event(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField()
     date = models.DateTimeField()
     created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name="events")
     qr_codes = models.ManyToManyField("QRCode", blank=True)
-
+    qr_code_count = models.PositiveIntegerField(default=500)
     def generate_qr_codes(self):
         """Genera 500 códigos QR y los asocia al evento."""
-        for i in range(500):
-            qr_data = f"{self.id}-{i}"
+        count = self.qr_code_count
+        for i in range(count):
+            caracteres = string.ascii_letters + string.digits
+            qr_data = f"{self.id}-{''.join(random.choice(caracteres) for _ in range(15))}"
             qr = QRCode.objects.create(data=qr_data)
             self.qr_codes.add(qr)
 
@@ -24,6 +30,7 @@ class Event(models.Model):
             self.generate_qr_codes()
     def __str__(self) -> str:
         return self.name
+
 
 class QRCode(models.Model):
     data = models.CharField(max_length=255, unique=True)

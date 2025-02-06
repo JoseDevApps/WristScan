@@ -27,7 +27,9 @@ urlpatterns = [
     path('accounts/', include('django.contrib.auth.urls')),
     path('accounts/', include('registration.urls')),
     path('', lambda request: redirect('/accounts/login/', permanent=True)),
-    path('create/', include('qrcodes.urls'))
+    path('create/', include('qrcodes.urls')),
+    path('payments/', include('payments.urls')),  # Include the payments app URLs
+    path('qr-scanner/', include('qrscan.urls')),
 ]
 
 if settings.DEBUG:  # Serve media files in development

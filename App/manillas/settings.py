@@ -42,6 +42,9 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "dashboard",
     "qrcodes",
+    "payments",
+    'channels',
+    'qrscan',
 ]
 
 MIDDLEWARE = [
@@ -55,6 +58,8 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = "manillas.urls"
+
+
 
 TEMPLATES = [
     {
@@ -78,7 +83,14 @@ WSGI_APPLICATION = "manillas.wsgi.application"
 
 # Asyncronous comunication 
 
-
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            'hosts': [('redis', 6379)],  # Local Redis instance
+        },
+    },
+}
 
 
 # Database
@@ -177,4 +189,7 @@ MY_SITE_PROTOCOL = "http"  # Change to "http" if not using HTTPS
 # Payments
 STRIPE_PUBLIC_KEY = "pk_test_51QeLxw4DIjWPcBFH08xjrIaXripqa0yUNjXCQNKFMi3U3mgNxOB7lrtYnGmr2DCUIHVLEBFV23FEAaEG1EREPQnY00IGe1cNdC"
 STRIPE_SECRET_KEY = "sk_test_51QeLxw4DIjWPcBFHlEVvcJrRgpRAqWkIxusUWmddpMkCcXH8ueA0GgFWqo7PPdh5F3qtWjOGRCsvu4qbFds8CtiM00hT1nb9Wb"
-STRIPE_WEBHOOK_KEY = ""
+STRIPE_WEBHOOK_KEY = "whsec_QnBZ2csUNeEc1nrd2P3bp9Hfk1MPAKG4"
+
+
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 10000  # Adjust this number as needed

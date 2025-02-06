@@ -7,10 +7,11 @@ urlpatterns = [
     path('qrgen', views.qrgen, name="qrgen"),
     path('qrscan', views.qrscan, name="qrscan"),
     path('create', views.create, name="create"),
+    path('createdb', views.createdb, name="createdb"),
     path('assign', views.basic, name="assign"),
     path('basic', views.tables, name="basic"),
     path('tables', views.qrgen, name="tables"),
-    path('create-checkout-session/<int:pk>/', views.create_checkout_session, name='create_checkout_session'),
+    path('create-checkout-session/<int:pk>/<int:slug>/', views.create_checkout_session, name='create_checkout_session'),
     path('cancel/', views.CancelView.as_view(), name='cancel'),
     path('success/', views.SuccessView.as_view(), name='success'),
 ]
