@@ -117,7 +117,7 @@ def create_checkout_session(request, pk, slug):
     print('checkout session init')
     product = get_object_or_404(Product, id=pk)
     Eventid = get_object_or_404(Event, id=slug)
-    YOUR_DOMAIN = "http://127.0.0.1"
+    YOUR_DOMAIN = "http://82.180.132.202/"
     
     checkout_session = stripe.checkout.Session.create(
         payment_method_types=['card'],
