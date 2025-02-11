@@ -136,7 +136,8 @@ def createdb(request):
 def assign(request):
     template = 'dashboard/assign.html' 
     # data = QRCode.objects.all()
-    print(user_email = request.user.email)
+    user_email = request.user.email
+    print(user_email)
     context = {}
     return render(request, template, context)
 ################################################
