@@ -14,6 +14,7 @@ from qrcodes.tasks import send_event_qr_codes
 import tempfile
 from PIL import Image
 import io
+from collections import defaultdict
 import sys
 from django.core.files.uploadedfile import InMemoryUploadedFile
 ################################################
@@ -138,7 +139,9 @@ def assign(request):
     # data = QRCode.objects.all()
     user_id = request.user.id
     user_events = Event.objects.filter(created_by=user_id)
-    print(user_events)
+    qr_codes_by_event = user_events.qr_codes.all()
+
+    print(qr_codes_by_event)
     context = {}
     return render(request, template, context)
 ################################################
