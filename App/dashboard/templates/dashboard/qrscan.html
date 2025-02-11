@@ -246,11 +246,16 @@
         <div class="modal-content">
             <span class="close">&times;</span>
             <h2>QR Code Scanned!</h2>
+            <div id="response-message"></div>
             <p id="qrCodeText"></p>
         </div>
     </div>
-    <audio id="beepSound" src="{% static 'dashboard/sounds/beep.wav' %}"></audio>
+    <!-- <audio id="beepSound" src="{% static 'dashboard/sounds/beep.wav' %}"></audio> -->
+
+    <audio id="successSound" src="{% static 'dashboard/sounds/success.mp3' %}"></audio>
+    <audio id="errorSound" src="{% static 'dashboard/sounds/error.mp3' %}"></audio>
     <button id="stopButton" style="display:none;">Stop Scanning</button>
+
     
     
   </div>
@@ -258,9 +263,13 @@
   <script>
     // Get the audio element
     const beepSound = document.getElementById('beepSound');
+    const successSound = document.getElementById('successSound');
+    const errorSound = document.getElementById('errorSound');
 
     var resultContainer = document.getElementById('qr-reader-results');
-    const socket = new WebSocket('ws://127.0.0.1:80/ws/qr/');
+    // const socket = new WebSocket('ws://10.38.134.24:8080/ws/qr/'); //change this
+    const socket = new WebSocket('ws://82.180.132.202/:8080/ws/qr/'); //change this
+
     let isSocketOpen = false;
 
     socket.onopen = function(event) {
@@ -271,6 +280,24 @@
     socket.onmessage = function(event) {
         const data = JSON.parse(event.data);
         console.log('Message from server:', data.message);
+        // Show the response message in a div
+        const responseMessageDiv = document.getElementById('response-message');
+        // document.getElementById('response-message').textContent = data.message;
+        const message = data.message;
+
+        responseMessageDiv.classList.remove('alert-success', 'alert-danger');
+            
+            // Determine if it's a success or error message and apply the corresponding Bootstrap class
+            if (message.includes('successfully')) {
+                responseMessageDiv.classList.add('alert', 'alert-success');  // Success message
+                successSound.play();
+            } else {
+                responseMessageDiv.classList.add('alert', 'alert-danger');  // Error message
+                errorSound.play(); // Play error sound
+            }
+
+            responseMessageDiv.textContent = message;
+            responseMessageDiv.style.display = 'block';  // Show the message
     };
 
     socket.onclose = function(event) {
@@ -305,7 +332,7 @@
         // Handle on success condition with the decoded text or result.
         console.log(`Scan result: ${decodedText}`, decodedResult);
         sendQrCode(decodedResult)
-        beepSound.play();
+        // beepSound.play();
         html5QrcodeScanner.pause();
         showModal(decodedText);
         // setTimeout(() => {

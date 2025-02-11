@@ -9,6 +9,7 @@ def send_event_qr_codes(event_id):
     from .models import Event
 
     event = Event.objects.get(id=event_id)
+    print(event.created_by.email)
     creator_email = event.created_by.email
 
     zip_filename = f"{event.name}_qr_codes.zip"

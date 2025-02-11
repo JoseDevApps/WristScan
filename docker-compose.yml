@@ -15,6 +15,7 @@ services:
       - ./App:/codigo
     command: bash -c "source activate myenv  && python manage.py makemigrations && python manage.py migrate && python manage.py runserver 0.0.0.0:8000 && celery -A manillas worker --loglevel=info"
     ports:
+      - "8080:8080"
       - "80:8000"
     depends_on:
       - db

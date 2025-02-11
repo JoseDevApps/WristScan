@@ -26,10 +26,18 @@ SECRET_KEY = "django-insecure-+!fz@19oq67d5_h430^m7ohtb0y$c0dlho6=h&$g!@_=dj3h#1
 DEBUG = True
 
 # IPs Access
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['*', 'web']
 ALLOWED_IPS = ['*']
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:8000",
+    "http://localhost:8080",
+    "http://127.0.0.1:8000",
+    "http://app.manillasbolivia.com",
+    "https://app.manillasbolivia.com"
+]
 
-
+# Define the ASGI application
+ASGI_APPLICATION = 'manillas.asgi.application'
 # Application definition
 
 INSTALLED_APPS = [
@@ -183,7 +191,7 @@ EMAIL_HOST_PASSWORD = 'kUyRVUsKBJ9C'
 
 
 PASSWORD_RESET_TIMEOUT = 3600
-MY_SITE_DOMAIN = "82.180.132.202/"
+MY_SITE_DOMAIN = "http://app.manillasbolivia.com/"
 MY_SITE_PROTOCOL = "http"  # Change to "http" if not using HTTPS
 
 # Payments
@@ -192,4 +200,4 @@ STRIPE_SECRET_KEY = "sk_test_51QeLxw4DIjWPcBFHlEVvcJrRgpRAqWkIxusUWmddpMkCcXH8ue
 STRIPE_WEBHOOK_KEY = "whsec_QnBZ2csUNeEc1nrd2P3bp9Hfk1MPAKG4"
 
 
-DATA_UPLOAD_MAX_NUMBER_FIELDS = 10000  # Adjust this number as needed
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 40000  # Adjust this number as needed

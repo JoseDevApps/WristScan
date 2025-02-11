@@ -6,5 +6,5 @@ from django.shortcuts import render
 from django.shortcuts import render
 
 def qr_scanner_view(request):
-    websocket_url = 'ws://localhost/ws/qr/'  # You can dynamically set this URL
+    websocket_url = 'ws://web:8080/ws/qr/'  # You can dynamically set this URL
     return render(request, 'qr-scan.html', {'websocket_url': websocket_url})

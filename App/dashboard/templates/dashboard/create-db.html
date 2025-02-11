@@ -383,17 +383,19 @@
                           <!--  -->
                           <div class="form-group">
                             <h2>Create Event</h2>
-                            <form method="POST">
+                            <form method="POST" enctype="multipart/form-data">
                                 {% csrf_token %}
                                 
                                 <label for="name">Event Name:</label>
                                 <input class="form-control form-control" type="text" id="name" name="name" required>
                         
-                                <label for="description">Description:</label>
+                                <!-- <label for="description">Description:</label>
                                 <textarea class="form-control" id="description" name="description" required></textarea>
-                        
-                                <label for="date">Event Date:</label>
-                                <input class="form-control form-control" type="datetime-local" id="date" name="date" required>
+                         -->
+                                <label for="qr_code_count">Number of QR:</label>
+                                <input class="form-control form-control" type="number" min="1" max="{{ solicitud }}" id="qr_code_count" name="qr_code_count" required>
+                                <label for="image">Image:</label>
+                                <input class="form-control form-control" type="file" id="image" name="image" required>
                                 <br>
                                 <button class="btn btn-primary" type="submit">Create Event</button>
                             

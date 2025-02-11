@@ -11,6 +11,41 @@ from django.views.generic import TemplateView
 from .models import Product
 from qrcodes.models import Event, EventRole, QRCode
 from qrcodes.tasks import send_event_qr_codes
+import tempfile
+from PIL import Image
+import io
+import sys
+from django.core.files.uploadedfile import InMemoryUploadedFile
+################################################
+#   Metodo de archivo temporal
+################################################
+def create_temp_file(uploaded_file):
+    """Creates a temporary file with the correct image format."""
+    
+    # Open the image to detect its format
+    image = Image.open(uploaded_file)
+    image_format = image.format.lower()  # Example: "jpeg", "png", "webp"
+
+    # Standardize JPEG extension
+    if image_format == "jpeg":
+        image_format = "jpg"
+
+    # Create a temporary file with the detected format
+    temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=f".{image_format}")
+
+    # Save image to the temporary file
+    buffer = io.BytesIO()
+    image.save(buffer, format=image.format)
+    buffer.seek(0)
+
+    # Write buffer contents to temp file
+    temp_file.write(buffer.getvalue())
+    temp_file.flush()  # Ensure data is written to disk
+
+    print(f"✅ Temporary file created: {temp_file.name}")
+
+    return temp_file
+
 
 ################################################
 #   Pagina de bienvenida
@@ -31,9 +66,10 @@ def qrgen(request):
 #   Pagina de QR Escaner
 ################################################
 def qrscan(request):
-
-    websocket_url = 'ws://localhost/ws/qr/'  # You can dynamically set this URL
+    # websocket_url = 'ws://10.38.134.24:8080/ws/qr/'  # You can dynamically set this URL
+    websocket_url = 'ws://82.180.132.202/:8080/ws/qr/'  # You can dynamically set this URL
     return render(request, 'dashboard/qrscan.html', {'websocket_url': websocket_url})
+
 ################################################
 #   Pagina de QR create event
 ################################################
@@ -67,21 +103,30 @@ def createdb(request):
         "product2": product2,
         "product3": product3, 
         "STRIPE_PUBLIC_KEY": settings.STRIPE_PUBLIC_KEY,
+        'solicitud': int(request.GET.get('solicitud'))
         }
     print(request.GET.get('solicitud'))
-    if request.method == "POST":
+    if request.method == "POST" :
         name = request.POST["name"]
-        description = request.POST["description"]
-        date = request.POST["date"]
+        qr_code_count_post = request.POST["qr_code_count"]
+        image = request.FILES.get("image")
+        print(image)
+        image_save = Image.open(io.BytesIO(image.read()))
+        print(image_save)
+        buffer = io.BytesIO()
+        image_save.save(buffer, format="jpeg")
+        buffer.seek(0)
+        temp_image_file = InMemoryUploadedFile(
+            buffer, None, "temp_image.png", "image/png", sys.getsizeof(buffer), None
+        )
         
+        #
         event = Event.objects.create(
             name=name,
-            description=description,
-            date=date,
             created_by=request.user,
-            qr_code_count = int(request.GET.get('solicitud'))
+            qr_code_count = int(qr_code_count_post),
+            image=temp_image_file
         )
-
         url = reverse('dashboard:create_checkout_session', kwargs={'pk': product1.id, 'slug': event.id })
         return redirect(url)
     return render(request, template, context)
@@ -117,7 +162,7 @@ def create_checkout_session(request, pk, slug):
     print('checkout session init')
     product = get_object_or_404(Product, id=pk)
     Eventid = get_object_or_404(Event, id=slug)
-    YOUR_DOMAIN = "http://82.180.132.202/"
+    YOUR_DOMAIN = "https://app.manillasbolivia.com/"
     
     checkout_session = stripe.checkout.Session.create(
         payment_method_types=['card'],
