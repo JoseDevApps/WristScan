@@ -139,7 +139,7 @@ def assign(request):
     # data = QRCode.objects.all()
     user_id = request.user.id
     user_events = Event.objects.filter(created_by=user_id)
-    eventos = [name for name in user_events.name]
+    eventos = [event.name for event in user_events]
     print(eventos)
     context = {}
     return render(request, template, context)
