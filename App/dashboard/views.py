@@ -67,7 +67,7 @@ def qrgen(request):
 ################################################
 def qrscan(request):
     # websocket_url = 'ws://10.38.134.24:8080/ws/qr/'  # You can dynamically set this URL
-    websocket_url = 'ws://82.180.132.202/:8080/ws/qr/'  # You can dynamically set this URL
+    websocket_url = 'wss://app.manillasbolivia.com/ws/qr/'  # You can dynamically set this URL
     return render(request, 'dashboard/qrscan.html', {'websocket_url': websocket_url})
 
 ################################################

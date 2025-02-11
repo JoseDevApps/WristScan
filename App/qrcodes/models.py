@@ -75,7 +75,7 @@ class QRCode(models.Model):
     image = models.ImageField(upload_to="qrcodes/", blank=True)
     event_name = models.CharField(max_length=255, blank=True)  # Guardamos el nombre del evento
     event_image = models.ImageField(upload_to="qrmask/", blank=True, null=True)  # Guardamos la imagen del evento
-
+    user_email = models.EmailField(max_length=255, blank=True)
     def process_qr_with_background(self, event_image):
         """Genera el QR en memoria y lo sobrepone en la imagen del evento."""
         # 🔹 1️⃣ Generar QR en memoria
