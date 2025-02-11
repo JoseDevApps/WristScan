@@ -137,7 +137,9 @@ def assign(request):
     template = 'dashboard/assign.html' 
     # data = QRCode.objects.all()
     user_email = request.user.email
-    print(user_email)
+    user_events = Event.objects.filter(created_by=user_email)
+    user_qr_codes = QRCode.objects.filter(event_name__in=[event.name for event in user_events])
+    print(user_qr_codes)
     context = {}
     return render(request, template, context)
 ################################################
