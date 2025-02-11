@@ -140,7 +140,8 @@ def assign(request):
     user_id = request.user.id
     user_events = Event.objects.filter(created_by=user_id)
     eventos = [event.name for event in user_events]
-    print(eventos)
+    qr_codes_list = [event.qr_codes for event in user_events]
+    print(qr_codes_list)
     context = {}
     return render(request, template, context)
 ################################################
