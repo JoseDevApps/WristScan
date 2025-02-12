@@ -257,6 +257,8 @@
                 <br>
                     <!-- Download link -->
                 <a href="{{ qrcode.image.url }}" download="{{ qrcode.data }}_QR_code">Download Image</a>
+              </td>
+              <td>{{qrcode.user_email}}</td>
               <td>
                 <div class="text-center">
                   <button class="btn btn-light button-modify-user" data-bs-toggle="modal" data-bs-target="#qrModal">
@@ -264,7 +266,7 @@
                   </button>
                 </div>
               </td>
-              <td>{{qrcode.user_email}}</td>
+             
             </tr> <!-- ✅ Closing <tr> added -->
             {% endfor %}
           </tbody>
