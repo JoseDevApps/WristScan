@@ -54,12 +54,12 @@ def create_temp_file(uploaded_file):
 @login_required
 def inicio(request):
     template = 'dashboard/index.html' 
-    user_id = request.user
+    user_name = request.user
     user_id = request.user.id
     user_events = Event.objects.filter(created_by=user_id)
     qr_codes_list = [qr for event in user_events for qr in event.qr_codes.all()]
     print(len(qr_codes_list))
-    context = {'user':user_id, "NC":str(len(qr_codes_list))}
+    context = {'user':user_name, "NC":str(len(qr_codes_list))}
     return render(request, template, context)
 ################################################
 #   Pagina de QR Generador
