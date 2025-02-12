@@ -143,6 +143,14 @@ def assign(request):
     
     print(qr_codes_list)
     
+    if request.method == 'POST':
+        qr = QRCode.objects.get(id=request.POST["user_email"])  # Get the qr id to update
+        form = UserEmailForm(request.POST)
+        if form.is_valid():
+            qr.email = form.cleaned_data['email']  # Update the user's email
+            qr.save()
+            return redirect('dashboard/assign.html')  # Redirect after successful update
+
     context = {'qr': qr_codes_list}
     return render(request, template, context)
 
