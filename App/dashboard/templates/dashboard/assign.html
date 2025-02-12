@@ -255,8 +255,7 @@
               <td>Edinburgh</td>
               <td>
                 <div class="text-center">
-                  <button class="btn btn-light button-modify-user" 
-                          onclick="functionOpenModalAction('{% url 'dashboard:inicio' %}')">
+                  <button class="btn btn-light button-modify-user" data-bs-toggle="modal" data-bs-target="#qrModal">
                     <i class="fas fa-pen"></i>
                   </button>
                 </div>
@@ -267,21 +266,23 @@
     </div>
   
     <!-- Edit Event Modal -->
-    <div class="modal fade" id="modal-user" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-      <div class="modal-dialog" style="max-width: 95%!important;">
+    <!-- Modal HTML -->
+    <div id="qrModal" class="modal fade" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+      <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title w-100 text-center" id="exampleModalLabel">Usuarios</h5>
-            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true" class="icono-close">&times;</span>
-            </button>
+            <h2 class="modal-title" id="modalLabel">QR Code Scanned!</h2>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-            <div class="modal-folder-add"></div>
+            <div id="response-message"></div>
+            <p id="qrCodeText">QR Code Details will be displayed here.</p>
           </div>
         </div>
       </div>
     </div>
+    
+
   </div>
 
 <!-- SCRIPTS DE USUARIO -->
