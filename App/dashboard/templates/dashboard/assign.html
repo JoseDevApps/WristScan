@@ -253,6 +253,9 @@
               <td>{{qrcode.data}}</td>
               <td>
                 <img src="{{ qrcode.image.url }}" alt="QR Code Image" width="100">
+                <br>
+                    <!-- Download link -->
+                <a href="{{ qrcode.image.url }}" download="{{ qrcode.data }}_QR_code">Download Image</a>
               <td>
                 <div class="text-center">
                   <button class="btn btn-light button-modify-user" data-bs-toggle="modal" data-bs-target="#qrModal">
