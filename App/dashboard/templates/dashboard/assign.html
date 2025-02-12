@@ -243,16 +243,15 @@
           <thead>
               <tr>
                   <th>Name</th>
-                  <th>Date</th>
-                  <th>Location</th>
+                  <th>Image</th>
                   <th>Actions</th>
               </tr>
           </thead>
           <tbody>
+            {% for qrcode in qr %}
             <tr>
-              <td>Tiger Nixon</td>
-              <td>System Architect</td>
-              <td>Edinburgh</td>
+              <td>{{qrcode.data}}</td>
+              <td>{{qrcode.image}}</td>
               <td>
                 <div class="text-center">
                   <button class="btn btn-light button-modify-user" data-bs-toggle="modal" data-bs-target="#qrModal">
@@ -261,6 +260,7 @@
                 </div>
               </td>
             </tr> <!-- ✅ Closing <tr> added -->
+            {% endfor %}
           </tbody>
       </table>
     </div>
