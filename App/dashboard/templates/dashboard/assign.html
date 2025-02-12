@@ -251,7 +251,7 @@
           <tbody>
             {% for qrcode in qr %}
             <tr>
-              <td>{{qrcode.data}}</td>
+              <td>{{qrcode.data}}-{{qrcode.id}}</td>
               <td>
                 <img src="{{ qrcode.image.url }}" alt="QR Code Image" width="100">
                 <br>

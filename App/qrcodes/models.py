@@ -87,6 +87,7 @@ class QRCode(models.Model):
         event_image.open()  # 📍 Cargar imagen desde el objeto en memoria
         background = Image.open(BytesIO(event_image.file.read())).convert("RGBA")
         background = background.resize((720, 1280))  # Ajustar tamaño
+        
 
         # 🔹 3️⃣ Cargar QR en memoria y pegarlo sobre la imagen
         overlay = Image.open(BytesIO(qr_buffer.getvalue())).convert("RGBA")
