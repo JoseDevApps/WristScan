@@ -54,7 +54,7 @@ def create_temp_file(uploaded_file):
 @login_required
 def inicio(request):
     template = 'dashboard/index.html' 
-    user_id = request.user.name
+    user_id = request.user
     context = {'user':user_id}
     return render(request, template, context)
 ################################################
