@@ -331,7 +331,10 @@
           "lengthMenu": [5, 10, 25, 50, 100], // Pagination options
           "pageLength": 5,      // Default items per page
       });
-
+      var updateEmailModal = document.getElementById("updateEmailModal");
+      var emailInput = document.getElementById("emailInput");
+      var qrIdInput = document.getElementById("qrIdInput");
+      var updateEmailForm = document.getElementById("updateEmailForm");
 
       // Show modal and populate fields
         updateEmailModal.addEventListener("show.bs.modal", function (event) {
