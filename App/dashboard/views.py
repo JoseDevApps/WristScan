@@ -134,7 +134,7 @@ def createdb(request):
 ################################################
 #   Pagina de QR assign assign
 ################################################
-def assign(request, id):
+def assign(request):
     template = 'dashboard/assign.html' 
     # data = QRCode.objects.all()
     user_id = request.user.id
