@@ -57,9 +57,10 @@ def inicio(request):
     user_name = request.user
     user_id = request.user.id
     user_events = Event.objects.filter(created_by=user_id)
+    
     qr_codes_list = [qr for event in user_events for qr in event.qr_codes.all()]
     print(len(qr_codes_list))
-    context = {'user':user_name, "NC":str(len(qr_codes_list))}
+    context = {'user':user_name, "NC":str(len(qr_codes_list)), "NE":str(len(user_events))}
     return render(request, template, context)
 ################################################
 #   Pagina de QR Generador
