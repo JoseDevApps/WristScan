@@ -337,50 +337,59 @@
 
 <script>
   document.addEventListener("DOMContentLoaded", function () {
-      var updateEmailModal = document.getElementById("updateEmailModal");
-      var emailInput = document.getElementById("emailInput");
-      var qrIdInput = document.getElementById("qrIdInput");
-      var updateEmailForm = document.getElementById("updateEmailForm");
-    
-      // Show modal and populate fields
-      updateEmailModal.addEventListener("show.bs.modal", function (event) {
+    console.log(button.getAttribute("data-id"));
+    console.log('modal')
+    updateEmailModal.addEventListener("show.bs.modal", function (event) {
           var button = event.relatedTarget;  // Button that triggered the modal
           var qrId = button.getAttribute("data-id");
           var userEmail = button.getAttribute("data-email");
-  
-          emailInput.value = userEmail;  // Prefill email field
           console.log(button.getAttribute("data-id"));
           console.log('abierto')
       });
+      // var updateEmailModal = document.getElementById("updateEmailModal");
+      // var emailInput = document.getElementById("emailInput");
+      // var qrIdInput = document.getElementById("qrIdInput");
+      // var updateEmailForm = document.getElementById("updateEmailForm");
+    
+      // // Show modal and populate fields
+      // updateEmailModal.addEventListener("show.bs.modal", function (event) {
+      //     var button = event.relatedTarget;  // Button that triggered the modal
+      //     var qrId = button.getAttribute("data-id");
+      //     var userEmail = button.getAttribute("data-email");
   
-      // Handle form submission with Fetch API
-      updateEmailForm.addEventListener("submit", function (event) {
-          event.preventDefault();  // Prevent default form submission
+      //     emailInput.value = userEmail;  // Prefill email field
+      //     console.log(button.getAttribute("data-id"));
+      //     console.log('abierto')
+      // });
   
-          var qrId = button.getAttribute("data-id");
-          var newEmail = emailInput.value;
-          var csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+      // // Handle form submission with Fetch API
+      // updateEmailForm.addEventListener("submit", function (event) {
+      //     event.preventDefault();  // Prevent default form submission
   
-          fetch(`/update_qr_email/${qrId}/`, {
-              method: "POST",
-              headers: {
-                  "X-CSRFToken": csrfToken,
-                  "Content-Type": "application/x-www-form-urlencoded"
-              },
-              body: `user_email=${encodeURIComponent(newEmail)}`
-          })
-          .then(response => response.json())
-          .then(data => {
-              if (data.success) {
-                  document.getElementById(`email-${qrId}`).innerText = newEmail; // ✅ Update table row
-                  var modal = bootstrap.Modal.getInstance(updateEmailModal);
-                  modal.hide();  // Close modal
-              } else {
-                  alert("Error updating email: " + data.error);
-              }
-          })
-          .catch(error => console.error("Error:", error));
-      });
+      //     var qrId = button.getAttribute("data-id");
+      //     var newEmail = emailInput.value;
+      //     var csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+  
+      //     fetch(`/update_qr_email/${qrId}/`, {
+      //         method: "POST",
+      //         headers: {
+      //             "X-CSRFToken": csrfToken,
+      //             "Content-Type": "application/x-www-form-urlencoded"
+      //         },
+      //         body: `user_email=${encodeURIComponent(newEmail)}`
+      //     })
+      //     .then(response => response.json())
+      //     .then(data => {
+      //         if (data.success) {
+      //             document.getElementById(`email-${qrId}`).innerText = newEmail; // ✅ Update table row
+      //             var modal = bootstrap.Modal.getInstance(updateEmailModal);
+      //             modal.hide();  // Close modal
+      //         } else {
+      //             alert("Error updating email: " + data.error);
+      //         }
+      //     })
+      //     .catch(error => console.error("Error:", error));
+      // });
   });
   </script>
 
