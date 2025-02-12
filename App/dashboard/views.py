@@ -136,7 +136,6 @@ def createdb(request):
 ################################################
 def assign(request):
     template = 'dashboard/assign.html' 
-    # data = QRCode.objects.all()
     user_id = request.user.id
     user_events = Event.objects.filter(created_by=user_id)
     qr_codes_list = [qr for event in user_events for qr in event.qr_codes.all()]
