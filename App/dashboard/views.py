@@ -54,7 +54,8 @@ def create_temp_file(uploaded_file):
 @login_required
 def inicio(request):
     template = 'dashboard/index.html' 
-    context = {}
+    user_id = request.user.name
+    context = {'user':user_id}
     return render(request, template, context)
 ################################################
 #   Pagina de QR Generador
@@ -146,7 +147,7 @@ def assign(request):
         qr = QRCode.objects.get(id=request.POST["id"])  # Get the qr id to update
         form = UserEmailForm(request.POST)
         if form.is_valid():
-            qr.email = form.cleaned_data['email']  # Update the user's email
+            qr.email = request.POST['user_email']  # Update the user's email
             qr.save()
             return redirect('dashboard/assign.html')  # Redirect after successful update
 
