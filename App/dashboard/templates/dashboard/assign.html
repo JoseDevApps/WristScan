@@ -331,57 +331,56 @@
           "lengthMenu": [5, 10, 25, 50, 100], // Pagination options
           "pageLength": 5,      // Default items per page
       });
+      
+  });
+</script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
       var updateEmailModal = document.getElementById("updateEmailModal");
       var emailInput = document.getElementById("emailInput");
       var qrIdInput = document.getElementById("qrIdInput");
       var updateEmailForm = document.getElementById("updateEmailForm");
-      console.log(qrIdInput);
-      console.log("----");
-      console.log(button.getAttribute("data-id"));
-
+  
       // Show modal and populate fields
-        updateEmailModal.addEventListener("show.bs.modal", function (event) {
-        var button = event.relatedTarget;  // Button that triggered the modal
-        var qrId = button.getAttribute("data-id");
-        var userEmail = button.getAttribute("data-email");
-
-        qrIdInput.value = qrId;  // Set hidden input
-        emailInput.value = userEmail;  // Prefill email field
-    });
-       // Handle form submission with Fetch API
-        updateEmailForm.addEventListener("submit", function (event) {
-        event.preventDefault();  // Prevent default form submission
-
-        var qrId = qrIdInput.value;
-        var newEmail = emailInput.value;
-        var csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-
-        fetch(`/update_qr_email/${button.getAttribute("data-id")}/`, {
-            method: "POST",
-            headers: {
-                "X-CSRFToken": csrfToken,
-                "Content-Type": "application/x-www-form-urlencoded"
-            },
-            body: `user_email=${encodeURIComponent(newEmail)}`
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                document.getElementById(`email-${qrId}`).innerText = newEmail; // ✅ Update table row
-                var modal = bootstrap.Modal.getInstance(updateEmailModal);
-                modal.hide();  // Close modal
-            } else {
-                alert("Error updating email: " + data.error);
-            }
-        })
-        .catch(error => console.error("Error:", error));
-    });
-      
-
+      updateEmailModal.addEventListener("show.bs.modal", function (event) {
+          var button = event.relatedTarget;  // Button that triggered the modal
+          var qrId = button.getAttribute("data-id");
+          var userEmail = button.getAttribute("data-email");
+  
+          qrIdInput.value = qrId;  // Set hidden input
+          emailInput.value = userEmail;  // Prefill email field
+      });
+  
+      // Handle form submission with Fetch API
+      updateEmailForm.addEventListener("submit", function (event) {
+          event.preventDefault();  // Prevent default form submission
+  
+          var qrId = qrIdInput.value;
+          var newEmail = emailInput.value;
+          var csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+  
+          fetch(`/update_qr_email/${qrId}/`, {
+              method: "POST",
+              headers: {
+                  "X-CSRFToken": csrfToken,
+                  "Content-Type": "application/x-www-form-urlencoded"
+              },
+              body: `user_email=${encodeURIComponent(newEmail)}`
+          })
+          .then(response => response.json())
+          .then(data => {
+              if (data.success) {
+                  document.getElementById(`email-${qrId}`).innerText = newEmail; // ✅ Update table row
+                  var modal = bootstrap.Modal.getInstance(updateEmailModal);
+                  modal.hide();  // Close modal
+              } else {
+                  alert("Error updating email: " + data.error);
+              }
+          })
+          .catch(error => console.error("Error:", error));
+      });
   });
-
-
-</script>
-
+  </script>
 
 {% endblock %}
