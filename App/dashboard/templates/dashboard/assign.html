@@ -378,7 +378,7 @@
                   "X-CSRFToken": csrfToken,
                   "Content-Type": "application/x-www-form-urlencoded"
               },
-              body: `user_email=${encodeURIComponent(newEmail)}`
+              body: `user_email=${encodeURIComponent(newEmail)}&id=${encodeURIComponent(qrId)}`
           })
           .then(response => response.json())
           .then(data => {
