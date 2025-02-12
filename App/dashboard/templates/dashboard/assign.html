@@ -237,10 +237,10 @@
 
 <div class="container">
 
-  <div class="container mt-4">
+  <div class="table-responsive">
     <h2>Event List</h2>
 
-    <table id="eventTable" class="display">
+    <table id="eventTable" class="display table table-striped table-hover">
         <thead>
             <tr>
                 <th>Name</th>
@@ -249,6 +249,34 @@
                 <th>Actions</th>
             </tr>
         </thead>
+        <tbody>
+          <tr>
+            <td>Tiger Nixon</td>
+            <td>System Architect</td>
+            <td>Edinburgh</td>
+            <td>
+              <div class="form-button-action">
+                <button
+                  type="button"
+                  data-bs-toggle="tooltip"
+                  title=""
+                  class="btn btn-link btn-primary btn-lg"
+                  data-original-title="Edit Task"
+                >
+                  <i class="fa fa-edit"></i>
+                </button>
+                <button
+                  type="button"
+                  data-bs-toggle="tooltip"
+                  title=""
+                  class="btn btn-link btn-danger"
+                  data-original-title="Remove"
+                >
+                  <i class="fa fa-times"></i>
+                </button>
+              </div>
+            </td>
+        </tbody>
     </table>
 </div>
 
