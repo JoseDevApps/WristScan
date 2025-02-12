@@ -338,7 +338,7 @@
             var userEmail = button.data('email');
 
             var modal = $(this);
-            modal.find('form').attr('action', 'dashboard/update_user_email/' + userId + '/');  // Update form action dynamically
+            modal.find('form').attr('action', '/update_user_email/' + userId + '/');  // Update form action dynamically
             modal.find('input[name="email"]').val(userEmail);  // Set the email input value
         });
   });
