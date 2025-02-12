@@ -313,6 +313,18 @@
   });
 </script>
 
+<script>
+  $(document).ready(function() {
+      $('#eventTable').DataTable({
+          "paging": true,       // Enable pagination
+          "searching": true,    // Enable search
+          "ordering": true,     // Enable sorting
+          "info": true,         // Show info text
+          "lengthMenu": [5, 10, 25, 50, 100], // Pagination options
+          "pageLength": 5,      // Default items per page
+      });
+  });
+</script>
 
 
 {% endblock %}
