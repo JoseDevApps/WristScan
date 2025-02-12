@@ -353,7 +353,7 @@
         var newEmail = emailInput.value;
         var csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
-        fetch(`/update_qr_email/${qrId}/`, {
+        fetch(`/update_qr_email/${button.getAttribute("data-id")}/`, {
             method: "POST",
             headers: {
                 "X-CSRFToken": csrfToken,
