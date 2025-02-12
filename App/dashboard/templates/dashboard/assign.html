@@ -275,8 +275,16 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-            <div id="response-message"></div>
-            <p id="qrCodeText">QR Code Details will be displayed here.</p>
+            <form method="POST" enctype="multipart/form-data">
+              {% csrf_token %}
+              <label for="name">Email:</label>
+              <input class="form-control form-control" type="text" id="user_email" name="user_email" required>
+              <br>
+              <button class="btn btn-primary" type="submit">Send QR Code</button>
+            </form>
+            <div id="spinner" style="display: none;">
+              <img src="https://i.gifer.com/ZZ5H.gif" alt="Loading..." width="100">
+          </div>
           </div>
         </div>
       </div>
@@ -286,32 +294,24 @@
   </div>
 
 <!-- SCRIPTS DE USUARIO -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-  let selector = 0;
-  //
-  function functionOpenModalAction(id){
-    selector = 1;
-    $("#modal-user").modal("show");
-    loadBodyAddModal(id)
-  }
-  function funcionOpenModalAdd(){
-    selector = 0;
-    $("#modal-user").modal("show");
-    loadBodyAddModal();
-  }
-  function loadBodyAddModal(id  = null ){
-  let body = $('.modal-folder-add');
-  if(selector == 0){
-    body.load("{% url 'dashboard:inicio' %}");
-  }else{
-    body.load(id);
-  }
-}
-</script>
+  document.addEventListener("DOMContentLoaded", function () {
+      const spinner = document.getElementById("spinner");
 
+      document.querySelectorAll("form").forEach(form => {
+          form.addEventListener("submit", function () {
+              spinner.style.display = "block";
+          });
+      });
+
+      document.querySelectorAll("a").forEach(link => {
+          link.addEventListener("click", function () {
+              spinner.style.display = "block";
+          });
+      });
+  });
+</script>
 
 
 
