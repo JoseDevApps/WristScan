@@ -255,7 +255,7 @@
             <td>System Architect</td>
             <td>Edinburgh</td>
             <td>
-              <div class="form-button-action">
+              <div class="text-center">
                 <button class="btn btn-light button-modify-user" onclick="functionOpenModalAction(`{% url 'dashboard:inicio' %}`)">
                   <i class="fas fa-pen"></i>
                 </button>
@@ -266,38 +266,84 @@
 </div>
 
 <!-- Edit Event Modal -->
-<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="editModalLabel">Edit Event</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form id="editForm">
-                    <input type="hidden" id="eventId">
-                    <div class="mb-3">
-                        <label for="eventName" class="form-label">Name</label>
-                        <input type="text" class="form-control" id="eventName">
-                    </div>
-                    <div class="mb-3">
-                        <label for="eventDate" class="form-label">Date</label>
-                        <input type="date" class="form-control" id="eventDate">
-                    </div>
-                    <div class="mb-3">
-                        <label for="eventLocation" class="form-label">Location</label>
-                        <input type="text" class="form-control" id="eventLocation">
-                    </div>
-                    <button type="submit" class="btn btn-primary">Save Changes</button>
-                </form>
-            </div>
-        </div>
+ <!-- Modal -->
+ <div class="modal fade" id="modal-user" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog " style="max-width: 95%!important;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title w-100 text-center" id="exampleModalLabel">Usuarios</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true" class="icono-close">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="modal-folder-add"></div>
+      </div>
     </div>
+  </div>
 </div>
 
 
 </div>
 
+<!-- SCRIPTS DE USUARIO -->
+<script>
+  let selector = 0;
+  //
+  function functionOpenModalAction(id){
+    selector = 1;
+    $("#modal-user").modal("show");
+    loadBodyAddModal(id)
+  }
+  function funcionOpenModalAdd(){
+    selector = 0;
+    $("#modal-user").modal("show");
+    loadBodyAddModal();
+  }
+  function loadBodyAddModal(id  = null ){
+  let body = $('.modal-folder-add');
+  if(selector == 0){
+    body.load("{% url 'dashboard:inicio' %}");
+  }else{
+    body.load(id);
+  }
+}
+</script>
+<script>
+  //CONFIGURACIONES DE DATA TABLES
+  $(function () {
+    $('#example1').DataTable({
+      "paging": true,
+      "lengthChange": false,
+      "searching": true,
+      "ordering": true,
+      "info": true,
+      "autoWidth": false,
+      "responsive": true,
+      "lengthChange": true,
+      "language": {
+        "decimal": "",
+        "emptyTable": "No hay información",
+        "info": "Mostrando _START_ a _END_ de _TOTAL_ Entradas",
+        "infoEmpty": "Mostrando 0 to 0 of 0 Entradas",
+        "infoFiltered": "(Filtrado de _MAX_ total entradas)",
+        "infoPostFix": "",
+        "thousands": ",",
+        "lengthMenu": "Mostrar _MENU_ Entradas",
+        "loadingRecords": "Cargando...",
+        "processing": "Procesando...",
+        "search": "Buscar:",
+        "zeroRecords": "Sin resultados encontrados",
+        "paginate": {
+            "first": "Primero",
+            "last": "Ultimo",
+            "next": "Siguiente",
+            "previous": "Anterior"
+      }
+    }
+  });
+});
+</script>
 
 
 
