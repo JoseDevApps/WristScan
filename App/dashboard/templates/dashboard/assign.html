@@ -251,7 +251,8 @@
             {% for qrcode in qr %}
             <tr>
               <td>{{qrcode.data}}</td>
-              <td>{{qrcode.image}}</td>
+              <td>
+                <img src="{{ qrcode.image.url }}" alt="QR Code Image" width="100">
               <td>
                 <div class="text-center">
                   <button class="btn btn-light button-modify-user" data-bs-toggle="modal" data-bs-target="#qrModal">
