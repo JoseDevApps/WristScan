@@ -261,7 +261,7 @@
               <td>{{qrcode.user_email}}</td>
               <td>
                 <div class="text-center">
-                  <button class="btn btn-light button-modify-user" data-bs-toggle="modal" data-bs-target="#qrModal">
+                  <button class="btn btn-light button-modify-user" data-bs-toggle="modal" data-bs-target="#qrModal" data-id="{{ qrcode.id }}" data-email="{{ qrcode.user_email }}">
                     <i class="fas fa-pen"></i>
                   </button>
                 </div>
@@ -283,7 +283,7 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-            <form method="POST" enctype="multipart/form-data">
+            <form method="POST" enctype="multipart/form-data" action="{% url 'dashboard:update_user_email' qr.id %}>
               {% csrf_token %}
               <label for="name">Email:</label>
               <input class="form-control form-control" type="text" id="user_email" name="user_email" required>
@@ -331,7 +331,19 @@
           "lengthMenu": [5, 10, 25, 50, 100], // Pagination options
           "pageLength": 5,      // Default items per page
       });
+
+      $('#updateEmailModal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget); // Button that triggered the modal
+            var userId = button.data('id'); // Extract info from data-* attributes
+            var userEmail = button.data('email');
+
+            var modal = $(this);
+            modal.find('form').attr('action', 'dashboard/update_user_email/' + userId + '/');  // Update form action dynamically
+            modal.find('input[name="email"]').val(userEmail);  // Set the email input value
+        });
   });
+
+
 </script>
 
 

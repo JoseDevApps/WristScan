@@ -9,6 +9,7 @@ urlpatterns = [
     path('create', views.create, name="create"),
     path('createdb', views.createdb, name="createdb"),
     path('assign', views.assign, name="assign"),
+    path('update_user_email/<int:user_id>/', views.update_user_email, name='update_user_email'),
     path('basic', views.tables, name="basic"),
     path('tables', views.qrgen, name="tables"),
     path('create-checkout-session/<int:pk>/<int:slug>/', views.create_checkout_session, name='create_checkout_session'),

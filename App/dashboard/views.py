@@ -14,9 +14,9 @@ from qrcodes.tasks import send_event_qr_codes
 import tempfile
 from PIL import Image
 import io
-from collections import defaultdict
 import sys
 from django.core.files.uploadedfile import InMemoryUploadedFile
+from .forms import UserEmailForm
 ################################################
 #   Metodo de archivo temporal
 ################################################
@@ -134,7 +134,7 @@ def createdb(request):
 ################################################
 #   Pagina de QR assign assign
 ################################################
-def assign(request):
+def assign(request, id):
     template = 'dashboard/assign.html' 
     # data = QRCode.objects.all()
     user_id = request.user.id
@@ -142,8 +142,30 @@ def assign(request):
     qr_codes_list = [qr for event in user_events for qr in event.qr_codes.all()]
     
     print(qr_codes_list)
+    
     context = {'qr': qr_codes_list}
     return render(request, template, context)
+
+
+################################################
+#   Pagina de QR assign assign update email
+################################################
+def update_user_email(request, id):
+    qr = QRCode.objects.get(id=id)  # Get the qr id to update
+
+    if request.method == 'POST':
+        form = UserEmailForm(request.POST)
+        if form.is_valid():
+            qr.email = form.cleaned_data['email']  # Update the user's email
+            qr.save()
+            return redirect('dashboard/assign.html')  # Redirect after successful update
+    else:
+        form = UserEmailForm(initial={'email': qr.email})
+    user_id = request.user.id
+    user_events = Event.objects.filter(created_by=user_id)
+    qr_codes_list = [qr for event in user_events for qr in event.qr_codes.all()]
+    context = {'qr': qr_codes_list}
+    return render(request, 'dashboard/assign.html', context)
 ################################################
 #   Pagina de QR basic
 ################################################
