@@ -348,9 +348,8 @@
           var qrId = button.getAttribute("data-id");
           var userEmail = button.getAttribute("data-email");
   
-          qrIdInput.value = qrId;  // Set hidden input
           emailInput.value = userEmail;  // Prefill email field
-          console.log(qrId)
+          console.log(button.getAttribute("data-id");)
           console.log('abierto')
       });
   
@@ -358,7 +357,7 @@
       updateEmailForm.addEventListener("submit", function (event) {
           event.preventDefault();  // Prevent default form submission
   
-          var qrId = qrIdInput.value;
+          var qrId = button.getAttribute("data-id");
           var newEmail = emailInput.value;
           var csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
   
