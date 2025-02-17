@@ -292,13 +292,17 @@
                 responseMessageDiv.classList.add('alert', 'alert-success');  // Success message
                 successSound.play();
             } 
-            if (message.includes('Duplicado')) {
+            
+            else {
+              if (message.includes('Duplicado')) {
                 responseMessageDiv.classList.add('alert', 'alert-orange');  // duplicado message
                 successSound.play();
             }
-            else {
+            else{
                 responseMessageDiv.classList.add('alert', 'alert-danger');  // Error message
                 errorSound.play(); // Play error sound
+            }
+                
             }
 
             responseMessageDiv.textContent = message;
