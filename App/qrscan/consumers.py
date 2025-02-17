@@ -54,7 +54,10 @@ class QRConsumer(AsyncWebsocketConsumer):
                 print('actualizado')
                 # cursor.execute("UPDATE qrcodes_qrcode SET status_scan = %s WHERE data = %s", ["concedido", qr_code['decodedText']])
                 cursor.execute(
-            "UPDATE qrcodes_qrcode SET status_scan = %s, updated_at = NOW() WHERE data = %s",
-            ["concedido", qr_code['decodedText']]
-        )
+                "UPDATE qrcodes_qrcode SET status_scan = %s, updated_at = NOW() WHERE data = %s",
+                ["concedido", qr_code['decodedText']]
+                )
+            else:
+                return None  # Si qr_code es None o no contiene 'decodedText', retorna None
+            
         return result
