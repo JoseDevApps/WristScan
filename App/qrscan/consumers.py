@@ -23,6 +23,7 @@ class QRConsumer(AsyncWebsocketConsumer):
         if qr_code:
             # Check if the QR code already exists in the database
             existing_qr = await self.query_qr_code(qr_code)
+            print(existing_qr.status_scan)
             if existing_qr:
                 # If QR code exists, send a response back that it's already processed
                 response_message = f'QR code already processed successfully'
