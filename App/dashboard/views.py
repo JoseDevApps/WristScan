@@ -37,10 +37,11 @@ def create_temp_file(uploaded_file):
     # Save image to the temporary file
     buffer = io.BytesIO()
     image.save(buffer, format=image.format)
-    buffer.seek(0)
+    buffer.seek(0) 
 
     # Write buffer contents to temp file
     temp_file.write(buffer.getvalue())
+    
     temp_file.flush()  # Ensure data is written to disk
 
     print(f"✅ Temporary file created: {temp_file.name}")
