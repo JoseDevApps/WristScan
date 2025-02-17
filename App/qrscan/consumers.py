@@ -31,7 +31,7 @@ class QRConsumer(AsyncWebsocketConsumer):
                     response_message = f'Acceso Concedido QR-{existing_qr[0]}'
                 if existing_qr[7]=='concedido':
                     date = existing_qr[8].astimezone(timezone(timedelta(hours=-4))).strftime('%Y-%m-%d %H:%M:%S')
-                    response_message = f'Acceso Duplicado QR-{existing_qr[0]} - escaneado en:{date}'
+                    response_message = f'Acceso Duplicado QR-{existing_qr[0]} - fecha:{date}'
 
             else:
                 response_message = "Acceso Denegado"
