@@ -88,6 +88,7 @@ class QRCode(models.Model):
     user_email = models.EmailField(max_length=255, blank=True)
     status_scan = models.CharField(max_length=200, default="nuevo", choices=STATUS)
     status_purchased = models.CharField(max_length=200, default="available", choices=STATUS_CHOICES)
+    updated_at = models.DateTimeField(auto_now=True)
     def process_qr_with_background(self, event_image):
         """Genera el QR en memoria y lo sobrepone en la imagen del evento."""
         # 🔹 1️⃣ Generar QR en memoria

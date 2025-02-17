@@ -26,8 +26,12 @@ class QRConsumer(AsyncWebsocketConsumer):
             print(existing_qr)
             print(existing_qr[7])
             if existing_qr:
+                if existing_qr[7]=='nuevo':
                 # If QR code exists, send a response back that it's already processed
-                response_message = f'QR code already processed successfully'
+                    response_message = f'QR - {existing_qr[0]} ingreso concedido'
+                if existing_qr[7]=='concedido':
+                    response_message = f'QR - {existing_qr[0]} - {existing_qr[8]}'
+
             else:
                 response_message = "The QR code you scanned is invalid or does not exist."
 
@@ -42,4 +46,8 @@ class QRConsumer(AsyncWebsocketConsumer):
             # Example raw SQL query
             cursor.execute("SELECT * FROM qrcodes_qrcode WHERE data = %s", [qr_code['decodedText']])
             result = cursor.fetchone()
+
+            if result:
+            # Si el QR existe, actualizar su estado a "concedido"
+                cursor.execute("UPDATE qrcodes_qrcode SET status_scan = %s WHERE data = %s", ["concedido", qr_code['decodedText']])
         return result
