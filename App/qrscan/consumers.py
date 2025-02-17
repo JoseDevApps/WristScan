@@ -2,6 +2,7 @@ import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 from asgiref.sync import sync_to_async
 from django.db import connection
+from datetime import datetime, timezone, timedelta
 
 class QRConsumer(AsyncWebsocketConsumer):
     async def connect(self):
@@ -30,7 +31,8 @@ class QRConsumer(AsyncWebsocketConsumer):
                 # If QR code exists, send a response back that it's already processed
                     response_message = f'QR - {existing_qr[0]} ingreso concedido'
                 if existing_qr[7]=='concedido':
-                    response_message = f'QR - {existing_qr[0]} - {existing_qr[8]}'
+                    date = existing_qr[8].astimezone(timezone(timedelta(hours=-4)))
+                    response_message = f'QR - {existing_qr[0]} - {date.strftime('%Y-%m-%d %H:%M:%S %Z%z')}'
 
             else:
                 response_message = "The QR code you scanned is invalid or does not exist."
