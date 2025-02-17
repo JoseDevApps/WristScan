@@ -28,13 +28,13 @@ class QRConsumer(AsyncWebsocketConsumer):
             if existing_qr is not None:
                 if existing_qr[7]=='nuevo':
                 # If QR code exists, send a response back that it's already processed
-                    response_message = f'QR - {existing_qr[0]} ingreso concedido'
+                    response_message = f'Acceso Concedido QR-{existing_qr[0]}'
                 if existing_qr[7]=='concedido':
                     date = existing_qr[8].astimezone(timezone(timedelta(hours=-4))).strftime('%Y-%m-%d %H:%M:%S')
-                    response_message = f'QR - {existing_qr[0]} - {date}'
+                    response_message = f'Acceso Duplicado QR-{existing_qr[0]} - escaneado en:{date}'
 
             else:
-                response_message = "The QR code you scanned is invalid or does not exist."
+                response_message = "Acceso Denegado"
 
         # Send response back to the WebSocket client
         await self.send(text_data=json.dumps({
