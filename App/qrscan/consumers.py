@@ -26,7 +26,7 @@ class QRConsumer(AsyncWebsocketConsumer):
             existing_qr = await self.query_qr_code(qr_code)
             print(existing_qr)
             print(existing_qr[7])
-            if existing_qr:
+            if existing_qr is not None:
                 if existing_qr[7]=='nuevo':
                 # If QR code exists, send a response back that it's already processed
                     response_message = f'QR - {existing_qr[0]} ingreso concedido'
@@ -58,7 +58,5 @@ class QRConsumer(AsyncWebsocketConsumer):
                 "UPDATE qrcodes_qrcode SET status_scan = %s, updated_at = NOW() WHERE data = %s",
                 ["concedido", qr_code['decodedText']]
                 )
-            else:
-                return None  # Si qr_code es None o no contiene 'decodedText', retorna None
             
         return result
