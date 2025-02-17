@@ -31,7 +31,7 @@ class QRConsumer(AsyncWebsocketConsumer):
                 # If QR code exists, send a response back that it's already processed
                     response_message = f'QR - {existing_qr[0]} ingreso concedido'
                 if existing_qr[7]=='concedido':
-                    date = existing_qr[8].astimezone(timezone(timedelta(hours=-4))).strftime('%Y-%m-%d %H:%M:%S %Z%z')
+                    date = existing_qr[8].astimezone(timezone(timedelta(hours=-4))).strftime('%Y-%m-%d %H:%M:%S %Z')
                     response_message = f'QR - {existing_qr[0]} - {date}'
 
             else:
@@ -50,6 +50,7 @@ class QRConsumer(AsyncWebsocketConsumer):
             result = cursor.fetchone()
 
             if result:
+                print(result)
             # Si el QR existe, actualizar su estado a "concedido"
                 cursor.execute("UPDATE qrcodes_qrcode SET status_scan = %s WHERE data = %s", ["concedido", qr_code['decodedText']])
         return result
