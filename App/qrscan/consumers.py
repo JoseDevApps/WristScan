@@ -47,8 +47,7 @@ class QRConsumer(AsyncWebsocketConsumer):
             # Example raw SQL query
             cursor.execute("SELECT * FROM qrcodes_qrcode WHERE data = %s", [qr_code['decodedText']])
             result = cursor.fetchone()
-            if len(result)==0:
-                return None
+
             if result is None:
                 return None  # Return None if no result is found
             if result[7]=='nuevo':
