@@ -81,7 +81,7 @@ def share_qr_codes(request):
                         qr_code.status_purchased = 'purchased'
                         qr_code.user_email = recipient_email
                         qr_code.save()
-                        qr_code_path = os.path.join(settings.MEDIA_ROOT, 'qrcodes/', qr_code.image)
+                        qr_code_path = os.path.join(settings.MEDIA_ROOT, 'qrcodes/', f"{qr_code.image}")
                         print(qr_code_path)
                         print(qr_code.image)
                         if os.path.exists(qr_code_path):
