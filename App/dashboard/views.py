@@ -63,7 +63,7 @@ def share_qr_codes(request):
             recipient_email = form.cleaned_data['recipient_email']
             number_of_codes = form.cleaned_data['number_of_codes']
 
-            available_qr_codes = event.qr_codes.filter(status='available')[:number_of_codes]
+            available_qr_codes = event.qr_codes.filter(status_purchased='available')[:number_of_codes]
             available_count = available_qr_codes.count()
 
             if available_count < number_of_codes:
