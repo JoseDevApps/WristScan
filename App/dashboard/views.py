@@ -77,10 +77,12 @@ def share_qr_codes(request):
                 with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zip_file:
                     codes_shared = []
                     for qr_code in available_qr_codes:
+                        print('start updating')
                         qr_code.status_purchased = 'purchased'
                         qr_code.user_email = recipient_email
                         qr_code.save()
-                        qr_code_path = os.path.join(settings.MEDIA_ROOT, 'qrcodes', f"{event.id}-{qr_code.data}_final.png")
+                        qr_code_path = os.path.join(settings.MEDIA_ROOT, 'qrcodes/', f"{event.id}-{qr_code.data}_final.png")
+                        print(qr_code_path)
                         if os.path.exists(qr_code_path):
                             zip_file.write(qr_code_path, f"{event.id}-{qr_code.data}_final.png")
                         codes_shared.append(qr_code.data)
