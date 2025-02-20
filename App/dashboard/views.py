@@ -80,7 +80,7 @@ def share_qr_codes(request):
                         qr_code.status_purchased = 'purchased'
                         qr_code.user_email = recipient_email
                         qr_code.save()
-                        qr_code_path = os.path.join(settings.MEDIA_ROOT, 'qrcodes', f"{event.id}-{qr_code.data}.png")
+                        qr_code_path = os.path.join(settings.MEDIA_ROOT, 'qrcodes', f"{event.id}-{qr_code.data}_final.png")
                         if os.path.exists(qr_code_path):
                             zip_file.write(qr_code_path, f"{event.id}-{qr_code.data}.png")
                         codes_shared.append(qr_code.data)
