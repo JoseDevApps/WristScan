@@ -12,11 +12,12 @@ from .models import Product
 from qrcodes.models import Event, EventRole, QRCode
 from qrcodes.tasks import send_event_qr_codes
 import tempfile
+from django.core.mail import send_mail
 from PIL import Image
 import io
 import sys
 from django.core.files.uploadedfile import InMemoryUploadedFile
-from .forms import UserEmailForm
+from .forms import UserEmailForm, ShareQRCodeForm
 ################################################
 #   Metodo de archivo temporal
 ################################################
@@ -47,6 +48,52 @@ def create_temp_file(uploaded_file):
     print(f"✅ Temporary file created: {temp_file.name}")
 
     return temp_file
+
+################################################
+#   Compartir QR
+################################################
+def share_qr_codes(request):
+    if not request.user.is_authenticated:
+        return redirect('login')
+
+    if request.method == 'POST':
+        form = ShareQRCodeForm(request.POST, user=request.user)
+        if form.is_valid():
+            event = form.cleaned_data['event']
+            recipient_email = form.cleaned_data['recipient_email']
+            number_of_codes = form.cleaned_data['number_of_codes']
+
+            available_qr_codes = event.qr_codes.filter(status='available')[:number_of_codes]
+            available_count = available_qr_codes.count()
+
+            if available_count < number_of_codes:
+                form.add_error('number_of_codes', f'Only {available_count} QR codes are available.')
+            else:
+                codes_shared = []
+                for qr_code in available_qr_codes:
+                    qr_code.status_purchased = 'purchased'
+                    qr_code.user_email = recipient_email
+                    qr_code.save()
+                    codes_shared.append(qr_code.code)
+
+                # Send email to the recipient
+                subject = f"QR Codes for Event: {event.name}"
+                message = f"You have been granted access to the event: {event.name}\n\n" \
+                          f"Event Details:\n{event.description}\nDate: {event.date}\n\n" \
+                          f"QR Codes:\n" + "\n".join(codes_shared)
+                send_mail(subject, message, 'your_email@example.com', [recipient_email])
+
+                return render(request, 'share_confirmation.html', {
+                    'event': event,
+                    'recipient_email': recipient_email,
+                    'codes_shared': codes_shared,
+                    'remaining_codes': event.qr_codes.filter(status='available').count()
+                })
+    else:
+        form = ShareQRCodeForm(user=request.user)
+
+    return render(request, 'dashboard/shareqr.html', {'form': form})
+
 
 
 ################################################
