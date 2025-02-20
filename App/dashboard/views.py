@@ -83,6 +83,7 @@ def share_qr_codes(request):
                         qr_code.save()
                         qr_code_path = os.path.join(settings.MEDIA_ROOT, 'qrcodes/', f"{qr_code.data}_final.png")
                         print(qr_code_path)
+                        print(qr_code.image)
                         if os.path.exists(qr_code_path):
                             zip_file.write(qr_code_path, f"{qr_code.data}_final.png")
                         codes_shared.append(qr_code.data)
