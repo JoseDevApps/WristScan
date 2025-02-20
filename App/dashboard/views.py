@@ -83,11 +83,11 @@ def share_qr_codes(request):
                           f"QR Codes:\n" + "\n".join(codes_shared)
                 send_mail(subject, message, 'minusmaya@zohomail.com', [recipient_email])
 
-                return render(request, 'share_confirmation.html', {
+                return render(request, 'dashboard/share_confirmation.html', {
                     'event': event,
                     'recipient_email': recipient_email,
                     'codes_shared': codes_shared,
-                    'remaining_codes': event.qr_codes.filter(status='available').count()
+                    'remaining_codes': event.qr_codes.filter(status_purchased='available').count()
                 })
     else:
         form = ShareQRCodeForm(user=request.user)
