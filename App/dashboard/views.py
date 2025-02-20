@@ -74,7 +74,7 @@ def share_qr_codes(request):
                     qr_code.status_purchased = 'purchased'
                     qr_code.user_email = recipient_email
                     qr_code.save()
-                    codes_shared.append(qr_code.code)
+                    codes_shared.append(qr_code.data)
 
                 # Send email to the recipient
                 subject = f"QR Codes for Event: {event.name}"
