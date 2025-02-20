@@ -81,7 +81,7 @@ def share_qr_codes(request):
                 message = f"You have been granted access to the event: {event.name}\n\n" \
                           f"Event Details:\n{event.description}\nDate: {event.date}\n\n" \
                           f"QR Codes:\n" + "\n".join(codes_shared)
-                send_mail(subject, message, 'your_email@example.com', [recipient_email])
+                send_mail(subject, message, 'minusmaya@zohomail.com', [recipient_email])
 
                 return render(request, 'share_confirmation.html', {
                     'event': event,
