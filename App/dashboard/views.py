@@ -85,7 +85,7 @@ def share_qr_codes(request):
                         print(qr_code_path)
                         print(qr_code.image)
                         if os.path.exists(qr_code_path):
-                            zip_file.write(qr_code_path, f"{qr_code.image}")
+                            zip_file.write(qr_code_path, f"{qr_code.image}_final.png")
                         codes_shared.append(qr_code.data)
                 zip_buffer.seek(0)
                 # Send email to the recipient
