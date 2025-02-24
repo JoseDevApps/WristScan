@@ -178,14 +178,6 @@ def listdb(request):
 #   Pagina de QR update event form db
 ################################################
 def updatedb(request, pk):
-    # template = 'dashboard/update_event.html'
-    # evento = Event.objects.get(id=pk)
-    # print(evento)
-    # # form = EventUpdateForm(instance=evento)
-    # form = EventUpdateForm(initial={"name": evento.name, "qr_code_count": evento.qr_code_count, "image": evento.image})
-    # context = {'form': form, 'evento':evento}
-    # # context={}
-    # return render(request, template, context)
     event = get_object_or_404(Event, id=pk)
 
     if request.method == "POST":
@@ -194,6 +186,7 @@ def updatedb(request, pk):
             new_total_qr_count = form.cleaned_data["new_qr_code_count"]
             event.update_qr_codes(new_total_qr_count)  # Call the method from the model
             messages.success(request, f"QR codes updated to {new_total_qr_count}.")
+            send_event_qr_codes.delay(pk)
             return redirect("dashboard:update_event", pk=event.id)
     else:
         form = UpdateQRCodesForm(instance=event, initial={"new_qr_code_count": event.qr_code_count})
