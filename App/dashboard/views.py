@@ -194,7 +194,7 @@ def updatedb(request, pk):
             new_total_qr_count = form.cleaned_data["new_qr_code_count"]
             event.update_qr_codes(new_total_qr_count)  # Call the method from the model
             messages.success(request, f"QR codes updated to {new_total_qr_count}.")
-            return redirect("update_qr_codes", event_id=event.id)
+            return redirect("dashboard:inicio", event_id=event.id)
     else:
         form = UpdateQRCodesForm(instance=event, initial={"new_qr_code_count": event.qr_code_count})
 
