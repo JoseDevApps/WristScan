@@ -137,7 +137,7 @@ class QRCode(models.Model):
         background.save(final_buffer, format="PNG")
 
         # 🔹 5️⃣ Asignar imagen al campo `image` sin escribir en disco
-        self.image.save(f"{self.data}_final.png", ContentFile(final_buffer.getvalue()), save=False)
+        self.image.save(f"{self.id}_.png", ContentFile(final_buffer.getvalue()), save=False)
 
     def __str__(self):
         return self.data
