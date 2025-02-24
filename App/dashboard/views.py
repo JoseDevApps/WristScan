@@ -170,7 +170,7 @@ def listdb(request):
     template = ''
     user_id = request.user.id
     user_events = Event.objects.filter(created_by=user_id)
-    context = {}
+    context = {'events': user_events}
     return render(request, template, context)
 
 ################################################

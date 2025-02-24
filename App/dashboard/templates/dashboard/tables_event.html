@@ -242,26 +242,26 @@
       <table id="eventTable" class="table table-bordered table-striped">
           <thead>
               <tr>
-                  <th>Codigo</th>
+                  <th>Event</th>
                   <th>Image</th>
-                  <th>Email client</th>
+                  <th>Numero de codigos</th>
                   <th>Actions</th>
               </tr>
           </thead>
           <tbody>
-            {% for qrcode in qr %}
+            {% for qrcode in events %}
             <tr>
-              <td>{{qrcode.data}}-{{qrcode.id}}</td>
+              <td>{{qrcode.name}}</td>
               <td>
                 <img src="{{ qrcode.image.url }}" alt="QR Code Image" width="100">
                 <br>
                     <!-- Download link -->
                 <a href="{{ qrcode.image.url }}" download="{{ qrcode.data }}_QR_code">Download Image</a>
               </td>
-              <td>{{qrcode.user_email}}</td>
+              <td>{{qrcode.qr_code_count}}</td>
               <td>
                 <div class="text-center">
-                  <button class="btn btn-light button-modify-user" data-bs-toggle="modal" data-bs-target="#updateEmailModal" data-id="{{ qrcode.id }}" data-email="{{ qrcode.user_email }}">
+                  <button class="btn btn-light button-modify-user" data-bs-toggle="modal" data-bs-target="#updateEmailModal" data-id="{{ qrcode.id }}" >
                     <i class="fas fa-pen"></i>
                   </button>
                 </div>
@@ -273,31 +273,7 @@
       </table>
     </div>
   
-    <!-- Edit Event Modal -->
-    <!-- Modal HTML -->
-    <div id="updateEmailModal" class="modal fade" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h2 class="modal-title" id="modalLabel">QR assignment</h2>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <form method="POST" enctype="multipart/form-data">
-              {% csrf_token %}
-              <label for="name">Email:</label>
-              <input class="form-control form-control" type="text" id="user_email" name="user_email" required>
-              <br>
-              <button class="btn btn-primary" type="submit">Send QR Code</button>
-            </form>
-            <div id="spinner" style="display: none;">
-              <img src="https://i.gifer.com/ZZ5H.gif" alt="Loading..." width="100">
-          </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    
+
 
   </div>
 
