@@ -180,8 +180,10 @@ def updatedb(request, pk):
     template = 'dashboard/update_event.html'
     evento = Event.objects.get(id=pk)
     print(evento)
-    form = EventUpdateForm(instance=evento)
+    # form = EventUpdateForm(instance=evento)
+    form = EventUpdateForm(data = request.GET)
     context = {'form': form,}
+    # context={}
     return render(request, template, context)
 
 ################################################
