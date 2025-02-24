@@ -176,11 +176,11 @@ def listdb(request):
 ################################################
 #   Pagina de QR update event form db
 ################################################
-def updatedb(request, id):
+def updatedb(request, pk):
     template = 'dashboard/update_event.html'
-    evento = Event.objects.get(id=id)
+    evento = Event.objects.get(id=pk)
     form = EventUpdateForm(instance=evento)
-    context = {'form': form, 'id':id}
+    context = {'form': form,}
     return render(request, template, context)
 
 ################################################
