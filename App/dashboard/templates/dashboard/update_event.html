@@ -236,41 +236,14 @@
    <!-- **************** -->
 
    <div class="container">
-    <div class="table-responsive">
       <h2>Event List</h2>
   
-      <table id="eventTable" class="table table-bordered table-striped">
-          <thead>
-              <tr>
-                  <th>Event</th>
-                  <th>Image</th>
-                  <th>Numero de codigos</th>
-                  <th>Actions</th>
-              </tr>
-          </thead>
-          <tbody>
-            {% for qrcode in events %}
-            <tr>
-              <td>{{qrcode.name}}</td>
-              <td>
-                <img src="{{ qrcode.image.url }}" alt="QR Code Image" width="100">
-                <br>
-                    <!-- Download link -->
-                <a href="{{ qrcode.image.url }}" download="{{ qrcode.name }}">Download Image</a>
-              </td>
-              <td>{{qrcode.qr_code_count}}</td>
-              <td>
-                <div class="text-center">
-                  <button class="btn btn-light button-modify-user" onclick="window.location.href='{% url 'dashboard:update_event' events.id %}'">
-                    <i class="fas fa-pen"></i>
-                  </button>
-                </div>
-              </td>
-             
-            </tr> <!-- ✅ Closing <tr> added -->
-            {% endfor %}
-          </tbody>
-      </table>
+        <h3 class="fw-bold mb-3">Edit events</h3>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Actualizar</button>
+        </form>
     </div>
   
 

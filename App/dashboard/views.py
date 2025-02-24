@@ -21,7 +21,7 @@ import io
 from io import BytesIO
 import sys
 from django.core.files.uploadedfile import InMemoryUploadedFile
-from .forms import UserEmailForm, ShareQRCodeForm
+from .forms import UserEmailForm, ShareQRCodeForm, EventUpdateForm
 ################################################
 #   Metodo de archivo temporal
 ################################################
@@ -176,9 +176,11 @@ def listdb(request):
 ################################################
 #   Pagina de QR update event form db
 ################################################
-def updatedb(request):
-    template = ''
-    context = {}
+def updatedb(request, id):
+    template = 'dashboard/update_event.html'
+    evento = Event.objects.get(id=id)
+    form = EventUpdateForm(instance=evento)
+    context = {'form': form, 'id':id}
     return render(request, template, context)
 
 ################################################

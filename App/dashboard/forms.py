@@ -16,3 +16,8 @@ class ShareQRCodeForm(forms.Form):
         super().__init__(*args, **kwargs)
         if user:
             self.fields['event'].queryset = Event.objects.filter(created_by=user)
+
+class EventUpdateForm(forms.Form):
+    class Meta:
+        model = Event
+        fields = ['name','qr_code_count','image']
