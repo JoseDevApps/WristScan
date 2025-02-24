@@ -240,6 +240,7 @@
         <form method="post">
             {% csrf_token %}
             {{ form.as_p }}
+            {{evento.qr_code_count}}
             <button type="submit">Actualizar</button>
         </form>
     </div>
