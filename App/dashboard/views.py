@@ -164,6 +164,24 @@ def create(request):
     return render(request, template, context)
 
 ################################################
+#   Pagina de QR view events form db
+################################################
+def listdb(request):
+    template = ''
+    user_id = request.user.id
+    user_events = Event.objects.filter(created_by=user_id)
+    context = {}
+    return render(request, template, context)
+
+################################################
+#   Pagina de QR update event form db
+################################################
+def updatedb(request):
+    template = ''
+    context = {}
+    return render(request, template, context)
+
+################################################
 #   Pagina de QR create event form db
 ################################################
 def createdb(request):
