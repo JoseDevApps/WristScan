@@ -167,7 +167,7 @@ def create(request):
 #   Pagina de QR view events form db
 ################################################
 def listdb(request):
-    template = ''
+    template = 'dashboard/tables_event.html'
     user_id = request.user.id
     user_events = Event.objects.filter(created_by=user_id)
     context = {'events': user_events}
