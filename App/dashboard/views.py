@@ -181,7 +181,7 @@ def updatedb(request, pk):
     evento = Event.objects.get(id=pk)
     print(evento)
     # form = EventUpdateForm(instance=evento)
-    form = EventUpdateForm(data = evento, instance=evento)
+    form = EventUpdateForm(initial={"name": evento.name, "qr_code_count": evento.qr_code_count, "image": evento.image})
     context = {'form': form, 'evento':evento}
     # context={}
     return render(request, template, context)
