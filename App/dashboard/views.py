@@ -179,6 +179,7 @@ def listdb(request):
 def updatedb(request, pk):
     template = 'dashboard/update_event.html'
     evento = Event.objects.get(id=pk)
+    print(evento)
     form = EventUpdateForm(instance=evento)
     context = {'form': form,}
     return render(request, template, context)
