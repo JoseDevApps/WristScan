@@ -261,8 +261,10 @@
               <td>{{qrcode.qr_code_count}}</td>
               <td>
                 <div class="text-center">
-                  <button class="btn btn-light button-modify-user" onclick="window.location.href='{% url 'dashboard:update_event' events.id %}'">
+                  <a href="{% url 'dashboard:update_event' qrcode.id %}" class="btn btn-primary">
                     <i class="fas fa-pen"></i>
+                  </a>
+                    
                   </button>
                 </div>
               </td>
