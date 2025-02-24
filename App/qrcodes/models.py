@@ -116,8 +116,7 @@ class QRCode(models.Model):
     def process_qr_with_background(self, event_image):
         """Genera el QR en memoria y lo sobrepone en la imagen del evento."""
         # 🔹 1️⃣ Generar QR en memoria
-        # qr = qrcode.make(self.data)
-        qr = qrcode.make(self.id)
+        qr = qrcode.make(self.data)
         qr_buffer = BytesIO()
         qr.save(qr_buffer, format="PNG")
 
@@ -138,10 +137,10 @@ class QRCode(models.Model):
         background.save(final_buffer, format="PNG")
 
         # 🔹 5️⃣ Asignar imagen al campo `image` sin escribir en disco
-        self.image.save(f"{self.id}_.png", ContentFile(final_buffer.getvalue()), save=False)
+        self.image.save(f"qr_{self.id}_.png", ContentFile(final_buffer.getvalue()), save=False)
 
     def __str__(self):
-        return self.id
+        return f"QR {self.id} - {self.data}"
     # def save(self, *args, **kwargs):
     #     """Genera la imagen QR automáticamente al guardar."""
     #     if not self.image:
