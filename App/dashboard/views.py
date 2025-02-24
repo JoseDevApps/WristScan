@@ -182,7 +182,7 @@ def updatedb(request, pk):
     print(evento)
     # form = EventUpdateForm(instance=evento)
     form = EventUpdateForm(data = request.GET)
-    context = {'form': form,}
+    context = {'form': form, 'evento':evento}
     # context={}
     return render(request, template, context)
 
