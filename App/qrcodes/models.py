@@ -115,6 +115,8 @@ class QRCode(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     def process_qr_with_background(self, event_image):
         """Genera el QR en memoria y lo sobrepone en la imagen del evento."""
+        if not self.id:
+            super().save()  # Ensure the instance has an ID before proceeding
         # 🔹 1️⃣ Generar QR en memoria
         qr = qrcode.make(self.data)
         qr_buffer = BytesIO()
