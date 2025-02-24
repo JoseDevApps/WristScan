@@ -47,6 +47,30 @@ class Event(models.Model):
     qr_code_count = models.PositiveIntegerField(default=500)
     image = models.ImageField(upload_to="qrmask/", blank=True, null=True)
 
+    def update_qr_codes(self, new_total_qr_count):
+        """Updates an event with more QR codes if needed."""
+        if not self.image:
+            print("❌ Error: No image uploaded for the event.")
+            return
+
+        existing_count = self.qr_codes.count()
+        if new_total_qr_count > existing_count:
+            extra_count = new_total_qr_count - existing_count
+            print(f"🔄 Generating {extra_count} additional QR codes...")
+            for _ in range(extra_count):
+                qr_data = f"{self.id}-{''.join(random.choices(string.ascii_letters + string.digits, k=15))}"
+                qr = QRCode(data=qr_data, event_name=self.name)
+                qr.process_qr_with_background(self.image)
+                qr.save()
+                self.qr_codes.add(qr)
+
+            # Update the QR count in the database
+            self.qr_code_count = new_total_qr_count
+            self.save(update_fields=['qr_code_count'])
+
+        else:
+            print("✅ No additional QR codes needed.")
+
     def generate_qr_codes(self):
         """Genera códigos QR en memoria y los guarda en la base de datos una vez la imagen del evento está cargada."""
         if not self.image:

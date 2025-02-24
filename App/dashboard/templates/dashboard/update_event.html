@@ -236,13 +236,25 @@
    <!-- **************** -->
 
    <div class="container">
-      <h2>Event {{evento.name}}</h2>
-        <form method="post">
-            {% csrf_token %}
-            {{ form.as_p }}
-            {{evento.qr_code_count}}
-            <button type="submit">Actualizar</button>
-        </form>
+      <h2>Update QR Codes for {{ event.name }}</h2>
+
+      <form method="post">
+          {% csrf_token %}
+          {{ form.as_p }}
+          <button type="submit">Update QR Codes</button>
+      </form>
+      
+      {% if messages %}
+          <ul>
+              {% for message in messages %}
+                  <li>{{ message }}</li>
+              {% endfor %}
+          </ul>
+      {% endif %}
+      
+      <a href="{% url 'dashboard:inicio' %}">Back to Events</a>
+
+
     </div>
   
 
