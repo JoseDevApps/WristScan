@@ -288,13 +288,13 @@
         responseMessageDiv.classList.remove('alert-success', 'alert-danger');
             
             // Determine if it's a success or error message and apply the corresponding Bootstrap class
-            if (message.includes('Concedido')) {
+            if (message.includes('APROVADO')) {
                 responseMessageDiv.classList.add('alert', 'alert-success');  // Success message
                 successSound.play();
             } 
             
             else {
-              if (message.includes('Duplicado')) {
+              if (message.includes('DUPLICADO')) {
                 responseMessageDiv.classList.add('alert', 'alert-orange');  // duplicado message
                 successSound.play();
             }
