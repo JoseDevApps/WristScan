@@ -266,9 +266,6 @@
                   </a>
 
                   <div class="share-container">
-                    <button class="share-btn" onclick="toggleShareOptions()"><i class="fas fa-share-alt"></i></button>
-                    
-                    <div class="share-options" id="shareOptions">
                         <a id="whatsappShare" target="_blank">
                           <i class="fab fa-whatsapp"></i> WhatsApp
                         </a>
@@ -278,7 +275,6 @@
                         <a id="emailShare">
                           <i class="fas fa-rss"></i> Email
                         </a>
-                    </div>
                  </div>
 
                   
@@ -304,10 +300,6 @@
 <!-- SCRIPTS DE USUARIO -->
 
 <script>
-  function toggleShareOptions() {
-      var options = document.getElementById("shareOptions");
-      options.style.display = options.style.display === "block" ? "none" : "block";
-  }
 
   document.addEventListener("DOMContentLoaded", function () {
       var eventId = "{{ qrcode.id }}";
