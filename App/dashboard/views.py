@@ -7,6 +7,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import get_object_or_404
 import stripe
 import zipfile
+from django.http import HttpResponse
 import os
 from django.contrib import messages
 from django.urls import reverse
@@ -175,6 +176,34 @@ def listdb(request):
     return render(request, template, context)
 
 ################################################
+#   Vista de QR zip and download
+################################################
+def download_qr_zip(request, event_id):
+    """Generates a ZIP file containing all QR codes for a given event."""
+    event = get_object_or_404(Event, id=event_id)
+    qr_codes = event.qr_codes.all()
+
+    if not qr_codes.exists():
+        return HttpResponse("No QR codes available for this event.", status=404)
+
+    # Create an in-memory ZIP file
+    zip_buffer = BytesIO()
+    with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zip_file:
+        for qr in qr_codes:
+            if qr.image:
+                file_path = qr.image.path
+                file_name = os.path.basename(file_path)
+                zip_file.write(file_path, file_name)
+
+    zip_buffer.seek(0)
+
+    # Send ZIP as a downloadable response
+    response = HttpResponse(zip_buffer, content_type="application/zip")
+    response["Content-Disposition"] = f'attachment; filename="QR_{event.name}.zip"'
+    return response
+
+
+################################################
 #   Pagina de QR update event form db
 ################################################
 def updatedb(request, pk):
@@ -186,8 +215,7 @@ def updatedb(request, pk):
             new_total_qr_count = form.cleaned_data["new_qr_code_count"]
             event.update_qr_codes(new_total_qr_count)  # Call the method from the model
             messages.success(request, f"QR codes updated to {new_total_qr_count}.")
-            # send_event_qr_codes.delay(pk)
-            # return redirect("dashboard:update_event", pk=event.id)
+
             url = reverse('dashboard:create_checkout_session', kwargs={'pk': 1, 'slug': pk })
             return redirect(url)
     else:

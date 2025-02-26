@@ -261,6 +261,9 @@
               <td>{{qrcode.qr_code_count}}</td>
               <td>
                 <div class="text-center">
+                  <a href="{% url 'dashboard:download_qr_zip' qrcode.id %}" class="btn btn-primary">
+                    <i class="fas fa-download"></i>
+                  </a>
                   <a href="{% url 'dashboard:update_event' qrcode.id %}" class="btn btn-primary">
                     <i class="fas fa-pen"></i>
                   </a>
