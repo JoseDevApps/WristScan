@@ -264,20 +264,19 @@
                   <a href="{% url 'dashboard:download_qr_zip' qrcode.id %}" class="btn btn-primary">
                     <i class="fas fa-download"></i>
                   </a>
-
+                  <hr>
                   <div class="share-container">
                         <a href="https://api.whatsapp.com/send?text=Download QR Codes for {{ qrcode.name }}%0Ahttps://app.manillasbolivia.com/{% url 'dashboard:download_qr_zip' qrcode.id %}" class="btn btn-primary">
                           <i class="fab fa-whatsapp"></i> WhatsApp
                         </a>
-                        <a id="telegramShare" class="btn btn-primary">
+                        <a href="https://t.me/share/url?url=https://app.manillasbolivia.com/{% url 'dashboard:download_qr_zip' qrcode.id %}&text=Download QR Codes for {{ qrcode.name }}" class="btn btn-primary">
                           <i class="fab fa-telegram-plane"></i>Telegram
                         </a>
-                        <a id="emailShare" class="btn btn-primary">
+                        <a href="mailto:?subject=Download QR Codes for {{ qrcode.name }}&body=Get the QR Codes here: https://app.manillasbolivia.com/{% url 'dashboard:download_qr_zip' qrcode.id %}" class="btn btn-primary">
                           <i class="fas fa-rss"></i> Email
                         </a>
                  </div>
-
-                  
+                 <hr>
 
                   <a href="{% url 'dashboard:update_event' qrcode.id %}" class="btn btn-primary">
                     <i class="fas fa-pen"></i>
@@ -298,23 +297,6 @@
   </div>
 
 <!-- SCRIPTS DE USUARIO -->
-
-<script>
-
-  document.addEventListener("DOMContentLoaded", function () {
-      var eventId = "{{ qrcode.id }}";
-      var zipUrl = window.location.origin + "/event/" + eventId + "/download_qr_zip/";
-
-      document.getElementById("whatsappShare").href =
-          "https://api.whatsapp.com/send?text=Download QR Codes for {{ qrcode.name }}%0A" + encodeURIComponent(zipUrl);
-
-      document.getElementById("telegramShare").href =
-          "https://t.me/share/url?url=" + encodeURIComponent(zipUrl) + "&text=Download QR Codes for {{ qrcode.name }}";
-
-      document.getElementById("emailShare").href =
-          "mailto:?subject=Download QR Codes for {{ qrcode.name }}&body=Get the QR Codes here: " + encodeURIComponent(zipUrl);
-  });
-</script>
 
 
 <script>
