@@ -245,6 +245,8 @@
                   <th>Codigo</th>
                   <th>Image</th>
                   <th>Email client</th>
+                  <th>Status Scan</th>
+                  <th>Status Purchased</th>
                   <th>Actions</th>
               </tr>
           </thead>
@@ -256,11 +258,15 @@
                 <img src="{{ qrcode.image.url }}" alt="QR Code Image" width="100">
                 <br>
                     <!-- Download link -->
-                <a href="{{ qrcode.image.url }}" download="{{ qrcode.data }}_QR_code">Download Image</a>
               </td>
-              <td>{{qrcode.user_email}}</td>
+              <td>{{qrcode.status_scan}}</td>
+              <td>{{qrcode.status_purchased}}</td>
               <td>
                 <div class="text-center">
+                  <!-- Download link -->
+                  <a href="{{ qrcode.image.url }}" download="{{ qrcode.data }}_QR_code">
+                    <i class="fas fa-download"></i>
+                  </a>
                   <button class="btn btn-light button-modify-user" data-bs-toggle="modal" data-bs-target="#updateEmailModal" data-id="{{ qrcode.id }}" data-email="{{ qrcode.user_email }}">
                     <i class="fas fa-pen"></i>
                   </button>
