@@ -12,7 +12,7 @@ urlpatterns = [
 
     path('update_user_email/<int:user_id>/', views.update_user_email, name='update_user_email'),
     path('update_event/<int:pk>/', views.updatedb, name='update_event'),
-    path('event/<int:event_id>/download_qr_zip/', views.updatedb, name='download_qr_zip'),
+    path('event/<int:event_id>/download_qr_zip/', views.download_qr_zip, name='download_qr_zip'),
     path('share', views.share_qr_codes, name="share"),
     path('tables', views.listdb, name="tables"),
     path('create-checkout-session/<int:pk>/<int:slug>/', views.create_checkout_session, name='create_checkout_session'),
