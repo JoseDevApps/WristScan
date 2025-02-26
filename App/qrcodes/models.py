@@ -11,33 +11,6 @@ from django.core.files.base import ContentFile
 from PIL import Image
 import io
 
-#**********************************************
-#   Generacion de codigos Plan 1
-#**********************************************
-# class Event(models.Model):
-#     name = models.CharField(max_length=255)
-#     description = models.TextField()
-#     date = models.DateTimeField()
-#     created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name="events")
-#     qr_codes = models.ManyToManyField("QRCode", blank=True)
-#     qr_code_count = models.PositiveIntegerField(default=500)
-#     image = models.ImageField(upload_to="qrmask/", blank=True)
-#     def generate_qr_codes(self):
-#         """Genera 500 códigos QR y los asocia al evento."""
-#         count = self.qr_code_count
-#         for i in range(count):
-#             caracteres = string.ascii_letters + string.digits
-#             qr_data = f"{self.id}-{''.join(random.choice(caracteres) for _ in range(15))}"
-#             qr = QRCode.objects.create(data=qr_data,event_name = self.name, event_image = self.image )
-#             self.qr_codes.add(qr)
-
-#     def save(self, *args, **kwargs):
-#         super().save(*args, **kwargs)
-#         if not self.qr_codes.exists():  # Solo generar QR si no existen
-#             self.generate_qr_codes()
-#     def __str__(self) -> str:
-#         return self.name
-
 class Event(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True)
@@ -139,46 +112,10 @@ class QRCode(models.Model):
         background.save(final_buffer, format="PNG")
 
         # 🔹 5️⃣ Asignar imagen al campo `image` sin escribir en disco
-        self.image.save(f"qr_{self.id}_.png", ContentFile(final_buffer.getvalue()), save=False)
+        self.image.save(f"qr_{str(self.id)}_.png", ContentFile(final_buffer.getvalue()), save=False)
 
     def __str__(self):
         return f"QR {self.id} - {self.data}"
-    # def save(self, *args, **kwargs):
-    #     """Genera la imagen QR automáticamente al guardar."""
-    #     if not self.image:
-    #         qr = qrcode.make(self.data)
-    #         buffer = BytesIO()
-    #         qr.save(buffer, format="PNG")
-    #         qr_image = ContentFile(buffer.getvalue())
-    #         self.image.save(f"{self.data}.png", ContentFile(buffer.getvalue()), save=False)
-    #         # Agregar mascara con fondo y id, y nombre del evento
-    #         # Si hay una imagen de evento, combinamos con el QR
-    #         print(self.event_image)
-    #         if self.event_image:
-    #             try:
-    #                 print('existe imagen')
-    #                 print(self.event_image)
-    #                 self.event_image.open()
-    #                 event_image_data = BytesIO(self.event_image.file.read())
-    #                 print(event_image_data)
-    #                 background = Image.open(event_image_data).convert("RGBA")
-    #                 background = background.resize((720, 1280))  # Ajustar tamaño
-    #                 overlay = Image.open(qr_image).convert("RGBA")
-                    
-    #                 position = (220, 880)  # Posición del QR en la imagen de fondo
-    #                 background.paste(overlay, position, overlay)
-
-    #                 final_buffer = BytesIO()
-    #                 background.save(final_buffer, format="PNG")
-    #                 self.image.save(f"{self.data}_final.png", ContentFile(final_buffer.getvalue()), save=False)
-    #                 self.event_image.close()
-    #             except Exception as e:
-    #                 print(f"Error al procesar la imagen del evento: {e}")
-
-    #         ###
-    #     super().save(*args, **kwargs)
-    def __str__(self) -> str:
-        return self.data
 
 class EventRole(models.Model):
     ROLE_CHOICES = [
