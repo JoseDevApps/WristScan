@@ -412,9 +412,8 @@
                 <thead>
                   <tr>
                     <th>Name of event</th>
-                    <th># of codes</th>
-                    <th># of purcahsed</th>
-                    <th style="width: 10%">Report</th>
+                    <th># of QR codes</th>
+                    <th># of QR purchased</th>
                   </tr>
                 </thead>
                
@@ -424,28 +423,7 @@
                     <td>{{event.name}} </td>
                     <td>{{event.total_qr_count}}</td>
                     <td>{{event.purchased_qr_count}}</td>
-                    <td>
-                      <div class="form-button-action">
-                        <button
-                          type="button"
-                          data-bs-toggle="tooltip"
-                          title=""
-                          class="btn btn-link btn-primary btn-lg"
-                          data-original-title="Edit Task"
-                        >
-                          <i class="fa fa-edit"></i>
-                        </button>
-                        <button
-                          type="button"
-                          data-bs-toggle="tooltip"
-                          title=""
-                          class="btn btn-link btn-danger"
-                          data-original-title="Remove"
-                        >
-                          <i class="fa fa-times"></i>
-                        </button>
-                      </div>
-                    </td>
+                    
                   </tr>
                   {% endfor %}
                 </tbody>
