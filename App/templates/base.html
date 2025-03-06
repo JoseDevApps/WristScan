@@ -155,15 +155,16 @@
           font-size: 24px;
           cursor: pointer;
       }
+
       #qrModal {
     display: none; /* Oculto por defecto */
     position: fixed;
     z-index: 1000; /* Asegura que esté por encima de otros elementos */
-    left: 50%;
+    left: 0;
     top: 50%;
-    transform: translate(-50%, -50%); /* Centra el modal exactamente */
-    width: 50%;
-    max-width: 400px; /* Ajusta el tamaño máximo */
+    transform: translateY(-50%); /* Solo centra verticalmente */
+    width: 100%; /* Se extiende a todo el ancho de la pantalla */
+    height: auto;
     background-color: white;
     padding: 20px;
     border-radius: 10px;
@@ -185,7 +186,11 @@
 /* Estilizar el contenido del modal */
 .modal-content {
     text-align: center;
+    max-width: 80%; /* Controla el ancho del contenido dentro del modal */
+    margin: auto; /* Centra el contenido dentro del modal */
 }
+
+      
     </style>
     {% block css %}{% endblock %}
 
