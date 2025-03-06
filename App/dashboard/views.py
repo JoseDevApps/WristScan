@@ -7,6 +7,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import get_object_or_404
 import stripe
 import zipfile
+import pandas as pd
 from django.http import HttpResponse
 import os
 from django.contrib import messages
@@ -118,6 +119,39 @@ def share_qr_codes(request):
 
     return render(request, 'dashboard/shareqr.html', {'form': form})
 
+################################################
+#   Pagina de bienvenida report
+################################################
+def export_qr_summary_to_excel(request):
+    user = request.user  # Usuario autenticado
+
+    # Obtener el total de QR comprados por el usuario en todos sus eventos
+    total_qr_purchased_by_user = QRCode.objects.filter(
+        event__created_by=user,
+        status_purchased='purchased'
+    ).count()
+
+    # Obtener los datos de cada evento
+    events = Event.objects.filter(created_by=user).annotate(
+        total_qr_count=Count('qr_codes'),
+        purchased_qr_count=Count('qr_codes', filter=Q(qr_codes__status_purchased='purchased'))
+    ).values("name", "total_qr_count", "purchased_qr_count")
+
+    # Convertir los datos a un DataFrame de pandas
+    df = pd.DataFrame(list(events))
+
+    # Agregar una fila con el total de QR comprados por el usuario
+    df.loc[len(df)] = ["TOTAL QR COMPRADOS POR EL USUARIO", "", total_qr_purchased_by_user]
+
+    # Crear la respuesta HTTP con el archivo Excel
+    response = HttpResponse(content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+    response["Content-Disposition"] = 'attachment; filename="qr_summary.xlsx"'
+
+    # Guardar el archivo en la respuesta HTTP
+    with pd.ExcelWriter(response, engine="openpyxl") as writer:
+        df.to_excel(writer, index=False, sheet_name="Resumen de QR")
+
+    return response
 
 
 ################################################

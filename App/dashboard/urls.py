@@ -4,6 +4,7 @@ from . import views
 app_name = 'dashboard'
 urlpatterns = [
     path('', views.inicio, name="inicio"),
+    path('export_qr_summary/', views.export_qr_summary_to_excel, name="export_qr_summary"),
     path('qrgen', views.qrgen, name="qrgen"),
     path('qrscan', views.qrscan, name="qrscan"),
     path('create', views.create, name="create"),
