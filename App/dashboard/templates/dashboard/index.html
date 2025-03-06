@@ -412,7 +412,7 @@
                 </thead>
                
                 <tbody>
-                  {% for event in events_with_purchased_qr_count %}
+                  {% for event in purchased %}
                   <tr>
                     <td>{{event.name}} </td>
                     <td>{{event.total_qr_count}}</td>
@@ -475,7 +475,7 @@
                   </tr>
                 </thead>
                 <tbody>
-                  {% for event in events_with_purchased_qr_count %}
+                  {% for event in purchased %}
                   <tr>
                     <th scope="row">
                       <button
