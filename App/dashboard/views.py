@@ -97,7 +97,7 @@ def share_qr_codes(request):
                 # Send email to the recipient
                 subject = f"QR Codes for Event: {event.name}"
                 message = f"You have been granted access to the event: {event.name}\n\n" \
-                          f"Attached are your QR codes."
+                          f"Attached are your {number_of_codes} QR codes."
 
                 email = EmailMessage(
                     subject,
