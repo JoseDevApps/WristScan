@@ -131,6 +131,11 @@ def inicio(request):
     qr_codes_list = [qr for event in user_events for qr in event.qr_codes.all()]
     print(len(qr_codes_list))
 # sql nombre del evento, # qr, # ventas, generar un reporte en excel
+    print(user_events)
+    for event in user_events:
+        print(event.name)
+        print(event.qr_code_count)
+        print(event.qr_codes)
     print(qr_codes_list)
     context = {'user':user_name, "NC":str(len(qr_codes_list)), "NE":str(len(user_events))}
     return render(request, template, context)
