@@ -133,7 +133,7 @@ def inicio(request):
     print(len(qr_codes_list))
 # sql nombre del evento, # qr, # ventas, generar un reporte en excel
     events_with_purchased_qr_count = Event.objects.annotate(
-    purchased_qr_count=Count('qr_codes', filter=QRCode.objects.filter(status_purchased='purchased'))
+    purchased_qr_count=Count('qr_codes', filter=Q(qr_codes__status_purchased='purchased'))
 )
     print(events_with_purchased_qr_count)
     # for event in events_with_purchased_qr_count:
