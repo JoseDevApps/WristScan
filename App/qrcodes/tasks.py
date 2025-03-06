@@ -21,7 +21,7 @@ def send_event_qr_codes(event_id):
 
     email = EmailMessage(
         subject=f"QR Codes for {event.name}",
-        body="Attached are the 500 QR codes for your event.",
+        body=f"Attached are {event.qr_code_count} QR codes for your event.",
         from_email=settings.DEFAULT_FROM_EMAIL,
         to=[creator_email],
     )
