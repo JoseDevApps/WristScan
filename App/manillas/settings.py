@@ -176,7 +176,7 @@ CELERY_TASK_TRACK_STARTED = True
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 LOGIN_REDIRECT_URL = 'dashboard:inicio'
-LOGOUT_REDIRECT_URL = 'login'
+LOGOUT_REDIRECT_URL = 'registration:login'
 
 # SMTP Config
 DEFAULT_FROM_EMAIL = 'minusmaya@zohomail.com'
