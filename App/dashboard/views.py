@@ -136,8 +136,8 @@ def inicio(request):
     purchased_qr_count=Count('qr_codes', filter=Q(qr_codes__status_purchased='purchased'))
 )
     print(events_with_purchased_qr_count)
-    # for event in events_with_purchased_qr_count:
-    #     print(f"Evento: {event.name}, QR Comprados: {event.purchased_qr_count}")
+    for event in events_with_purchased_qr_count:
+        print(f"Evento: {event.name}, QR Comprados: {event.purchased_qr_count}")
 
     print(user_events)
     # for event in user_events:
