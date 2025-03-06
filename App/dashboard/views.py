@@ -20,7 +20,7 @@ from django.core.mail import send_mail
 from django.core.mail import EmailMessage
 from PIL import Image
 import io
-from django.db.models import Count
+from django.db.models import Count, Q
 from io import BytesIO
 import sys
 from django.core.files.uploadedfile import InMemoryUploadedFile
