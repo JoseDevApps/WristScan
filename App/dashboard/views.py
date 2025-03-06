@@ -146,7 +146,7 @@ def inicio(request):
     #     print(event.qr_code_count)
         # print(event.qr_codes.status_purchased)
     # print(qr_codes_list)
-    context = {'user':user_name, "NC":str(len(qr_codes_list)), "NE":str(len(user_events)), "events":user_events, "purchased":events_with_purchased_qr_count}
+    context = {'user':user_name, "NC":str(len(qr_codes_list)), "NE":str(len(user_events)), "purchased":events_with_purchased_qr_count}
     return render(request, template, context)
 ################################################
 #   Pagina de QR Generador

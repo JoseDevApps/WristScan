@@ -412,10 +412,11 @@
                 </thead>
                
                 <tbody>
+                  {% for event in events_with_purchased_qr_count %}
                   <tr>
-                    <td>Tiger Nixon</td>
-                    <td>System Architect</td>
-                    <td>Edinburgh</td>
+                    <td>{{event.name}} </td>
+                    <td>{{event.total_qr_count}}</td>
+                    <td>{{event.purchased_qr_count}}</td>
                     <td>
                       <div class="form-button-action">
                         <button
@@ -439,6 +440,7 @@
                       </div>
                     </td>
                   </tr>
+                  {% endfor %}
                 </tbody>
               </table>
             </div>
@@ -473,6 +475,7 @@
                   </tr>
                 </thead>
                 <tbody>
+                  {% for event in events_with_purchased_qr_count %}
                   <tr>
                     <th scope="row">
                       <button
@@ -488,6 +491,7 @@
                       <span class="badge badge-success">Completed</span>
                     </td>
                   </tr>
+                  {% endfor %}
                 </tbody>
               </table>
             </div>
