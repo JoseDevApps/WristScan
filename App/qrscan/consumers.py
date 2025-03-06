@@ -34,7 +34,7 @@ class QRConsumer(AsyncWebsocketConsumer):
                     print(date)
                     hours, remainder = divmod(date.total_seconds(), 3600)
                     minutes, _ = divmod(remainder, 60)
-                    response_message = f'DUPLICADO - escaneado hace:{hours} horas y {minutes} minutos'
+                    response_message = f'DUPLICADO - escaneado hace:\n{hours} horas y {minutes} minutos'
 
             else:
                 response_message = "DENEGADO"
