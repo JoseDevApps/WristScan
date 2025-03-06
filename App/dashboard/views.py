@@ -20,6 +20,7 @@ from django.core.mail import send_mail
 from django.core.mail import EmailMessage
 from PIL import Image
 import io
+from django.db.models import Count
 from io import BytesIO
 import sys
 from django.core.files.uploadedfile import InMemoryUploadedFile
@@ -131,11 +132,17 @@ def inicio(request):
     qr_codes_list = [qr for event in user_events for qr in event.qr_codes.all()]
     print(len(qr_codes_list))
 # sql nombre del evento, # qr, # ventas, generar un reporte en excel
+    events_with_purchased_qr_count = Event.objects.annotate(
+    purchased_qr_count=Count('qr_codes', filter=QRCode.objects.filter(status_purchased='purchased'))
+)
+    for event in events_with_purchased_qr_count:
+        print(f"Evento: {event.name}, QR Comprados: {event.purchased_qr_count}")
+
     print(user_events)
-    for event in user_events:
-        print(event.name)
-        print(event.qr_code_count)
-        print(event.qr_codes.status_purchased)
+    # for event in user_events:
+    #     print(event.name)
+    #     print(event.qr_code_count)
+        # print(event.qr_codes.status_purchased)
     print(qr_codes_list)
     context = {'user':user_name, "NC":str(len(qr_codes_list)), "NE":str(len(user_events))}
     return render(request, template, context)
