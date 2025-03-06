@@ -141,7 +141,7 @@ def export_qr_summary_to_excel(request):
     df = pd.DataFrame(list(events))
 
     # Agregar una fila con el total de QR comprados por el usuario
-    df.loc[len(df)] = ["TOTAL QR COMPRADOS POR EL USUARIO", "", total_qr_purchased_by_user]
+    df.loc[len(df)] = ["# QR sold by the user", "", total_qr_purchased_by_user]
 
     # Crear la respuesta HTTP con el archivo Excel
     response = HttpResponse(content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
