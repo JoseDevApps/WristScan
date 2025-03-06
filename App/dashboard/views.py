@@ -138,6 +138,7 @@ def inicio(request):
     print(events_with_purchased_qr_count)
     for event in events_with_purchased_qr_count:
         print(f"Evento: {event.name}, QR Comprados: {event.purchased_qr_count}")
+        print(event.name)
     print(user_events)
     # for event in user_events:
     #     print(event.name)
