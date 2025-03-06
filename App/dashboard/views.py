@@ -131,6 +131,10 @@ def inicio(request):
     user_events = Event.objects.filter(created_by=user_id)
     qr_codes_list = [qr for event in user_events for qr in event.qr_codes.all()]
     print(len(qr_codes_list))
+    total_qr_purchased_by_user = QRCode.objects.filter(
+        event__created_by=user_id,
+        status_purchased='purchased'
+    ).count()
 # sql nombre del evento, # qr, # ventas, generar un reporte en excel
     events_with_purchased_qr_count = Event.objects.filter(created_by=user_id).annotate(
         total_qr_count=Count('qr_codes'),  # Total de QR asociados al evento
@@ -140,13 +144,14 @@ def inicio(request):
     for event in events_with_purchased_qr_count:
         print(f"Evento: {event.name}, QR Comprados: {event.purchased_qr_count}")
         print(event.total_qr_count)
+    
     print(user_events)
     # for event in user_events:
     #     print(event.name)
     #     print(event.qr_code_count)
         # print(event.qr_codes.status_purchased)
     # print(qr_codes_list)
-    context = {'user':user_name, "NC":str(len(qr_codes_list)), "NE":str(len(user_events)), "purchased":events_with_purchased_qr_count}
+    context = {'user':user_name, "NC":str(len(qr_codes_list)), "NE":str(len(user_events)), "purchased":events_with_purchased_qr_count, 'tp':total_qr_purchased_by_user}
     return render(request, template, context)
 ################################################
 #   Pagina de QR Generador
