@@ -68,14 +68,14 @@
               </li>
               <li>
                 <a href="{% url 'dashboard:assign' %}">
-                  <span class="sub-item">Assign Users</span>
+                  <span class="sub-item">Monitor QR</span>
                 </a>
               </li>
             </ul>
           </div>
         </li>
 <!-- Monitor option-->
-        <li class="nav-item">
+        <li class="nav-item active">
           <a data-bs-toggle="collapse" href="#tables">
             <i class="fas fa-table"></i>
             <p>Monitor Event</p>
@@ -85,12 +85,12 @@
             <ul class="nav nav-collapse">
               <li>
                 <a href="{% url 'dashboard:share' %}">
-                  <span class="sub-item">Basic Table</span>
+                  <span class="sub-item">Share QR</span>
                 </a>
               </li>
               <li>
                 <a href="{% url 'dashboard:tables' %}">
-                  <span class="sub-item">Datatables</span>
+                  <span class="sub-item">Event list</span>
                 </a>
               </li>
             </ul>
@@ -107,7 +107,7 @@
           <div class="collapse" id="submenu">
             <ul class="nav nav-collapse">
               <li>
-                <a  href="{% url 'dashboard:inicio' %}">
+                <a  href="{% url 'login' %}">
                   <span class="sub-item">LogOut</span>
                 </a>
                 
