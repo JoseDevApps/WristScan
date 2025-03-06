@@ -135,8 +135,9 @@ def inicio(request):
     events_with_purchased_qr_count = Event.objects.annotate(
     purchased_qr_count=Count('qr_codes', filter=QRCode.objects.filter(status_purchased='purchased'))
 )
-    for event in events_with_purchased_qr_count:
-        print(f"Evento: {event.name}, QR Comprados: {event.purchased_qr_count}")
+    print(events_with_purchased_qr_count)
+    # for event in events_with_purchased_qr_count:
+    #     print(f"Evento: {event.name}, QR Comprados: {event.purchased_qr_count}")
 
     print(user_events)
     # for event in user_events:
