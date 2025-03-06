@@ -308,12 +308,12 @@
               <h4 class="card-title">Resumen de actividad</h4>
               
             </div>
-            <button class="btn btn-info">
+            <a href="{% url 'dashboard:export_qr_summary' %}" class="btn btn-info">
               <span class="btn-label">
-                <i class="fa fa-info"></i>
+                  <i class="fa fa-info"></i>
               </span>
-              Report
-            </button>
+              Download Report
+          </a>
 
           </div>
           <div class="card-body">
