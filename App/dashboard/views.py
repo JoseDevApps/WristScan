@@ -153,6 +153,39 @@ def export_qr_summary_to_excel(request):
 
     return response
 
+################################################
+#   export qr codes
+################################################
+def export_qr_codes_to_excel(request):
+    user = request.user  # Usuario autenticado
+
+    # Obtener el total de QR comprados por el usuario en todos sus eventos
+    total_qr_purchased_by_user = QRCode.objects.filter(
+        event__created_by=user,
+        status_purchased='purchased'
+    ).count()
+
+    # Obtener los datos de cada evento
+    events = Event.objects.filter(created_by=user).annotate(
+        total_qr_count=Count('qr_codes'),
+        purchased_qr_count=Count('qr_codes', filter=Q(qr_codes__status_purchased='purchased'))
+    ).values("name", "total_qr_count", "purchased_qr_count")
+
+    # Convertir los datos a un DataFrame de pandas
+    df = pd.DataFrame(list(events))
+
+    # Agregar una fila con el total de QR comprados por el usuario
+    df.loc[len(df)] = ["# QR sold by the user", "", total_qr_purchased_by_user]
+
+    # Crear la respuesta HTTP con el archivo Excel
+    response = HttpResponse(content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+    response["Content-Disposition"] = 'attachment; filename="qr_summary.xlsx"'
+
+    # Guardar el archivo en la respuesta HTTP
+    with pd.ExcelWriter(response, engine="openpyxl") as writer:
+        df.to_excel(writer, index=False, sheet_name="Resumen de QR")
+
+    return response
 
 ################################################
 #   Pagina de bienvenida
@@ -198,15 +231,17 @@ def qrgen(request):
 #   Pagina de QR Escaner
 ################################################
 def qrscan(request):
-    # websocket_url = 'ws://10.38.134.24:8080/ws/qr/'  # You can dynamically set this URL
+    user_name = request.user
+
     websocket_url = 'wss://app.manillasbolivia.com/ws/qr/'  # You can dynamically set this URL
-    return render(request, 'dashboard/qrscan.html', {'websocket_url': websocket_url})
+    return render(request, 'dashboard/qrscan.html', {'websocket_url': websocket_url, 'user':user_name,})
 
 ################################################
 #   Pagina de QR create event
 ################################################
 def create(request):
     template = 'dashboard/create.html' 
+    user_name = request.user
     product1 = Product.objects.get(name="Plan 1")
     product2 = Product.objects.get(name="Plan 2")
     product3 = Product.objects.get(name="Plan 3")
@@ -216,7 +251,8 @@ def create(request):
         "product1": product1,
         "product2": product2,
         "product3": product3, 
-        "STRIPE_PUBLIC_KEY": settings.STRIPE_PUBLIC_KEY
+        "STRIPE_PUBLIC_KEY": settings.STRIPE_PUBLIC_KEY,
+        'user':user_name
         }
     return render(request, template, context)
 
@@ -225,9 +261,10 @@ def create(request):
 ################################################
 def listdb(request):
     template = 'dashboard/tables_event.html'
+    user_name = request.user
     user_id = request.user.id
     user_events = Event.objects.filter(created_by=user_id)
-    context = {'events': user_events}
+    context = {'events': user_events, 'user':user_name}
     return render(request, template, context)
 
 ################################################
@@ -237,7 +274,6 @@ def download_qr_zip(request, event_id):
     """Generates a ZIP file containing all QR codes for a given event."""
     event = get_object_or_404(Event, id=event_id)
     qr_codes = event.qr_codes.all()
-
     if not qr_codes.exists():
         return HttpResponse("No QR codes available for this event.", status=404)
 
@@ -263,7 +299,7 @@ def download_qr_zip(request, event_id):
 ################################################
 def updatedb(request, pk):
     event = get_object_or_404(Event, id=pk)
-
+    user_name = request.user
     if request.method == "POST":
         form = UpdateQRCodesForm(request.POST, instance=event)
         if form.is_valid():
@@ -276,13 +312,14 @@ def updatedb(request, pk):
     else:
         form = UpdateQRCodesForm(instance=event, initial={"new_qr_code_count": event.qr_code_count})
 
-    return render(request, "dashboard/update_event.html", {"form": form, "event": event})
+    return render(request, "dashboard/update_event.html", {"form": form, "event": event,'user':user_name})
 
 ################################################
 #   Pagina de QR create event form db
 ################################################
 def createdb(request):
     template = 'dashboard/create-db.html' 
+    user_name = request.user
     product1 = Product.objects.get(name="Plan 1")
     product2 = Product.objects.get(name="Plan 2")
     product3 = Product.objects.get(name="Plan 3")
@@ -293,7 +330,8 @@ def createdb(request):
         "product2": product2,
         "product3": product3, 
         "STRIPE_PUBLIC_KEY": settings.STRIPE_PUBLIC_KEY,
-        'solicitud': int(request.GET.get('solicitud'))
+        'solicitud': int(request.GET.get('solicitud')),
+        'user':user_name
         }
     print(request.GET.get('solicitud'))
     if request.method == "POST" :
@@ -324,6 +362,7 @@ def createdb(request):
 #   Pagina de QR assign assign
 ################################################
 def assign(request):
+    user_name = request.user
     template = 'dashboard/assign.html' 
     user_id = request.user.id
     user_events = Event.objects.filter(created_by=user_id)
@@ -339,7 +378,7 @@ def assign(request):
             qr.save()
             return redirect('dashboard/assign.html')  # Redirect after successful update
 
-    context = {'qr': qr_codes_list}
+    context = {'qr': qr_codes_list, 'user':user_name}
     return render(request, template, context)
 
 
@@ -348,7 +387,7 @@ def assign(request):
 ################################################
 def update_user_email(request, id):
     qr = QRCode.objects.get(id=id)  # Get the qr id to update
-
+    user_name = request.user
     if request.method == 'POST':
         form = UserEmailForm(request.POST)
         if form.is_valid():
@@ -360,7 +399,7 @@ def update_user_email(request, id):
     user_id = request.user.id
     user_events = Event.objects.filter(created_by=user_id)
     qr_codes_list = [qr for event in user_events for qr in event.qr_codes.all()]
-    context = {'qr': qr_codes_list}
+    context = {'qr': qr_codes_list, 'user':user_name}
     return render(request, 'dashboard/assign.html', context)
 ################################################
 #   Pagina de QR basic
