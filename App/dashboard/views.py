@@ -160,30 +160,26 @@ def export_qr_codes_to_excel(request):
     user = request.user  # Usuario autenticado
 
     # Obtener el total de QR comprados por el usuario en todos sus eventos
-    total_qr_purchased_by_user = QRCode.objects.filter(
-        event__created_by=user,
-        status_purchased='purchased'
-    ).count()
+    qr_codes = QRCode.objects.filter(event__created_by=user).select_related("30k")
+    if not qr_codes.exists():
+        return HttpResponse("No hay códigos QR disponibles.", status=404)
+    data = []
+    for qr in qr_codes:
+        data.append({
+            "QR ID": qr.id,
+            "Código QR": qr.data,
+            "Estado": qr.status_purchased,
+        })
 
-    # Obtener los datos de cada evento
-    events = Event.objects.filter(created_by=user).annotate(
-        total_qr_count=Count('qr_codes'),
-        purchased_qr_count=Count('qr_codes', filter=Q(qr_codes__status_purchased='purchased'))
-    ).values("name", "total_qr_count", "purchased_qr_count")
-
-    # Convertir los datos a un DataFrame de pandas
-    df = pd.DataFrame(list(events))
-
-    # Agregar una fila con el total de QR comprados por el usuario
-    df.loc[len(df)] = ["# QR sold by the user", "", total_qr_purchased_by_user]
+    df = pd.DataFrame(data)
 
     # Crear la respuesta HTTP con el archivo Excel
     response = HttpResponse(content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-    response["Content-Disposition"] = 'attachment; filename="qr_summary.xlsx"'
+    response["Content-Disposition"] = 'attachment; filename="qr_codes.xlsx"'
 
     # Guardar el archivo en la respuesta HTTP
     with pd.ExcelWriter(response, engine="openpyxl") as writer:
-        df.to_excel(writer, index=False, sheet_name="Resumen de QR")
+        df.to_excel(writer, index=False, sheet_name="QR Codes")
 
     return response
 
