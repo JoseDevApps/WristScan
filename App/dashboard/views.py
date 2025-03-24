@@ -159,8 +159,11 @@ def export_qr_summary_to_excel(request):
 def export_qr_codes_to_excel(request):
     user = request.user  # Usuario autenticado
 
-    # Obtener el total de QR comprados por el usuario en todos sus eventos
-    qr_codes = QRCode.objects.filter(event__created_by=user).select_related("30k")
+    event = get_object_or_404(Event, name="30k")
+
+    # Obtener todos los códigos QR asociados a este evento
+    qr_codes = event.qr_codes.all()
+
     if not qr_codes.exists():
         return HttpResponse("No hay códigos QR disponibles.", status=404)
     data = []
