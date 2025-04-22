@@ -465,3 +465,10 @@ class SuccessView(TemplateView):
 ################################################
 class CancelView(TemplateView):
     template_name = "dashboard/cancel.html"
+
+################################################
+#   Pagina de Terminos y condiciones
+################################################
+def qr_app(request):
+    template = 'dashboard/qrapp.html'
+    return render(request, template, )

@@ -20,4 +20,5 @@ urlpatterns = [
     path('create-checkout-session/<int:pk>/<int:slug>/', views.create_checkout_session, name='create_checkout_session'),
     path('cancel/', views.CancelView.as_view(), name='cancel'),
     path('success/', views.SuccessView.as_view(), name='success'),
+    path('qrpass/', views.qr_app, name="qrpass"),
 ]
