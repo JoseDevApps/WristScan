@@ -33,7 +33,10 @@ CSRF_TRUSTED_ORIGINS = [
     "http://localhost:8080",
     "http://127.0.0.1:8000",
     "http://app.manillasbolivia.com",
-    "https://app.manillasbolivia.com"
+    "https://app.manillasbolivia.com",
+    "http://app.uniqbo.com",
+    "https://app.uniqbo.com",
+
 ]
 
 # Define the ASGI application
