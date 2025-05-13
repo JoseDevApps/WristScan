@@ -420,7 +420,7 @@
                     <td>{{event.total_qr_count}}</td>
                     <td>{{event.purchased_qr_count}}</td>
                     <td>
-                      <a href="{% url 'export_qr_codes' event.id %}" class="btn btn-sm btn-outline-primary">
+                      <a href="{% url 'dashboard:export_qr_codes' event.id %}" class="btn btn-sm btn-outline-primary">
                         Descargar Excel
                       </a>
                     </td>
