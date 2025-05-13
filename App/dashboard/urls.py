@@ -5,7 +5,9 @@ app_name = 'dashboard'
 urlpatterns = [
     path('', views.inicio, name="inicio"),
     path('export_qr_summary/', views.export_qr_summary_to_excel, name="export_qr_summary"),
-    path('export_qr_codes/', views.export_qr_codes_to_excel, name="export_qr_codes"),
+    # path('export_qr_codes/', views.export_qr_codes_to_excel, name="export_qr_codes"),
+    path('export-qrs/<int:event_id>/', views.export_qr_codes_to_excel, name='export_qrs_excel'),
+
     path('qrgen', views.qrgen, name="qrgen"),
     path('qrscan', views.qrscan, name="qrscan"),
     path('create', views.create, name="create"),

@@ -156,35 +156,69 @@ def export_qr_summary_to_excel(request):
 ################################################
 #   export qr codes
 ################################################
-def export_qr_codes_to_excel(request):
-    user = request.user  # Usuario autenticado
 
-    event = get_object_or_404(Event, name="30k")
-
-    # Obtener todos los códigos QR asociados a este evento
+@login_required
+def export_qr_codes_to_excel(request, event_id):
+    user = request.user
+    # Buscar evento por ID y asegurar que pertenece al usuario
+    event = get_object_or_404(Event, id=event_id, created_by=user)
     qr_codes = event.qr_codes.all()
 
     if not qr_codes.exists():
-        return HttpResponse("No hay códigos QR disponibles.", status=404)
-    data = []
-    for qr in qr_codes:
-        data.append({
+        return HttpResponse("No hay códigos QR disponibles para este evento.", status=404)
+
+    # Estructurar los datos
+    data = [
+        {
             "QR ID": qr.id,
-            "Código QR": qr.data,
-            "Estado": qr.status_purchased,
-        })
+            "QRCode": qr.data,
+            "Status": qr.status_purchased,
+        }
+        for qr in qr_codes
+    ]
 
     df = pd.DataFrame(data)
 
-    # Crear la respuesta HTTP con el archivo Excel
-    response = HttpResponse(content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-    response["Content-Disposition"] = 'attachment; filename="qr_codes.xlsx"'
+    response = HttpResponse(
+        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
+    filename = f"qr_codes_{event.name}.xlsx"
+    response["Content-Disposition"] = f'attachment; filename="{filename}"'
 
-    # Guardar el archivo en la respuesta HTTP
     with pd.ExcelWriter(response, engine="openpyxl") as writer:
         df.to_excel(writer, index=False, sheet_name="QR Codes")
 
     return response
+
+# def export_qr_codes_to_excel(request):
+#     user = request.user  # Usuario autenticado
+
+#     event = get_object_or_404(Event, name="30k")
+
+#     # Obtener todos los códigos QR asociados a este evento
+#     qr_codes = event.qr_codes.all()
+
+#     if not qr_codes.exists():
+#         return HttpResponse("No hay códigos QR disponibles.", status=404)
+#     data = []
+#     for qr in qr_codes:
+#         data.append({
+#             "QR ID": qr.id,
+#             "QRCode": qr.data,
+#             "Status": qr.status_purchased,
+#         })
+
+#     df = pd.DataFrame(data)
+
+#     # Crear la respuesta HTTP con el archivo Excel
+#     response = HttpResponse(content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+#     response["Content-Disposition"] = 'attachment; filename="qr_codes.xlsx"'
+
+#     # Guardar el archivo en la respuesta HTTP
+#     with pd.ExcelWriter(response, engine="openpyxl") as writer:
+#         df.to_excel(writer, index=False, sheet_name="QR Codes")
+
+#     return response
 
 ################################################
 #   Pagina de bienvenida
@@ -212,11 +246,6 @@ def inicio(request):
         print(event.total_qr_count)
     
     print(user_events)
-    # for event in user_events:
-    #     print(event.name)
-    #     print(event.qr_code_count)
-        # print(event.qr_codes.status_purchased)
-    # print(qr_codes_list)
     context = {'user':user_name, "NC":str(len(qr_codes_list)), "NE":str(len(user_events)), "purchased":events_with_purchased_qr_count, 'tp':total_qr_purchased_by_user}
     return render(request, template, context)
 ################################################

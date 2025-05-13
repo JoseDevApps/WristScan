@@ -13,12 +13,6 @@
     <div class="logo-header" data-background-color="white">
       <a href="{% url 'dashboard:inicio' %}" class="logo">
         <i class="fas fa-qrcode fs-1"></i>
-          <!-- <img
-                src= "{% static 'img/kaiadmin/manLogo.png' %}"
-                alt="navbar brand"
-                class="navbar-brand"
-                height="40"
-           /> -->
       </a>
       <div class="nav-toggle">
         <button class="btn btn-toggle toggle-sidebar">
@@ -431,7 +425,11 @@
                     <td>{{event.name}} </td>
                     <td>{{event.total_qr_count}}</td>
                     <td>{{event.purchased_qr_count}}</td>
-                    
+                    <td>
+                      <a href="{% url 'export_qrs_excel' event.id %}" class="btn btn-sm btn-outline-primary">
+                        Descargar Excel
+                      </a>
+                    </td>
                   </tr>
                   {% endfor %}
                 </tbody>
