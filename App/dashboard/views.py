@@ -190,35 +190,6 @@ def export_qr_codes_to_excel(request, event_id):
 
     return response
 
-# def export_qr_codes_to_excel(request):
-#     user = request.user  # Usuario autenticado
-
-#     event = get_object_or_404(Event, name="30k")
-
-#     # Obtener todos los códigos QR asociados a este evento
-#     qr_codes = event.qr_codes.all()
-
-#     if not qr_codes.exists():
-#         return HttpResponse("No hay códigos QR disponibles.", status=404)
-#     data = []
-#     for qr in qr_codes:
-#         data.append({
-#             "QR ID": qr.id,
-#             "QRCode": qr.data,
-#             "Status": qr.status_purchased,
-#         })
-
-#     df = pd.DataFrame(data)
-
-#     # Crear la respuesta HTTP con el archivo Excel
-#     response = HttpResponse(content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-#     response["Content-Disposition"] = 'attachment; filename="qr_codes.xlsx"'
-
-#     # Guardar el archivo en la respuesta HTTP
-#     with pd.ExcelWriter(response, engine="openpyxl") as writer:
-#         df.to_excel(writer, index=False, sheet_name="QR Codes")
-
-#     return response
 
 ################################################
 #   Pagina de bienvenida
@@ -367,7 +338,12 @@ def createdb(request):
         qr_code_count_post = request.POST["qr_code_count"]
         image = request.FILES.get("image")
         print(image)
-        image_save = Image.open(io.BytesIO(image.read()))
+        if image:
+            image_save = Image.open(io.BytesIO(image.read()))
+        else:
+            # Crear una imagen blanca por defecto (500x500 px)
+            image_save = Image.new('RGB', (500, 500), color='white')
+        # image_save = Image.open(io.BytesIO(image.read()))
         print(image_save)
         buffer = io.BytesIO()
         image_save.save(buffer, format="jpeg")
