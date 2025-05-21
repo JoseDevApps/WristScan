@@ -99,8 +99,7 @@ class QRCode(models.Model):
         event_image.open()  # 📍 Cargar imagen desde el objeto en memoria
         background = Image.open(BytesIO(event_image.file.read())).convert("RGBA")
         # background = background.resize((720, 1280))  # Ajustar tamaño
-         # 🔸 2.1 Si no es 500x500, redimensionar a 720x1280 (como antes)
-        if background.size != (500, 500):
+        if background.size != (330, 330):
             background = background.resize((720, 1280))
 
             # Posición del QR en imagen redimensionada (ajustada)

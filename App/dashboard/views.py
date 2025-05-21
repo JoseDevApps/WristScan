@@ -342,7 +342,7 @@ def createdb(request):
             image_save = Image.open(io.BytesIO(image.read()))
         else:
             # Crear una imagen blanca por defecto (500x500 px)
-            image_save = Image.new('RGB', (500, 500), color='white')
+            image_save = Image.new('RGB', (330, 330), color='white')
         # image_save = Image.open(io.BytesIO(image.read()))
         print(image_save)
         buffer = io.BytesIO()
