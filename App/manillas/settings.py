@@ -36,6 +36,7 @@ CSRF_TRUSTED_ORIGINS = [
     "https://app.manillasbolivia.com",
     "http://app.uniqbo.com",
     "https://app.uniqbo.com",
+    "http://82.180.132.202/"
 
 ]
 
