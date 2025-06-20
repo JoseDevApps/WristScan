@@ -229,7 +229,7 @@
                 <!-- Modal -->
                 <div class="modal fade" id="postFormModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
                   <div class="modal-dialog">
-                    <form method="POST" action="{% url 'submit-form' %}">
+                    <form method="POST" action="{% url 'dashboard:modal-form' %}">
                       {% csrf_token %}
                       <div class="modal-content">
                         <div class="modal-header">
