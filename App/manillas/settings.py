@@ -29,9 +29,8 @@ DEBUG = True
 ALLOWED_HOSTS = ['*', 'web']
 ALLOWED_IPS = ['*']
 CSRF_TRUSTED_ORIGINS = [
-    "http://localhost:8000",
-    "http://localhost:8080",
-    "http://127.0.0.1:8000",
+    'http://82.180.132.202',
+    'https://82.180.132.202',  # si usas HTTPS también
     "http://app.manillasbolivia.com",
     "https://app.manillasbolivia.com",
     "http://app.uniqbo.com",
