@@ -207,6 +207,10 @@ def inicio(request):
         event__created_by=user_id,
         status_purchased='purchased'
     ).count()
+    total_qr_used_by_user = QRCode.objects.filter(
+        event__created_by=user_id,
+        status_scan='concedido'
+    ).count()
     total_qr_available_by_user = QRCode.objects.filter(
         event__created_by=user_id,
         status_purchased='available'
@@ -223,7 +227,7 @@ def inicio(request):
     
     print(user_events)
     context = {'user':user_name, "NC":str(len(qr_codes_list)), "NE":str(len(user_events)), "purchased":events_with_purchased_qr_count, 'tp':total_qr_purchased_by_user,
-               'available':total_qr_available_by_user}
+               'available':total_qr_available_by_user,'used':total_qr_used_by_user}
     return render(request, template, context)
 ################################################
 #   Pagina de QR Generador
