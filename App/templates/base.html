@@ -7,24 +7,27 @@
     <title>{% block title %}My Website{% endblock %}</title>
     <script src="{% static 'js/plugin/webfont/webfont.min.js' %}"></script>
     <script src="https://js.stripe.com/v3/"></script>
-    <script>
-      WebFont.load({
-          google: { families: ["Inconsolata:300,400,500,600,700"] },
-          custom: {
-              families: [
-                  "Font Awesome 5 Solid",
-                  "Font Awesome 5 Regular",
-                  "Font Awesome 5 Brands",
-                  "simple-line-icons",
-              ],
-              urls: ["https://fonts.googleapis.com/css2?family=Inconsolata:wght@300;400;500;600;700&display=swap", 
-                     "{% static 'css/fonts.min.css' %}"]
-          },
-          active: function () {
-              sessionStorage.fonts = true;
-          },
-      });
-  </script>
+<script>
+    WebFont.load({
+        google: { families: ["Protest Strike"] },
+        custom: {
+            families: [
+                "Font Awesome 5 Solid",
+                "Font Awesome 5 Regular",
+                "Font Awesome 5 Brands",
+                "simple-line-icons",
+            ],
+            urls: [
+                "https://fonts.googleapis.com/css2?family=Protest+Strike&display=swap", 
+                "{% static 'css/fonts.min.css' %}"
+            ]
+        },
+        active: function () {
+            sessionStorage.fonts = true;
+        },
+    });
+</script>
+
 
     <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
     <link rel="stylesheet" href="{% static 'css/plugins.min.css' %}">
