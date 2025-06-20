@@ -85,10 +85,11 @@ danger-color : #f3545d
 
 -------------------------------------------------------------------*/
 /*   Typography    */
+@import url('https://fonts.googleapis.com/css2?family=Protest+Strike&display=swap');
 body, h1, .h1, h2, .h2, h3, .h3, h4, .h4, h5, .h5, h6, .h6, p, .navbar, .brand, .btn-simple, .alert, a, .td-name, td, button.close {
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
-  font-family: 'Public Sans', sans-serif; }
+  font-family: 'Protest Strike', sans-serif; }
 
 body, html {
   font-size: 14px;
@@ -2050,7 +2051,7 @@ label {
       position: relative; }
       .card-pricing2 .pricing-content li.disable:before, .card-pricing2 .pricing-content li:before {
         content: "\f00c";
-        font-family: 'Font Awesome 5 Solid';
+        font-family: 'Protest Strike', 'Font Awesome 5 Solid';
         font-weight: 900;
         width: 20px;
         height: 20px;
@@ -2410,7 +2411,7 @@ label {
       margin-left: auto; }
       .accordion .card > .card-header > .span-mode:before {
         content: "\f068" !important;
-        font-family: 'Font Awesome 5 Solid';
+        font-family: 'Protest Strike', 'Font Awesome 5 Solid';
         font-weight: 900;
         font-size: 16px; }
     .accordion .card > .card-header.collapsed > .span-mode:before {
