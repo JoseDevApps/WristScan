@@ -1,0 +1,304 @@
+{% extends 'base.html' %}
+{% block title %}Manillas Bolivia{% endblock %}
+{% load static %}
+{% block content %}
+<div class="wrapper">
+  <!-- Sidebar -->
+  <div class="sidebar" data-background-color="white">
+    <!-- *************** -->
+    <!-- CABECERA INICIO -->
+    <!-- *************** -->
+  <div class="sidebar-logo" >
+    <!-- Logo Header -->
+    <div class="logo-header" data-background-color="white">
+      <a href="{% url 'dashboard:inicio' %}" class="logo">
+         <i class="fas fa-qrcode fs-1"></i>
+      </a>
+      <div class="nav-toggle">
+        <button class="btn btn-toggle toggle-sidebar">
+          <i class="gg-menu-right"></i>
+        </button>
+        <button class="btn btn-toggle sidenav-toggler">
+          <i class="gg-menu-left"></i>
+        </button>
+      </div>
+      <button class="topbar-toggler more">
+        <i class="gg-more-vertical-alt"></i>
+      </button>
+    </div>
+    <!-- End Logo Header -->
+  </div>
+  
+<!-- ********************** -->
+<!-- INICIO DE Menu Lateral -->
+<!-- ********************** -->
+
+  <div class="sidebar-wrapper scrollbar scrollbar-inner">
+    <div class="sidebar-content">
+      <ul class="nav nav-secondary">
+
+        <li class="nav-item">
+          <a href="{% url 'dashboard:inicio' %}">
+            <i class="fas fa-bars"></i>
+            <p>Home</p>
+          </a>
+          
+        </li>
+
+        <li class="nav-item">
+          <a href="{% url 'dashboard:qrscan' %}">
+            <i class="fas fa-qrcode"></i>
+            <p>QR Control</p>
+          </a>
+        </li>
+        
+        <li class="nav-item active">
+          <a data-bs-toggle="collapse" href="#forms">
+            <i class="fas fa-pen-square"></i>
+            <p>Create Event</p>
+            <span class="caret"></span>
+          </a>
+          <div class="collapse" id="forms">
+            <ul class="nav nav-collapse">
+              <li>
+                <a href="{% url 'dashboard:create' %}">
+                  <span class="sub-item">Create</span>
+                </a>
+              </li>
+              <li>
+                <a href="{% url 'dashboard:assign' %}">
+                  <span class="sub-item">Assign Users</span>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </li>
+<!-- Monitor option-->
+        <li class="nav-item">
+          <a data-bs-toggle="collapse" href="#tables">
+            <i class="fas fa-table"></i>
+            <p>Monitor Event</p>
+            <span class="caret"></span>
+          </a>
+          <div class="collapse" id="tables">
+            <ul class="nav nav-collapse">
+              <li>
+                <a href="{% url 'dashboard:share' %}">
+                  <span class="sub-item">Share QR</span>
+                </a>
+              </li>
+              <li>
+                <a href="{% url 'dashboard:tables' %}">
+                  <span class="sub-item">Event list</span>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </li>
+
+<!-- log Out -->
+        <li class="nav-item">
+          <a data-bs-toggle="collapse" href="#submenu">
+            <i class="fas fa-bars"></i>
+            <p>Log Out</p>
+            <span class="caret"></span>
+          </a>
+          <div class="collapse" id="submenu">
+            <ul class="nav nav-collapse">
+              <li>
+                <a  href="{% url 'dashboard:inicio' %}">
+                  <span class="sub-item">LogOut</span>
+                </a>
+                
+              </li>
+              
+            </ul>
+          </div>
+        </li>
+        <!-- END -->
+           
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ********************** -->
+<!-- FIN DE Menu Lateral -->
+<!-- ********************** -->
+
+<div class="main-panel">
+  <div class="main-header">
+
+    <div class="main-header-logo">
+      <!-- Logo Header -->
+      <div class="logo-header" data-background-color="dark">
+        <a href="{% url 'dashboard:inicio' %}" class="logo">
+          <img
+            src= "{% static 'img/kaiadmin/logo_light.svg' %}"
+            alt="navbar brand"
+            class="navbar-brand"
+            height="20"
+          />
+        </a>
+        <div class="nav-toggle">
+          <button class="btn btn-toggle toggle-sidebar">
+            <i class="gg-menu-right"></i>
+          </button>
+          <button class="btn btn-toggle sidenav-toggler">
+            <i class="gg-menu-left"></i>
+          </button>
+        </div>
+        <button class="topbar-toggler more">
+          <i class="gg-more-vertical-alt"></i>
+        </button>
+      </div>
+      <!-- End Logo Header -->
+    </div>
+
+  <!-- Navbar Header -->
+  <nav
+    class="navbar navbar-header navbar-header-transparent navbar-expand-lg border-bottom"
+  >
+    <div class="container-fluid">
+      <nav
+        class="navbar navbar-header-left navbar-expand-lg navbar-form nav-search p-0 d-none d-lg-flex"
+      >
+      <div>
+        <h4 class="text-primary fw-bold mb-12">
+          WristScan
+        </h4>
+      </div>
+      </nav>
+
+      <ul class="navbar-nav topbar-nav ms-md-auto align-items-center">
+        
+        <li class="nav-item topbar-user dropdown hidden-caret">
+          <a
+            class="dropdown-toggle profile-pic"
+            data-bs-toggle="dropdown"
+            href="#"
+            aria-expanded="false"
+          >
+            <div class="avatar-sm">
+              <!-- Imagen de Perfil -->
+             <img
+                src="{% static 'img/profile.jpg' %}"
+                alt="..."
+                class="avatar-img rounded-circle"
+              /> 
+
+            </div>
+            <span class="profile-username">
+              <span class="op-7">Hi,</span>
+              <span class="fw-bold">{{user}}</span>
+            </span>
+          </a>
+          <ul class="dropdown-menu dropdown-user animated fadeIn">
+            <div class="dropdown-user-scroll scrollbar-outer">
+              <li>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="#">My Profile</a>
+                <a class="dropdown-item" href="#">My Balance</a>
+                <a class="dropdown-item" href="#">Inbox</a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="#">Account Setting</a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="#">Logout</a>
+              </li>
+            </div>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </nav>
+  <!-- End Navbar -->
+  </div>
+
+  <div class="container">
+    <div class="card">
+
+        <div class="card-body">
+            <div class="row">
+                <!-- Trigger Button -->
+                <div class="container mt-5">
+                  <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#postFormModal">
+                    Open Form
+                  </button>
+                </div>
+
+                <!-- Modal -->
+                <div class="modal fade" id="postFormModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+                  <div class="modal-dialog">
+                    <form method="POST" action="{% url 'submit-form' %}">
+                      {% csrf_token %}
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title" id="modalLabel">Submit Info</h5>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                          {{ form.as_p }}
+                        </div>
+                        <div class="modal-footer">
+                          <button type="submit" class="btn btn-success">Send</button>
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+  // Disable switching tabs by removing 'data-bs-toggle' and managing the active class
+  document.querySelectorAll('.nav-link').forEach(function(tab) {
+      tab.addEventListener('click', function(event) {
+          event.preventDefault(); // Disable default tab switch
+      });
+  });
+
+  // Ensure the "Plans" tab stays active and no other tab is activated
+  const plansTab = document.getElementById("v-pills-home-tab-icons");
+  const eventTab = document.getElementById("v-pills-profile-tab-icons");
+
+  // Prevent the "Event" tab from being clicked
+  eventTab.classList.add('disabled');
+</script>
+
+<script>
+
+    var csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    var stripe = Stripe("{{ STRIPE_PUBLIC_KEY }}");
+    var checkoutButton = document.getElementById("checkout-button");
+    checkoutButton.addEventListener("click", function(){
+        fetch("{% url 'dashboard:createdb' %}",
+            {
+                method:"POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    'X-CSRFToken': csrftoken
+                },
+            })
+            .then(function(response){
+                return response.json();
+            })
+            .then(function(session){
+                return stripe.redirectToCheckout({sessionId: session.id});
+            })
+            .then(function(result){
+                if(result.error){
+                    alert(result.error.message);
+                }
+            })
+            .catch(function(error){
+
+            })
+    })
+</script>
+
+
+
+{% endblock %}

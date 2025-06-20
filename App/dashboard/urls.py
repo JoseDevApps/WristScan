@@ -23,4 +23,6 @@ urlpatterns = [
     path('cancel/', views.CancelView.as_view(), name='cancel'),
     path('success/', views.SuccessView.as_view(), name='success'),
     path('qrpass/', views.qr_app, name="qrpass"),
+
+    path('modal/', views.ShowModalView.as_view(), name="modal-form"),
 ]

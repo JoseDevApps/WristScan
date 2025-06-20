@@ -7,6 +7,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import get_object_or_404
 import stripe
 import zipfile
+from django.views import View
 import pandas as pd
 from django.http import HttpResponse
 import os
@@ -26,6 +27,7 @@ from io import BytesIO
 import sys
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from .forms import UserEmailForm, ShareQRCodeForm, EventUpdateForm,UpdateQRCodesForm
+from .forms import MyPostForm  # Este es tu formulario definido
 ################################################
 #   Metodo de archivo temporal
 ################################################
@@ -264,6 +266,22 @@ def create(request):
         'user':user_name
         }
     return render(request, template, context)
+################################################
+#   Pagina de QR create tickets
+################################################
+class ShowModalView(View):
+    def get(self, request):
+        form = MyPostForm()
+        return render(request, 'create_ticket.html', {'form': form})
+
+class ProcessFormView(View):
+    def post(self, request):
+        form = MyPostForm(request.POST)
+        if form.is_valid():
+            # Aquí podrías guardar los datos o iniciar una sesión de pago
+            # por ejemplo: payment = create_stripe_session(...)
+            return redirect('dashboard:inicio')  # o cualquier otra vista
+        return render(request, 'create_ticket.html', {'form': form})
 
 ################################################
 #   Pagina de QR view events form db

@@ -40,3 +40,7 @@ class UpdateQRCodesForm(forms.ModelForm):
         if new_count < event.qr_code_count:
             raise forms.ValidationError("New count must be greater than the existing QR count.")
         return new_count
+    
+class MyPostForm(forms.Form):
+    email = forms.EmailField()
+    amount = forms.IntegerField(min_value=1)
