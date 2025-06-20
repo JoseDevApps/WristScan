@@ -201,7 +201,7 @@ def inicio(request):
     user_id = request.user.id
     user_events = Event.objects.filter(created_by=user_id)
     qr_codes_list = [qr for event in user_events for qr in event.qr_codes.all()]
-    available_qrs = event.qr_codes.filter(status_purchased="available")
+    available_qrs = user_events.qr_codes.filter(status_purchased="available")
     print(len(qr_codes_list))
     total_qr_purchased_by_user = QRCode.objects.filter(
         event__created_by=user_id,
