@@ -28,6 +28,11 @@ import sys
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from .forms import UserEmailForm, ShareQRCodeForm, EventUpdateForm,UpdateQRCodesForm
 from .forms import MyPostForm  # Este es tu formulario definido
+from django.contrib.auth import logout
+
+def force_logout_view(request):
+    logout(request)
+    return redirect('login')  # Redirige a tu vista de login o donde quieras
 ################################################
 #   Metodo de archivo temporal
 ################################################

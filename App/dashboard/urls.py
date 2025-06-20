@@ -23,6 +23,6 @@ urlpatterns = [
     path('cancel/', views.CancelView.as_view(), name='cancel'),
     path('success/', views.SuccessView.as_view(), name='success'),
     path('qrpass/', views.qr_app, name="qrpass"),
-
+    path('logout/', views.force_logout_view, name='logout'),
     path('modal/', views.ShowModalView.as_view(), name="modal-form"),
 ]
