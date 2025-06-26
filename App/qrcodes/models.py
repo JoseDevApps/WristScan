@@ -13,7 +13,7 @@ import io
 
 # 💰 Precio dinámico por cantidad
 class PriceTier(models.Model):
-    min_quantity = models.PositiveIntegerField()
+    min_quantity = models.PositiveIntegerField(null=True, blank=True)
     max_quantity = models.PositiveIntegerField(null=True, blank=True)  # null = sin límite superior
     price_cents = models.PositiveIntegerField(null=True, blank=True,help_text="Price per ticket in cents (e.g. 5 = $0.05)")
 
@@ -23,8 +23,8 @@ class PriceTier(models.Model):
 
     def __str__(self):
         if self.max_quantity:
-            return f"{self.min_quantity} - {self.max_quantity} → ${self.price}"
-        return f"{self.min_quantity}+ → ${self.price}"
+            return f"{self.min_quantity} - {self.max_quantity} → ${self.price_cents}"
+        return f"{self.min_quantity}+ → ${self.price_cents}"
     def price_in_dollars(self):
         """Returns the price in dollars as Decimal."""
         return self.price_cents / 100
