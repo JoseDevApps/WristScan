@@ -232,10 +232,10 @@ def inicio(request):
         print(f"Evento: {event.name}, QR Comprados: {event.purchased_qr_count}")
         print(event.total_qr_count)
     form = MyPostForm(request.POST)
-    if form.is_valid():
-            ticket = form.save(commit=False)
-            ticket.user_name = user_name.username if hasattr(user_name, 'email') else str(user_name)
-            ticket.save()
+    # if form.is_valid():
+    #         ticket = form.save(commit=False)
+    #         ticket.user_name = user_name if hasattr(user_name, 'email') else str(user_name)
+    #         ticket.save()
     if request.method == "POST":
         ticket_db = Ticket.objects.create(
             user_name = user_name,
