@@ -23,7 +23,7 @@ class PriceTier(models.Model):
 
     def __str__(self):
         if self.max_quantity:
-            return f"{self.min_quantity} - {self.max_quantity} → 0.0${self.price_cents}"
+            return f"{self.min_quantity} - {self.max_quantity} → 0.0{self.price_cents}$"
         return f"{self.min_quantity}+ → ${self.price_cents}"
     def price_in_dollars(self):
         """Returns the price in dollars as Decimal."""
