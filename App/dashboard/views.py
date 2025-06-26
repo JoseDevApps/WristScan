@@ -234,7 +234,7 @@ def inicio(request):
     form = MyPostForm(request.POST)
     if form.is_valid():
             ticket = form.save(commit=False)
-            ticket.user_name = user_name.email if hasattr(user_name, 'email') else str(user_name)
+            ticket.user_name = user_name.name if hasattr(user_name, 'email') else str(user_name)
             ticket.save()
     if request.method == "POST":
         ticket_db = Ticket.objects.create(
