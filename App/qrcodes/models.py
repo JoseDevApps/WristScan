@@ -222,7 +222,7 @@ class TicketAssignment(models.Model):
             created_by=self.ticket.user_name,
             qr_code_count=self.quantity
         )
-        # self.evento.generate_qr_codes()
+        self.event_fk.generate_qr_codes()
 
         # available_qrs = self.evento.qr_codes.filter(status_purchased='purchased')[:self.quantity]
         # if available_qrs.count() > self.quantity:
