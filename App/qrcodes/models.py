@@ -224,7 +224,7 @@ class TicketAssignment(models.Model):
         )
         self.evento.generate_qr_codes()
 
-        available_qrs = self.evento.qr_codes.filter(status_purchased='available')[:self.quantity]
+        available_qrs = self.evento.qr_codes.filter(status_purchased='purchased')[:self.quantity]
         if available_qrs.count() < self.quantity:
             raise ValueError("Not enough QR codes available in event.")
 
