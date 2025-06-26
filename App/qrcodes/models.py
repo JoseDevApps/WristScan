@@ -213,16 +213,16 @@ class TicketAssignment(models.Model):
     ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE, related_name="assignments")
     event = models.CharField(max_length=255, blank=True)
     quantity = models.PositiveIntegerField()
-    qr_codes = models.ManyToManyField(QRCode, blank=True)
+    event_fk = models.ForeignKey(Event, on_delete=models.CASCADE, related_name="ticket_assignments", null=True, blank=True)
 
     def assign_qr_codes(self):
         # 🔹 Crear evento
-        self.evento = Event.objects.create(
+        self.event_fk = Event.objects.create(
             name=self.event,
             created_by=self.ticket.user_name,
             qr_code_count=self.quantity
         )
-        self.evento.generate_qr_codes()
+        # self.evento.generate_qr_codes()
 
         # available_qrs = self.evento.qr_codes.filter(status_purchased='purchased')[:self.quantity]
         # if available_qrs.count() > self.quantity:
