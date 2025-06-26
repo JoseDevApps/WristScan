@@ -476,7 +476,7 @@ def create_checkout_session(request, pk):
     price_per_ticket = ticket.get_price_tier().price_cents
     total_cents = price_per_ticket * ticket.quantity
     Payments = Payment.objects.create(
-            ticket = ticket.id,
+            ticket = ticket,
             payment_method = 'card'
         )
     print('checkout session init')
