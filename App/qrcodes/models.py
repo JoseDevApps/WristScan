@@ -10,6 +10,7 @@ import tempfile
 from django.core.files.base import ContentFile
 from PIL import Image
 import io
+from django.core.files.uploadedfile import InMemoryUploadedFile
 
 # 💰 Precio dinámico por cantidad
 class PriceTier(models.Model):
@@ -217,10 +218,19 @@ class TicketAssignment(models.Model):
 
     def assign_qr_codes(self):
         # 🔹 Crear evento
+        image_save = Image.new('RGB', (330, 330), color='white')
+        buffer = io.BytesIO()
+        image_save.save(buffer, format="jpeg")
+        buffer.seek(0)
+        temp_image_file = InMemoryUploadedFile(
+            buffer, None, "temp_image.png", "image/png", sys.getsizeof(buffer), None
+        )
+        
         self.event_fk = Event.objects.create(
             name=self.event,
             created_by=self.ticket.user_name,
-            qr_code_count=self.quantity
+            qr_code_count=self.quantity,
+            image=temp_image_file
         )
         # available_qrs = self.evento.qr_codes.filter(status_purchased='purchased')[:self.quantity]
         # if available_qrs.count() > self.quantity:
