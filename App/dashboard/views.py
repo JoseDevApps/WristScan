@@ -15,7 +15,7 @@ from django.contrib import messages
 from django.urls import reverse
 from django.views.generic import TemplateView
 from .models import Product
-from qrcodes.models import Event, EventRole, QRCode
+from qrcodes.models import Event, EventRole, QRCode, Ticket
 from qrcodes.tasks import send_event_qr_codes
 import tempfile
 from django.core.mail import send_mail
@@ -236,12 +236,14 @@ def inicio(request):
             ticket = form.save(commit=False)
             ticket.user_name = user_name.email if hasattr(user_name, 'email') else str(user_name)
             ticket.save()
-    # if request.method == "POST":
-
-
-
-
-        
+    if request.method == "POST":
+        ticket_db = Ticket.objects.create(
+            user_name = user_name,
+            quantity = request.POST["quantity"],
+            is_paid = False
+        )
+        url = reverse('dashboard:create_checkout_session', kwargs={'pk': ticket_db.id })
+        return redirect(url)
     print(user_events)
     context = {'user':user_name, "NC":str(len(qr_codes_list)), "NE":str(len(user_events)), "purchased":events_with_purchased_qr_count, 'tp':total_qr_purchased_by_user,
                'available':total_qr_available_by_user,'used':total_qr_used_by_user,
@@ -468,12 +470,12 @@ def tables(request):
 #   Pagina de pagos
 ################################################
 @csrf_exempt
-def create_checkout_session(request, pk, slug):
-    # if request.method == "POST":
+def create_checkout_session(request, pk):
     stripe.api_key = settings.STRIPE_SECRET_KEY
+    ticket = get_object_or_404(Ticket, id=pk, is_paid=False)
+    price_per_ticket = ticket.get_price_tier().price_cents
+    total_cents = price_per_ticket * ticket.quantity
     print('checkout session init')
-    product = get_object_or_404(Product, id=pk)
-    Eventid = get_object_or_404(Event, id=slug)
     YOUR_DOMAIN = "https://app.manillasbolivia.com/"
     
     checkout_session = stripe.checkout.Session.create(
@@ -482,16 +484,16 @@ def create_checkout_session(request, pk, slug):
             {
                 'price_data': {
                     'currency': 'usd',
-                    'unit_amount': product.price,
+                    'unit_amount': total_cents,
                     'product_data': {
-                        'name': product.name,
+                        'name': f"{ticket.quantity} Tickets for {ticket.user_name}",
                     },
                 },
-                'quantity': 1,
+                'quantity': ticket.quantity,
             },
         ],
         metadata={
-            "product_id": product.id,
+            "product_id": ticket.id,
         },
         mode='payment',
         # Modificar
@@ -499,7 +501,7 @@ def create_checkout_session(request, pk, slug):
         cancel_url=YOUR_DOMAIN + '/dashboard/cancel',
     )
 
-    send_event_qr_codes.delay(Eventid.id)
+    # send_event_qr_codes.delay(Eventid.id)
     return redirect(checkout_session.url, code=303)
     # return JsonResponse({'error': 'Invalid request method'}, status=400)
 ################################################
