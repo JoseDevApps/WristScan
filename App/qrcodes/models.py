@@ -233,40 +233,11 @@ class TicketAssignment(models.Model):
             qr_code_count=self.quantity,
             image=temp_image_file
         )
-        # available_qrs = self.evento.qr_codes.filter(status_purchased='purchased')[:self.quantity]
-        # if available_qrs.count() > self.quantity:
-        #     raise ValueError("Not enough QR codes available in event.")
-
-        # for qr in available_qrs:
-        #     qr.status_purchased = 'available'
-        #     qr.user_email = self.ticket.user_name.username
-        #     qr.save()
-        #     self.qr_codes.add(qr)
-
     def save(self, *args, **kwargs):
         self.assign_qr_codes()
-        self.event_fk.generate_qr_codes()
         super().save(*args, **kwargs)
-        # if self.qr_codes.count() < self.quantity:
-        #     self.assign_qr_codes()
+
 
     def __str__(self):
         return f"{self.quantity} tickets of {self.ticket} assigned to {self.event or 'New Event'}"
     
-    # def assign_qr_codes(self):
-    #     available_qrs = self.event.qr_codes.filter(status_purchased='available')[:self.quantity]
-    #     if available_qrs.count() < self.quantity:
-    #         raise ValueError("Not enough QR codes available.")
-    #     for qr in available_qrs:
-    #         qr.status_purchased = 'available'
-    #         qr.user_email = self.ticket.user_name
-    #         qr.save()
-    #         self.qr_codes.add(qr)
-
-    # def save(self, *args, **kwargs):
-    #     super().save(*args, **kwargs)
-    #     if self.qr_codes.count() < self.quantity:
-    #         self.assign_qr_codes()
-
-    # def __str__(self):
-    #     return f"{self.quantity} tickets of {self.ticket} assigned to {self.event}"
