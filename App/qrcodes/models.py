@@ -216,16 +216,15 @@ class TicketAssignment(models.Model):
     qr_codes = models.ManyToManyField(QRCode, blank=True)
 
     def assign_qr_codes(self):
-        if not self.event:
-            # 🔹 Crear evento
-            self.event = Event.objects.create(
-                name=self.event,
-                created_by=self.ticket.user,
-                qr_code_count=self.quantity
-            )
-            self.event.generate_qr_codes()
+        # 🔹 Crear evento
+        self.evento = Event.objects.create(
+            name=self.event,
+            created_by=self.ticket.user,
+            qr_code_count=self.quantity
+        )
+        self.evento.generate_qr_codes()
 
-        available_qrs = self.event.qr_codes.filter(status_purchased='available')[:self.quantity]
+        available_qrs = self.evento.qr_codes.filter(status_purchased='available')[:self.quantity]
         if available_qrs.count() < self.quantity:
             raise ValueError("Not enough QR codes available in event.")
 
