@@ -49,7 +49,7 @@ class Ticket(models.Model):
 
     def price_per_ticket(self):
         tier = self.get_price_tier()
-        return tier.price if tier else 0.05
+        return tier.price_cents if tier else 0.05
 
     def total_amount(self):
         return round(self.quantity * self.price_per_ticket(), 2)
