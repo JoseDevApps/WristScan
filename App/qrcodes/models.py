@@ -28,7 +28,7 @@ class PriceTier(models.Model):
 
 # 🎟️ Ticket comprado por un usuario
 class Ticket(models.Model):
-    user_name = models.CharField(max_length=100)
+    user_name = models.ForeignKey(User, on_delete=models.CASCADE, related_name="ticket")
     quantity = models.PositiveIntegerField(default=1)
     created_at = models.DateTimeField(auto_now_add=True)
     is_paid = models.BooleanField(default=False)
