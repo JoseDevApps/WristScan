@@ -49,11 +49,11 @@ class MyPostForm(forms.ModelForm):
             'quantity': forms.NumberInput(attrs={'min': 1, 'class': 'form-control'}),
         }
         labels = {
-            'quantity': 'Cantidad de Tickets',
+            'quantity': 'quantity of qr codes',
         }
 
     def clean_quantity(self):
         quantity = self.cleaned_data.get('quantity')
         if quantity < 1:
-            raise forms.ValidationError("La cantidad debe ser mayor que cero.")
+            raise forms.ValidationError("The quantity must be greater than 0")
         return quantity
