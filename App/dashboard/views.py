@@ -231,7 +231,15 @@ def inicio(request):
     for event in events_with_purchased_qr_count:
         print(f"Evento: {event.name}, QR Comprados: {event.purchased_qr_count}")
         print(event.total_qr_count)
-    form = MyPostForm()
+    form = MyPostForm(request.POST)
+    if form.is_valid():
+            ticket = form.save(commit=False)
+            ticket.user_name = user_name.email if hasattr(user_name, 'email') else str(user_name)
+            ticket.save()
+    # if request.method == "POST":
+
+
+        
     print(user_events)
     context = {'user':user_name, "NC":str(len(qr_codes_list)), "NE":str(len(user_events)), "purchased":events_with_purchased_qr_count, 'tp':total_qr_purchased_by_user,
                'available':total_qr_available_by_user,'used':total_qr_used_by_user,
