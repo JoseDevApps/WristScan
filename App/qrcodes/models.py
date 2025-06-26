@@ -15,7 +15,7 @@ import io
 class PriceTier(models.Model):
     min_quantity = models.PositiveIntegerField()
     max_quantity = models.PositiveIntegerField(null=True, blank=True)  # null = sin límite superior
-    price_cents = models.PositiveIntegerField(help_text="Price per ticket in cents (e.g. 5 = $0.05)")
+    price_cents = models.PositiveIntegerField(null=True, blank=True,help_text="Price per ticket in cents (e.g. 5 = $0.05)")
 
 
     class Meta:
