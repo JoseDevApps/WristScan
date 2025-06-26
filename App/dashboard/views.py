@@ -484,7 +484,7 @@ def create_checkout_session(request, pk):
             {
                 'price_data': {
                     'currency': 'usd',
-                    'unit_amount': total_cents,
+                    'unit_amount': price_per_ticket,
                     'product_data': {
                         'name': f"{ticket.quantity} Tickets for {ticket.user_name}",
                     },

@@ -27,7 +27,7 @@
 			for does not exist.
 		</p>
         {% csrf_token %}
-        <form action="{% url 'dashboard:inicio' %}" method="POST">
+        <form action="{% url 'dashboard:inicio' %}" method="GET">
             {% csrf_token %}
             <button  type="submit">Back Home</button>
         </form>
