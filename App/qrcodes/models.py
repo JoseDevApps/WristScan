@@ -15,7 +15,8 @@ import io
 class PriceTier(models.Model):
     min_quantity = models.PositiveIntegerField()
     max_quantity = models.PositiveIntegerField(null=True, blank=True)  # null = sin límite superior
-    price = models.DecimalField(max_digits=5, decimal_places=2)
+    price_cents = models.PositiveIntegerField(help_text="Price per ticket in cents (e.g. 5 = $0.05)")
+
 
     class Meta:
         ordering = ['min_quantity']
@@ -24,7 +25,9 @@ class PriceTier(models.Model):
         if self.max_quantity:
             return f"{self.min_quantity} - {self.max_quantity} → ${self.price}"
         return f"{self.min_quantity}+ → ${self.price}"
-
+    def price_in_dollars(self):
+        """Returns the price in dollars as Decimal."""
+        return self.price_cents / 100
 
 # 🎟️ Ticket comprado por un usuario
 class Ticket(models.Model):
