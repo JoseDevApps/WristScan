@@ -15,7 +15,7 @@ from django.contrib import messages
 from django.urls import reverse
 from django.views.generic import TemplateView
 from .models import Product
-from qrcodes.models import Event, EventRole, QRCode, Ticket, Payment
+from qrcodes.models import Event, EventRole, QRCode, Ticket, Payment, TicketAssignment
 from qrcodes.tasks import send_event_qr_codes
 import tempfile
 from django.core.mail import send_mail
@@ -311,9 +311,13 @@ def listdb(request):
     form = TicketAssignmentForm(request.POST)
     if request.method == "POST":
         if form.is_valid():
-            assignment = form.save()
-            messages.success(request, f"Successfully assigned {assignment.quantity} tickets to event '{assignment.event.name}'.")
-            return redirect('dashboard:assign_ticket')  # Ajusta a tu URL
+            TicketAssignment.objects.create(
+              ticket = request.POST['ticket'],
+              event = request.POST['event'],
+              quantity = request.POST['quantity']
+            )
+            messages.success(request, f"Successfully assigned {request.POST['quantity']} tickets to event '{request.POST['event']}'.")
+            return redirect('dashboard:inicio')  # Ajusta a tu URL
         else:
             messages.error(request, "Please correct the errors below.")
     else:
