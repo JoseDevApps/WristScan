@@ -219,7 +219,7 @@ class TicketAssignment(models.Model):
         # 🔹 Crear evento
         self.evento = Event.objects.create(
             name=self.event,
-            created_by=self.ticket.user,
+            created_by=self.ticket.user_name,
             qr_code_count=self.quantity
         )
         self.evento.generate_qr_codes()
