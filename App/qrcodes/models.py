@@ -233,9 +233,9 @@ class TicketAssignment(models.Model):
         #     self.qr_codes.add(qr)
 
     def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
         self.assign_qr_codes()
         self.event_fk.generate_qr_codes()
+        super().save(*args, **kwargs)
         # if self.qr_codes.count() < self.quantity:
         #     self.assign_qr_codes()
 
