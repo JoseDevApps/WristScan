@@ -236,8 +236,8 @@ def inicio(request):
             ticket = form.save(commit=False)
             ticket.user_name = user_name.email if hasattr(user_name, 'email') else str(user_name)
             ticket.save()
-    if request.method == "POST":
-        
+    # if request.method == "POST":
+
 
 
 
