@@ -1,5 +1,5 @@
 from django import forms
-from qrcodes.models import QRCode, Event, Ticket
+from qrcodes.models import QRCode, Event, Ticket, TicketAssignment
 
 class UserEmailForm(forms.ModelForm):
     class Meta:
@@ -57,3 +57,30 @@ class MyPostForm(forms.ModelForm):
         if quantity < 1:
             raise forms.ValidationError("The quantity must be greater than 0")
         return quantity
+
+class TicketAssignmentForm(forms.ModelForm):
+    class Meta:
+        model = TicketAssignment
+        fields = ['ticket', 'event', 'quantity']
+        widgets = {
+            'ticket': forms.Select(attrs={'class': 'form-control'}),
+            'event': forms.Select(attrs={'class': 'form-control'}),
+            'quantity': forms.NumberInput(attrs={'class': 'form-control', 'min': 1}),
+        }
+        labels = {
+            'ticket': 'Ticket',
+            'event': 'Event',
+            'quantity': 'Quantity of QR codes to assign',
+        }
+    def clean(self):
+        cleaned_data = super().clean()
+        ticket = cleaned_data.get("ticket")
+        quantity = cleaned_data.get("quantity")
+
+        if ticket and quantity:
+            unassigned = ticket.unassigned_quantity()
+            if quantity > unassigned:
+                raise forms.ValidationError(
+                    f"The ticket only has {unassigned} unassigned tickets left."
+                )
+        return cleaned_data

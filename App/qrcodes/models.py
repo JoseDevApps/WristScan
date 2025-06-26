@@ -220,7 +220,7 @@ class TicketAssignment(models.Model):
         if available_qrs.count() < self.quantity:
             raise ValueError("Not enough QR codes available.")
         for qr in available_qrs:
-            qr.status_purchased = 'purchased'
+            qr.status_purchased = 'available'
             qr.user_email = self.ticket.user_name
             qr.save()
             self.qr_codes.add(qr)

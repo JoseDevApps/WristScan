@@ -26,7 +26,7 @@ from django.db.models import Count, Q
 from io import BytesIO
 import sys
 from django.core.files.uploadedfile import InMemoryUploadedFile
-from .forms import UserEmailForm, ShareQRCodeForm, EventUpdateForm,UpdateQRCodesForm
+from .forms import UserEmailForm, ShareQRCodeForm, EventUpdateForm,UpdateQRCodesForm, TicketAssignmentForm
 from .forms import MyPostForm  # Este es tu formulario definido
 from django.contrib.auth import logout
 
@@ -308,8 +308,19 @@ def listdb(request):
     template = 'dashboard/tables_event.html'
     user_name = request.user
     user_id = request.user.id
+    form = TicketAssignmentForm(request.POST)
+    if request.method == "POST":
+        if form.is_valid():
+            assignment = form.save()
+            messages.success(request, f"Successfully assigned {assignment.quantity} tickets to event '{assignment.event.name}'.")
+            return redirect('dashboard:assign_ticket')  # Ajusta a tu URL
+        else:
+            messages.error(request, "Please correct the errors below.")
+    else:
+        form = TicketAssignmentForm()
     user_events = Event.objects.filter(created_by=user_id)
-    context = {'events': user_events, 'user':user_name}
+
+    context = {'events': user_events, 'user':user_name,'form':form}
     return render(request, template, context)
 
 ################################################
