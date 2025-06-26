@@ -211,17 +211,27 @@ class EventRole(models.Model):
 # 🔗 Relación de tickets distribuidos entre eventos
 class TicketAssignment(models.Model):
     ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE, related_name="assignments")
-    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name="ticket_assignments")
+    event = models.CharField(max_length=255, blank=True)
     quantity = models.PositiveIntegerField()
     qr_codes = models.ManyToManyField(QRCode, blank=True)
 
     def assign_qr_codes(self):
+        if not self.event:
+            # 🔹 Crear evento
+            self.event = Event.objects.create(
+                name=self.event,
+                created_by=self.ticket.user,
+                qr_code_count=self.quantity
+            )
+            self.event.generate_qr_codes()
+
         available_qrs = self.event.qr_codes.filter(status_purchased='available')[:self.quantity]
         if available_qrs.count() < self.quantity:
-            raise ValueError("Not enough QR codes available.")
+            raise ValueError("Not enough QR codes available in event.")
+
         for qr in available_qrs:
-            qr.status_purchased = 'available'
-            qr.user_email = self.ticket.user_name
+            qr.status_purchased = 'purchased'
+            qr.user_email = self.ticket.user.username
             qr.save()
             self.qr_codes.add(qr)
 
@@ -231,4 +241,22 @@ class TicketAssignment(models.Model):
             self.assign_qr_codes()
 
     def __str__(self):
-        return f"{self.quantity} tickets of {self.ticket} assigned to {self.event}"
+        return f"{self.quantity} tickets of {self.ticket} assigned to {self.event or 'New Event'}"
+    
+    # def assign_qr_codes(self):
+    #     available_qrs = self.event.qr_codes.filter(status_purchased='available')[:self.quantity]
+    #     if available_qrs.count() < self.quantity:
+    #         raise ValueError("Not enough QR codes available.")
+    #     for qr in available_qrs:
+    #         qr.status_purchased = 'available'
+    #         qr.user_email = self.ticket.user_name
+    #         qr.save()
+    #         self.qr_codes.add(qr)
+
+    # def save(self, *args, **kwargs):
+    #     super().save(*args, **kwargs)
+    #     if self.qr_codes.count() < self.quantity:
+    #         self.assign_qr_codes()
+
+    # def __str__(self):
+    #     return f"{self.quantity} tickets of {self.ticket} assigned to {self.event}"
