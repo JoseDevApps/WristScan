@@ -310,7 +310,7 @@ def listdb(request):
     user_id = request.user.id
     form = TicketAssignmentForm(request.POST)
     if request.method == "POST":
-        ticket = get_object_or_404(Ticket, id=request.POST['ticket'], created_by=user_name)
+        ticket = get_object_or_404(Ticket, id=request.POST['ticket'])
         if form.is_valid():
             TicketAssignment.objects.create(
               ticket = ticket,
