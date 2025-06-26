@@ -15,7 +15,7 @@ from django.contrib import messages
 from django.urls import reverse
 from django.views.generic import TemplateView
 from .models import Product
-from qrcodes.models import Event, EventRole, QRCode, Ticket
+from qrcodes.models import Event, EventRole, QRCode, Ticket, Payment
 from qrcodes.tasks import send_event_qr_codes
 import tempfile
 from django.core.mail import send_mail
@@ -475,6 +475,10 @@ def create_checkout_session(request, pk):
     ticket = get_object_or_404(Ticket, id=pk, is_paid=False)
     price_per_ticket = ticket.get_price_tier().price_cents
     total_cents = price_per_ticket * ticket.quantity
+    Payments = Payment.objects.create(
+            ticket = ticket.id,
+            payment_method = 'card'
+        )
     print('checkout session init')
     YOUR_DOMAIN = "https://app.manillasbolivia.com/"
     
