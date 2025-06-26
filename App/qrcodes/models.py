@@ -11,13 +11,79 @@ from django.core.files.base import ContentFile
 from PIL import Image
 import io
 
+# 💰 Precio dinámico por cantidad
+class PriceTier(models.Model):
+    min_quantity = models.PositiveIntegerField()
+    max_quantity = models.PositiveIntegerField(null=True, blank=True)  # null = sin límite superior
+    price = models.DecimalField(max_digits=5, decimal_places=2)
+
+    class Meta:
+        ordering = ['min_quantity']
+
+    def __str__(self):
+        if self.max_quantity:
+            return f"{self.min_quantity} - {self.max_quantity} → ${self.price}"
+        return f"{self.min_quantity}+ → ${self.price}"
+
+
+# 🎟️ Ticket comprado por un usuario
+class Ticket(models.Model):
+    user_name = models.CharField(max_length=100)
+    quantity = models.PositiveIntegerField(default=1)
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_paid = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.user_name} ({self.quantity} tickets)"
+
+    def get_price_tier(self):
+        tiers = PriceTier.objects.order_by('min_quantity')
+        for tier in tiers:
+            if tier.max_quantity is None or self.quantity <= tier.max_quantity:
+                if self.quantity >= tier.min_quantity:
+                    return tier
+        return None
+
+    def price_per_ticket(self):
+        tier = self.get_price_tier()
+        return tier.price if tier else 0.05
+
+    def total_amount(self):
+        return round(self.quantity * self.price_per_ticket(), 2)
+
+    def assigned_quantity(self):
+        return sum(a.quantity for a in self.assignments.all())
+
+    def unassigned_quantity(self):
+        return self.quantity - self.assigned_quantity()
+
+
+# 💳 Pago del ticket
+class Payment(models.Model):
+    ticket = models.OneToOneField(Ticket, on_delete=models.CASCADE, related_name='payment')
+    amount = models.DecimalField(max_digits=8, decimal_places=2)
+    paid_at = models.DateTimeField(auto_now_add=True)
+    payment_method = models.CharField(max_length=50)
+
+    def save(self, *args, **kwargs):
+        if not self.amount:
+            self.amount = self.ticket.total_amount()
+        self.ticket.is_paid = True
+        self.ticket.save()
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"Payment for {self.ticket}"
+
+
+
 class Event(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True)
     date = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name="events")
     qr_codes = models.ManyToManyField("QRCode", blank=True)
-    qr_code_count = models.PositiveIntegerField(default=500)
+    qr_code_count = models.PositiveIntegerField(default=1)
     image = models.ImageField(upload_to="qrmask/", blank=True, null=True)
 
     def update_qr_codes(self, new_total_qr_count):
@@ -138,3 +204,28 @@ class EventRole(models.Model):
         unique_together = ("user", "event")  # Un usuario no puede tener múltiples roles en el mismo evento
     def __str__(self) -> str:
         return self.user
+
+# 🔗 Relación de tickets distribuidos entre eventos
+class TicketAssignment(models.Model):
+    ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE, related_name="assignments")
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name="ticket_assignments")
+    quantity = models.PositiveIntegerField()
+    qr_codes = models.ManyToManyField(QRCode, blank=True)
+
+    def assign_qr_codes(self):
+        available_qrs = self.event.qr_codes.filter(status_purchased='available')[:self.quantity]
+        if available_qrs.count() < self.quantity:
+            raise ValueError("Not enough QR codes available.")
+        for qr in available_qrs:
+            qr.status_purchased = 'purchased'
+            qr.user_email = self.ticket.user_name
+            qr.save()
+            self.qr_codes.add(qr)
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        if self.qr_codes.count() < self.quantity:
+            self.assign_qr_codes()
+
+    def __str__(self):
+        return f"{self.quantity} tickets of {self.ticket} assigned to {self.event}"
