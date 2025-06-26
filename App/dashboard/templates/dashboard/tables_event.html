@@ -279,7 +279,11 @@
             <tr>
               <td>{{qrcode.name}}</td>
               <td>
-                <img src="{{ qrcode.image.url }}" alt="QR Code Image" width="100">
+                {% if qrcode.image %}
+                    <img src="{{ qrcode.image.url }}" alt="QR Code Image" width="100">
+                {% else %}
+                    <p>No QR image available.</p>
+                {% endif %}
                 <br>
                     <!-- Download link -->
                 <a href="{{ qrcode.image.url }}" download="{{ qrcode.name }}">Download Image</a>
