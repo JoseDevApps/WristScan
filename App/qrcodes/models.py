@@ -10,6 +10,7 @@ import tempfile
 from django.core.files.base import ContentFile
 from PIL import Image
 import io
+import sys
 from django.core.files.uploadedfile import InMemoryUploadedFile
 
 # 💰 Precio dinámico por cantidad
