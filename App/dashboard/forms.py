@@ -1,5 +1,5 @@
 from django import forms
-from qrcodes.models import QRCode, Event, Ticket
+from qrcodes.models import QRCode, Event
 
 class UserEmailForm(forms.ModelForm):
     class Meta:
@@ -42,18 +42,5 @@ class UpdateQRCodesForm(forms.ModelForm):
         return new_count
     
 class MyPostForm(forms.Form):
-    class Meta:
-        model = Ticket
-        fields = ['quantity']  # Only include quantity
-        widgets = {
-            'quantity': forms.NumberInput(attrs={'min': 1, 'class': 'form-control'}),
-        }
-        labels = {
-            'quantity': 'Cantidad de Tickets',
-        }
-
-    # def clean_quantity(self):
-    #     quantity = self.cleaned_data.get('quantity')
-    #     if quantity < 1:
-    #         raise forms.ValidationError("La cantidad debe ser mayor que cero.")
-    #     return quantity
+    email = forms.EmailField()
+    amount = forms.IntegerField(min_value=1)
