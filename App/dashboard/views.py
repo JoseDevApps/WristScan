@@ -315,7 +315,7 @@ def listdb(request):
             TicketAssignment.objects.create(
               ticket = ticket,
               event = request.POST['event'],
-              quantity = request.POST['quantity']
+              quantity = int(request.POST['quantity'])
             )
             messages.success(request, f"Successfully assigned {request.POST['quantity']} tickets to event '{request.POST['event']}'.")
             return redirect('dashboard:inicio')  # Ajusta a tu URL
