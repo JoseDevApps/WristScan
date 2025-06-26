@@ -286,7 +286,11 @@
                 {% endif %}
                 <br>
                     <!-- Download link -->
-                <a href="{{ qrcode.image.url }}" download="{{ qrcode.name }}">Download Image</a>
+                {% if qrcode.image %}
+                    <a href="{{ qrcode.image.url }}" download="{{ qrcode.name }}">Download Image</a>
+                {% else %}
+                    <p>No QR image available for download.</p>
+                {% endif %}
               </td>
               <td>{{qrcode.qr_code_count}}</td>
               <td>
