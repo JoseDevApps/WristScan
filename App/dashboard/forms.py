@@ -64,7 +64,7 @@ class TicketAssignmentForm(forms.ModelForm):
         fields = ['ticket', 'event', 'quantity']
         widgets = {
             'ticket': forms.Select(attrs={'class': 'form-control'}),
-            'event': forms.Select(attrs={'class': 'form-control'}),
+            'event': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Event name'}),
             'quantity': forms.NumberInput(attrs={'class': 'form-control', 'min': 1}),
         }
         labels = {
