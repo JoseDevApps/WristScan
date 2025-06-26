@@ -310,9 +310,10 @@ def listdb(request):
     user_id = request.user.id
     form = TicketAssignmentForm(request.POST)
     if request.method == "POST":
+        ticket = get_object_or_404(Ticket, id=request.POST['ticket'], created_by=user_name)
         if form.is_valid():
             TicketAssignment.objects.create(
-              ticket = request.POST['ticket'],
+              ticket = ticket,
               event = request.POST['event'],
               quantity = request.POST['quantity']
             )
