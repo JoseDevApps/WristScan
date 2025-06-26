@@ -52,8 +52,8 @@ class MyPostForm(forms.Form):
             'quantity': 'Cantidad de Tickets',
         }
 
-    def clean_quantity(self):
-        quantity = self.cleaned_data.get('quantity')
-        if quantity < 1:
-            raise forms.ValidationError("La cantidad debe ser mayor que cero.")
-        return quantity
+    # def clean_quantity(self):
+    #     quantity = self.cleaned_data.get('quantity')
+    #     if quantity < 1:
+    #         raise forms.ValidationError("La cantidad debe ser mayor que cero.")
+    #     return quantity
