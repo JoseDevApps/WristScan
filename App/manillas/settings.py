@@ -203,4 +203,4 @@ STRIPE_SECRET_KEY = "sk_test_51QeLxw4DIjWPcBFHlEVvcJrRgpRAqWkIxusUWmddpMkCcXH8ue
 STRIPE_WEBHOOK_KEY = "whsec_QnBZ2csUNeEc1nrd2P3bp9Hfk1MPAKG4"
 
 
-DATA_UPLOAD_MAX_NUMBER_FIELDS = 40000  # Adjust this number as needed
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 80000  # Adjust this number as needed
