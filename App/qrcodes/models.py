@@ -9,6 +9,7 @@ from django.conf import settings
 import tempfile
 from django.core.files.base import ContentFile
 from PIL import Image
+from PIL import ImageDraw, ImageFont
 import io
 import sys
 from django.core.files.uploadedfile import InMemoryUploadedFile
@@ -170,7 +171,7 @@ class QRCode(models.Model):
         event_image.open()  # 📍 Cargar imagen desde el objeto en memoria
         background = Image.open(BytesIO(event_image.file.read())).convert("RGBA")
         # background = background.resize((720, 1280))  # Ajustar tamaño
-        if background.size != (330, 330):
+        if background.size != (600, 600):
             background = background.resize((720, 1280))
 
             # Posición del QR en imagen redimensionada (ajustada)
@@ -185,6 +186,21 @@ class QRCode(models.Model):
         # position = (220, 880)  # Posición del QR en la imagen
 
         background.paste(overlay, position, overlay)
+
+        # 4️⃣ Dibujar texto con el ID del QR
+        draw = ImageDraw.Draw(background)
+        
+        # Intentar cargar una fuente TTF (o usar por defecto)
+        try:
+            font = ImageFont.truetype("arial.ttf", 36)  # asegúrate que arial.ttf esté disponible en tu entorno
+        except:
+            font = ImageFont.load_default()
+        
+        text = f"ID: {self.id}"
+        text_position = (position[0], position[1] + overlay.size[1] + 10)  # Debajo del QR
+        text_color = (255, 255, 255)  # Blanco
+
+        draw.text(text_position, text, fill=text_color, font=font)
 
         # 🔹 4️⃣ Guardar imagen final en memoria
         final_buffer = BytesIO()
@@ -219,7 +235,7 @@ class TicketAssignment(models.Model):
 
     def assign_qr_codes(self):
         # 🔹 Crear evento
-        image_save = Image.new('RGB', (330, 330), color='white')
+        image_save = Image.new('RGB', (600, 600), color='white')
         buffer = io.BytesIO()
         image_save.save(buffer, format="jpeg")
         buffer.seek(0)
