@@ -278,20 +278,6 @@
             {% for qrcode in events %}
             <tr>
               <td>{{qrcode.name}}</td>
-              <td>
-                {% if qrcode.image %}
-                    <img src="{{ qrcode.image.url }}" alt="QR Code Image" width="100">
-                {% else %}
-                    <p>No QR image available.</p>
-                {% endif %}
-                <br>
-                    <!-- Download link -->
-                {% if qrcode.image %}
-                    <a href="{{ qrcode.image.url }}" download="{{ qrcode.name }}">Download Image</a>
-                {% else %}
-                    <p>No QR image available for download.</p>
-                {% endif %}
-              </td>
               <td>{{qrcode.qr_code_count}}</td>
               <!-- <td>
                 <div class="text-center">
