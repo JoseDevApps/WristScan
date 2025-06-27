@@ -261,9 +261,9 @@ def qrgen(request):
 ################################################
 def qrscan(request):
     user_name = request.user
-
+    form = EventSelectorForm(user=request.user)
     websocket_url = 'wss://app.manillasbolivia.com/ws/qr/'  # You can dynamically set this URL
-    return render(request, 'dashboard/qrscan.html', {'websocket_url': websocket_url, 'user':user_name,})
+    return render(request, 'dashboard/qrscan.html', {'websocket_url': websocket_url, 'user':user_name,'form':form})
 
 ################################################
 #   Pagina de QR create event
