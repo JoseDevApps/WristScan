@@ -192,7 +192,7 @@ class QRCode(models.Model):
         
         # Intentar cargar una fuente TTF (o usar por defecto)
         try:
-            font = ImageFont.truetype("arial.ttf", 36)  # asegúrate que arial.ttf esté disponible en tu entorno
+            font = ImageFont.truetype("arial.ttf", 80)  # asegúrate que arial.ttf esté disponible en tu entorno
         except:
             font = ImageFont.load_default()
         
