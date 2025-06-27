@@ -198,7 +198,7 @@ class QRCode(models.Model):
         
         text = f"ID: {self.id}"
         text_position = (position[0], position[1] + overlay.size[1] + 10)  # Debajo del QR
-        text_color = (255, 255, 255)  # Blanco
+        text_color = (0, 0, 0)  # Blanco
 
         draw.text(text_position, text, fill=text_color, font=font)
 
