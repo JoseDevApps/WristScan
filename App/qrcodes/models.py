@@ -178,7 +178,7 @@ class QRCode(models.Model):
             position = (220, 880)
         else:
             # Si es 500x500, centrar el QR
-            position = ((500 - 500) // 2, (500 - 500) // 2)  # (0, 0) o centrado exacto si QR es más pequeño
+            position = (135, 135)  # (0, 0) o centrado exacto si QR es más pequeño
 
 
         # 🔹 3️⃣ Cargar QR en memoria y pegarlo sobre la imagen
@@ -194,7 +194,7 @@ class QRCode(models.Model):
         try:
             font = ImageFont.truetype("arial.ttf", 80)  # asegúrate que arial.ttf esté disponible en tu entorno
         except:
-            font = ImageFont.load_default(size=80)
+            font = ImageFont.load_default(size=70)
         
         text = f"ID: {self.id}"
         text_position = (position[0], position[1] + overlay.size[1] + 10)  # Debajo del QR
