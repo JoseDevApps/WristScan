@@ -274,8 +274,8 @@
     socket.onmessage = function(event) {
         const data = JSON.parse(event.data);
         console.log('Message from server:', data.message);
-        const select = document.getElementById('id_event');
-        const selectedValue = select.value;
+        let select = document.getElementById('id_event');
+        let selectedValue = select.value;
         console.log("Selected event ID:", selectedValue);
         // Show the response message in a div
         const responseMessageDiv = document.getElementById('response-message');
@@ -315,6 +315,7 @@
         if (isSocketOpen) {
             socket.send(JSON.stringify({
                 'qr_code': qr_code,
+                'eventid': selectedValue,
             }));
         } else {
             console.log('WebSocket connection is not open. Cannot send message.');
