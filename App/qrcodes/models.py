@@ -242,7 +242,6 @@ class TicketAssignment(models.Model):
         temp_image_file = InMemoryUploadedFile(
             buffer, None, "temp_image.png", "image/png", sys.getsizeof(buffer), None
         )
-        
         self.event_fk = Event.objects.create(
             name=self.event,
             created_by=self.ticket.user_name,

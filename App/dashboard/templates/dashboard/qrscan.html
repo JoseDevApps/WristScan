@@ -229,6 +229,7 @@
 
 
     <h1>QR Control</h1>
+    {{ form.as_p }}
     <div id="qr-reader" style="width: 500px;"></div>
     <div id="qr-reader-results"></div>
 
@@ -308,7 +309,7 @@
     function sendQrCode(qr_code) {
         if (isSocketOpen) {
             socket.send(JSON.stringify({
-                'qr_code': qr_code
+                'qr_code': qr_code,
             }));
         } else {
             console.log('WebSocket connection is not open. Cannot send message.');

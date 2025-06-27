@@ -27,7 +27,7 @@ from io import BytesIO
 import sys
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from .forms import UserEmailForm, ShareQRCodeForm, EventUpdateForm,UpdateQRCodesForm, TicketAssignmentForm
-from .forms import MyPostForm  # Este es tu formulario definido
+from .forms import MyPostForm, EventSelectorForm  # Este es tu formulario definido
 from django.contrib.auth import logout
 
 def force_logout_view(request):

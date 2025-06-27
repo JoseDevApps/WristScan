@@ -84,3 +84,18 @@ class TicketAssignmentForm(forms.ModelForm):
                     f"The ticket only has {unassigned} unassigned tickets left."
                 )
         return cleaned_data
+
+class EventSelectorForm(forms.Form):
+    event = forms.ModelChoiceField(
+        queryset=Event.objects.none(),  # inicial vacío
+        widget=forms.Select(attrs={'class': 'form-control'}),
+        label="Select Event",
+        empty_label="Choose one of your events...",
+    )
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)  # extrae el usuario
+        super().__init__(*args, **kwargs)
+
+        if user:
+            self.fields['event'].queryset = Event.objects.filter(created_by=user).order_by('-date')
