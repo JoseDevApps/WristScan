@@ -312,12 +312,14 @@ def listdb(request):
     if request.method == "POST":
         ticket = get_object_or_404(Ticket, id=int(request.POST['ticket']))
         if form.is_valid():
-            TicketAssignment.objects.create(
+            ticket_assignment = TicketAssignment.objects.create(
               ticket = ticket,
               event = request.POST['event'],
               quantity = int(request.POST['quantity'])
             )
             messages.success(request, f"Successfully assigned {request.POST['quantity']} tickets to event '{request.POST['event']}'.")
+            new_event_id = ticket_assignment.event_fk.id
+            send_event_qr_codes.delay(new_event_id)
             return redirect('dashboard:inicio')  # Ajusta a tu URL
         else:
             messages.error(request, "Please correct the errors below.")
