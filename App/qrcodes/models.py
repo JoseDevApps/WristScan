@@ -167,12 +167,21 @@ class QRCode(models.Model):
         qr_buffer = BytesIO()
         qr.save(qr_buffer, format="PNG")
         overlay = Image.open(BytesIO(qr_buffer.getvalue())).convert("RGBA")
+        qr_width, qr_height = overlay.size
+        crop_width, crop_height = 300, 300
+        left = (qr_width - crop_width) // 2
+        upper = (qr_height - crop_height) // 2
+        right = left + crop_width
+        lower = upper + crop_height
+        cropped_qr = overlay.crop((left, upper, right, lower))
+
+
         # 🔹 2️⃣ Procesar la imagen del evento en memoria
         event_image.open()  # 📍 Cargar imagen desde el objeto en memoria
         background = Image.open(BytesIO(event_image.file.read())).convert("RGBA")
-        width, height = overlay.size
+        width, height = cropped_qr.size
         # background = background.resize((720, 1280))  # Ajustar tamaño
-        if background.size != (330, 330):
+        if background.size != (300, 300):
             background = background.resize((720, 1280))
 
             # Posición del QR en imagen redimensionada (ajustada)
@@ -181,8 +190,8 @@ class QRCode(models.Model):
             # Si es 500x500, centrar el QR
             # Calcula el offset para centrar:
             
-            offset_x = (330 - width) // 2
-            offset_y = (330 - height) // 2
+            offset_x = (300 - width) // 2
+            offset_y = (300 - height) // 2
             position = (offset_x, offset_y)
             # position = (135, 135)  # (0, 0) o centrado exacto si QR es más pequeño
 
@@ -190,15 +199,15 @@ class QRCode(models.Model):
         # 🔹 3️⃣ Cargar QR en memoria y pegarlo sobre la imagen
         
 
-        background.paste(overlay, position, overlay)
+        background.paste(cropped_qr, position, cropped_qr)
 
         # 4️⃣ Dibujar texto con el ID del QR
         draw = ImageDraw.Draw(background)
-        rect_width, rect_height = 330, 30
+        rect_width, rect_height = 300, 30
         # Calcula coordenadas del rectángulo: parte inferior de la imagen
         rect_x0 = 0
-        rect_y0 = background.height - 30
-        rect_x1 = 330
+        rect_y0 = background.height - 10
+        rect_x1 = 300
         rect_y1 = background.height
 
         draw.rectangle([rect_x0, rect_y0, rect_x1, rect_y1], fill="white")
@@ -217,7 +226,7 @@ class QRCode(models.Model):
         text_height = bbox[3] - bbox[1]
         # Calcula la posición para centrar el texto horizontal y verticalmente
         text_x = rect_x0 + (rect_width - text_width) // 2
-        text_y = rect_y0 + ((rect_height - text_height) // 2 )-20
+        text_y = rect_y0 + ((rect_height - text_height) // 2 )-10
 
         draw.text((text_x, text_y), text, fill=text_color, font=font, stroke_width=0)
 
@@ -254,7 +263,7 @@ class TicketAssignment(models.Model):
 
     def assign_qr_codes(self):
         # 🔹 Crear evento
-        image_save = Image.new('RGB', (330, 330), color='white')
+        image_save = Image.new('RGB', (300, 300), color='white')
         buffer = io.BytesIO()
         image_save.save(buffer, format="jpeg")
         buffer.seek(0)
