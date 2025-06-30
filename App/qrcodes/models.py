@@ -207,7 +207,7 @@ class QRCode(models.Model):
         try:
             font = ImageFont.truetype("arial.ttf", 15)  # asegúrate que arial.ttf esté disponible en tu entorno
         except:
-            font = ImageFont.load_default(size=25)
+            font = ImageFont.load_default(size=15)
         
 
         text = f"ID: {self.id}"
@@ -217,9 +217,9 @@ class QRCode(models.Model):
         text_height = bbox[3] - bbox[1]
         # Calcula la posición para centrar el texto horizontal y verticalmente
         text_x = rect_x0 + (rect_width - text_width) // 2
-        text_y = rect_y0 + ((rect_height - text_height) // 2 )-10
+        text_y = rect_y0 + ((rect_height - text_height) // 2 )-20
 
-        draw.text((text_x, text_y), text, fill=text_color, font=font)
+        draw.text((text_x, text_y), text, fill=text_color, font=font, stroke_width=2)
 
         # 🔹 4️⃣ Guardar imagen final en memoria
         final_buffer = BytesIO()
