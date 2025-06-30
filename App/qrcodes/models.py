@@ -172,7 +172,7 @@ class QRCode(models.Model):
         background = Image.open(BytesIO(event_image.file.read())).convert("RGBA")
         width, height = overlay.size
         # background = background.resize((720, 1280))  # Ajustar tamaño
-        if background.size != (350, 350):
+        if background.size != (400, 400):
             background = background.resize((720, 1280))
 
             # Posición del QR en imagen redimensionada (ajustada)
@@ -181,8 +181,8 @@ class QRCode(models.Model):
             # Si es 500x500, centrar el QR
             # Calcula el offset para centrar:
             
-            offset_x = (350 - width) // 2
-            offset_y = (350 - height) // 2
+            offset_x = (400 - width) // 2
+            offset_y = (400 - height) // 2
             position = (offset_x, offset_y)
             # position = (135, 135)  # (0, 0) o centrado exacto si QR es más pequeño
 
@@ -198,7 +198,7 @@ class QRCode(models.Model):
         # Calcula coordenadas del rectángulo: parte inferior de la imagen
         rect_x0 = 0
         rect_y0 = background.height - 50
-        rect_x1 = 350
+        rect_x1 = 400
         rect_y1 = background.height
 
         draw.rectangle([rect_x0, rect_y0, rect_x1, rect_y1], fill="black")
@@ -211,7 +211,7 @@ class QRCode(models.Model):
         
 
         text = f"ID: {self.id}"
-        text_position = (position[0]+(width//2)-10, position[1] + overlay.size[1] -10)  # Debajo del QR
+        text_position = (position[0]+(width//2)-25, position[1] + overlay.size[1] -25)  # Debajo del QR
         text_color = (255, 255, 255)  # Blanco
 
         draw.text(text_position, text, fill=text_color, font=font)
@@ -249,7 +249,7 @@ class TicketAssignment(models.Model):
 
     def assign_qr_codes(self):
         # 🔹 Crear evento
-        image_save = Image.new('RGB', (350, 350), color='white')
+        image_save = Image.new('RGB', (400, 400), color='white')
         buffer = io.BytesIO()
         image_save.save(buffer, format="jpeg")
         buffer.seek(0)
