@@ -198,10 +198,10 @@ class QRCode(models.Model):
         try:
             font = ImageFont.truetype("arial.ttf", 80)  # asegúrate que arial.ttf esté disponible en tu entorno
         except:
-            font = ImageFont.load_default(size=40)
+            font = ImageFont.load_default(size=10)
         
         text = f"ID: {self.id}"
-        text_position = (position[0], position[1] + overlay.size[1] + 10)  # Debajo del QR
+        text_position = (position[0], position[1] + overlay.size[1] )  # Debajo del QR
         text_color = (0, 0, 0)  # Blanco
 
         draw.text(text_position, text, fill=text_color, font=font)
