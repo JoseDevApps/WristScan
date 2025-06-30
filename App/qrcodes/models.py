@@ -195,15 +195,24 @@ class QRCode(models.Model):
         # 4️⃣ Dibujar texto con el ID del QR
         draw = ImageDraw.Draw(background)
         
+        # Calcula coordenadas del rectángulo: parte inferior de la imagen
+        rect_x0 = 0
+        rect_y0 = background.height - 50
+        rect_x1 = 350
+        rect_y1 = background.height
+
+        draw.rectangle([rect_x0, rect_y0, rect_x1, rect_y1], fill="black")
+
         # Intentar cargar una fuente TTF (o usar por defecto)
         try:
             font = ImageFont.truetype("arial.ttf", 80)  # asegúrate que arial.ttf esté disponible en tu entorno
         except:
-            font = ImageFont.load_default(size=10)
+            font = ImageFont.load_default(size=25)
         
+
         text = f"ID: {self.id}"
         text_position = (position[0]+(width//2)-10, position[1] + overlay.size[1] -10)  # Debajo del QR
-        text_color = (0, 0, 0)  # Blanco
+        text_color = (255, 255, 255)  # Blanco
 
         draw.text(text_position, text, fill=text_color, font=font)
 
