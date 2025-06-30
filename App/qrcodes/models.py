@@ -166,24 +166,28 @@ class QRCode(models.Model):
         qr = qrcode.make(self.data)
         qr_buffer = BytesIO()
         qr.save(qr_buffer, format="PNG")
-
+        overlay = Image.open(BytesIO(qr_buffer.getvalue())).convert("RGBA")
         # 🔹 2️⃣ Procesar la imagen del evento en memoria
         event_image.open()  # 📍 Cargar imagen desde el objeto en memoria
         background = Image.open(BytesIO(event_image.file.read())).convert("RGBA")
         # background = background.resize((720, 1280))  # Ajustar tamaño
-        if background.size != (600, 600):
+        if background.size != (350, 350):
             background = background.resize((720, 1280))
 
             # Posición del QR en imagen redimensionada (ajustada)
             position = (220, 880)
         else:
             # Si es 500x500, centrar el QR
-            position = (135, 135)  # (0, 0) o centrado exacto si QR es más pequeño
+            # Calcula el offset para centrar:
+            width, height = overlay.size
+            offset_x = (width - width) // 2
+            offset_y = (height - height) // 2
+            position = (offset_x, offset_y)
+            # position = (135, 135)  # (0, 0) o centrado exacto si QR es más pequeño
 
 
         # 🔹 3️⃣ Cargar QR en memoria y pegarlo sobre la imagen
-        overlay = Image.open(BytesIO(qr_buffer.getvalue())).convert("RGBA")
-        # position = (220, 880)  # Posición del QR en la imagen
+        
 
         background.paste(overlay, position, overlay)
 
@@ -235,7 +239,7 @@ class TicketAssignment(models.Model):
 
     def assign_qr_codes(self):
         # 🔹 Crear evento
-        image_save = Image.new('RGB', (600, 600), color='white')
+        image_save = Image.new('RGB', (350, 350), color='white')
         buffer = io.BytesIO()
         image_save.save(buffer, format="jpeg")
         buffer.seek(0)
