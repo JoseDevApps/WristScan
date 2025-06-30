@@ -170,6 +170,7 @@ class QRCode(models.Model):
         # 🔹 2️⃣ Procesar la imagen del evento en memoria
         event_image.open()  # 📍 Cargar imagen desde el objeto en memoria
         background = Image.open(BytesIO(event_image.file.read())).convert("RGBA")
+        width, height = overlay.size
         # background = background.resize((720, 1280))  # Ajustar tamaño
         if background.size != (350, 350):
             background = background.resize((720, 1280))
@@ -179,7 +180,7 @@ class QRCode(models.Model):
         else:
             # Si es 500x500, centrar el QR
             # Calcula el offset para centrar:
-            width, height = overlay.size
+            
             offset_x = (350 - width) // 2
             offset_y = (350 - height) // 2
             position = (offset_x, offset_y)
@@ -201,7 +202,7 @@ class QRCode(models.Model):
             font = ImageFont.load_default(size=10)
         
         text = f"ID: {self.id}"
-        text_position = (position[0], position[1] + overlay.size[1] )  # Debajo del QR
+        text_position = (position[0]+(width//2)-10, position[1] + overlay.size[1] -10)  # Debajo del QR
         text_color = (0, 0, 0)  # Blanco
 
         draw.text(text_position, text, fill=text_color, font=font)
