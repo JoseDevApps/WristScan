@@ -214,7 +214,9 @@ class QRCode(models.Model):
         text_position = (position[0]+(width//2)-30, position[1] + overlay.size[1] -15)  # Debajo del QR
         text_color = (255, 255, 255)  # Blanco
 
-        text_width, text_height = draw.textsize(text, font=font)
+        bbox = draw.textbbox((0, 0), text, font=font)
+        text_width = bbox[2] - bbox[0]
+        text_height = bbox[3] - bbox[1]
         # Calcula la posición para centrar el texto horizontal y verticalmente
         text_x = rect_x0 + (rect_width - text_width) // 2
         text_y = rect_y0 + (rect_height - text_height) // 2
