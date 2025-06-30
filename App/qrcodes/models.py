@@ -205,13 +205,13 @@ class QRCode(models.Model):
 
         # Intentar cargar una fuente TTF (o usar por defecto)
         try:
-            font = ImageFont.truetype("arial.ttf", 80)  # asegúrate que arial.ttf esté disponible en tu entorno
+            font = ImageFont.truetype("arial.ttf", 25)  # asegúrate que arial.ttf esté disponible en tu entorno
         except:
             font = ImageFont.load_default(size=25)
         
 
         text = f"ID: {self.id}"
-        text_position = (position[0]+(width//2)-25, position[1] + overlay.size[1] -25)  # Debajo del QR
+        text_position = (position[0]+(width//2)-30, position[1] + overlay.size[1] -15)  # Debajo del QR
         text_color = (255, 255, 255)  # Blanco
 
         draw.text(text_position, text, fill=text_color, font=font)
