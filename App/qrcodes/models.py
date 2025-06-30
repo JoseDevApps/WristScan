@@ -219,7 +219,7 @@ class QRCode(models.Model):
         text_x = rect_x0 + (rect_width - text_width) // 2
         text_y = rect_y0 + ((rect_height - text_height) // 2 )-20
 
-        draw.text((text_x, text_y), text, fill=text_color, font=font, stroke_width=2)
+        draw.text((text_x, text_y), text, fill=text_color, font=font, stroke_width=1)
 
         # 🔹 4️⃣ Guardar imagen final en memoria
         final_buffer = BytesIO()
