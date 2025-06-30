@@ -226,7 +226,7 @@ class QRCode(models.Model):
         text_height = bbox[3] - bbox[1]
         # Calcula la posición para centrar el texto horizontal y verticalmente
         text_x = rect_x0 + (rect_width - text_width) // 2
-        text_y = rect_y0 + ((rect_height - text_height) // 2 )-10
+        text_y = rect_y0 + ((rect_height - text_height) // 2 )-18
 
         draw.text((text_x, text_y), text, fill=text_color, font=font, stroke_width=0)
 
