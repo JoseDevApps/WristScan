@@ -194,7 +194,7 @@ class QRCode(models.Model):
 
         # 4️⃣ Dibujar texto con el ID del QR
         draw = ImageDraw.Draw(background)
-        
+        rect_width, rect_height = 400, 50
         # Calcula coordenadas del rectángulo: parte inferior de la imagen
         rect_x0 = 0
         rect_y0 = background.height - 50
@@ -214,7 +214,12 @@ class QRCode(models.Model):
         text_position = (position[0]+(width//2)-30, position[1] + overlay.size[1] -15)  # Debajo del QR
         text_color = (255, 255, 255)  # Blanco
 
-        draw.text(text_position, text, fill=text_color, font=font)
+        text_width, text_height = draw.textsize(text, font=font)
+        # Calcula la posición para centrar el texto horizontal y verticalmente
+        text_x = rect_x0 + (rect_width - text_width) // 2
+        text_y = rect_y0 + (rect_height - text_height) // 2
+
+        draw.text((text_x, text_y), text, fill=text_color, font=font)
 
         # 🔹 4️⃣ Guardar imagen final en memoria
         final_buffer = BytesIO()
