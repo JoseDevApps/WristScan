@@ -18,13 +18,13 @@ class QRConsumer(AsyncWebsocketConsumer):
         text_data_json = json.loads(text_data)
         print(text_data_json.get('eventid'))
         qr_code = text_data_json.get('qr_code')
-        # eventid = text_data_json.get('eventid')
+        eventid = text_data_json.get('eventid')
         # Process the QR code (e.g., validate it)
         # You can also interact with the database or perform any task here.
         print(qr_code['decodedText'])
         if qr_code:
             # Check if the QR code already exists in the database
-            existing_qr = await self.query_qr_code(qr_code)
+            existing_qr = await self.query_qr_code(qr_code,eventid)
 
             if existing_qr is not None:
                 if existing_qr[7]=='nuevo':
@@ -46,20 +46,19 @@ class QRConsumer(AsyncWebsocketConsumer):
             'message': response_message
         }))
     @sync_to_async
-    def query_qr_code(self, qr_code):
+    def query_qr_code(self, qr_code, eventid):
         with connection.cursor() as cursor:
             # Example raw SQL query
-            cursor.execute("SELECT * FROM qrcodes_qrcode WHERE data = %s", [qr_code['decodedText']])
-            result = cursor.fetchone()
-            # cursor.execute("""
-            #                 SELECT 1
-            #                 FROM qrcodes_qrcode q
-            #                 INNER JOIN qrcodes_event_qr_codes eq
-            #                     ON q.id = eq.qrcode_id
-            #                 WHERE q.data = %s AND eq.event_id = %s
-            #                 LIMIT 1
-            #             """, [qr_code, 79])   
-            # result = cursor.fetchone() is not None
+            # cursor.execute("SELECT * FROM qrcodes_qrcode WHERE data = %s", [qr_code['decodedText']])
+            # result = cursor.fetchone()
+            cursor.execute("""
+                SELECT 1
+                FROM events_event_qr_codes AS ec
+                JOIN qrcodes_qrcode AS qr ON ec.qrcode_id = qr.id
+                WHERE ec.event_id = %s AND qr.data = %s
+                LIMIT 1
+            """, [eventid, qr_code])
+            result = cursor.fetchone() is not None
             print(result)
             if result is None:
                 return None  # Return None if no result is found
