@@ -289,7 +289,7 @@ def invite_user(request, event_id):
                     f"Para registrarte y acceder, haz clic aquí: {registration_link}\n\n"
                     "Gracias."
                 ),
-                from_email="noreply@tusitio.com",
+                from_email=settings.DEFAULT_FROM_EMAIL,
                 recipient_list=[invite.email],
             )
 
