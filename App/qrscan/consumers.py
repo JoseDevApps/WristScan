@@ -56,7 +56,6 @@ class QRConsumer(AsyncWebsocketConsumer):
                 FROM qrcodes_event_qr_codes AS ec
                 JOIN qrcodes_qrcode AS qr ON ec.qrcode_id = qr.id
                 WHERE ec.event_id = %s AND qr.data = %s
-                LIMIT 1
             """, [str(eventid), qr_code['decodedText']])
             result = cursor.fetchone() is not None
             print(result)
