@@ -102,4 +102,4 @@ class EventSelectorForm(forms.Form):
 
  
 class InviteForm(forms.Form):
-    email = forms.EmailField(label="Guest\'s email")
+    email = forms.EmailField(label="Guest email")

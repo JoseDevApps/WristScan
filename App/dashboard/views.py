@@ -293,11 +293,11 @@ def invite_user(request, event_id):
                 recipient_list=[invite.email],
             )
 
-            return render(request, "events/invite_success.html", {"event": event, "email": email})
+            return render(request, "dashboard/invite_success.html", {"event": event, "email": email})
     else:
         form = InviteForm()
 
-    return render(request, "dashborad/invite.html", {"form": form, "event": event})
+    return render(request, "dashboard/invite.html", {"form": form, "event": event})
 
 
 ################################################
