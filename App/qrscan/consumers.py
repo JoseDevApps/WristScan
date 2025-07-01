@@ -52,23 +52,27 @@ class QRConsumer(AsyncWebsocketConsumer):
             # cursor.execute("SELECT * FROM qrcodes_qrcode WHERE data = %s", [qr_code['decodedText']])
             # result = cursor.fetchone()
             cursor.execute("""
-                SELECT *
+                SELECT 1
                 FROM qrcodes_event_qr_codes AS ec
                 JOIN qrcodes_qrcode AS qr ON ec.qrcode_id = qr.id
                 WHERE ec.event_id = %s AND qr.data = %s
+                LIMIT 1
             """, [str(eventid), qr_code['decodedText']])
             result = cursor.fetchone() is not None
-            print('resultado')
             print(result)
             if result is None:
                 return None  # Return None if no result is found
-            if result[7]=='nuevo':
-            # Si el QR existe, actualizar su estado a "concedido"
-                print('actualizado')
-                # cursor.execute("UPDATE qrcodes_qrcode SET status_scan = %s WHERE data = %s", ["concedido", qr_code['decodedText']])
-                cursor.execute(
-                "UPDATE qrcodes_qrcode SET status_scan = %s, updated_at = NOW() WHERE data = %s",
-                ["concedido", qr_code['decodedText']]
-                )
+            if result:
+                cursor.execute("SELECT * FROM qrcodes_qrcode WHERE data = %s", [qr_code['decodedText']])
+                result2 = cursor.fetchone()
+                if result2[7]=='nuevo':
+                # Si el QR existe, actualizar su estado a "concedido"
+                    print('actualizado')
+                    # cursor.execute("UPDATE qrcodes_qrcode SET status_scan = %s WHERE data = %s", ["concedido", qr_code['decodedText']])
+                    cursor.execute(
+                    "UPDATE qrcodes_qrcode SET status_scan = %s, updated_at = NOW() WHERE data = %s",
+                    ["concedido", qr_code['decodedText']]
+                    )
+                return result2
             
         return result
