@@ -75,4 +75,4 @@ class QRConsumer(AsyncWebsocketConsumer):
                     )
                 return result2
             
-        return result
+        return None
