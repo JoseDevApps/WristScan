@@ -313,9 +313,12 @@
 
     function sendQrCode(qr_code) {
         if (isSocketOpen) {
+            let select = document.getElementById('id_event');
+            let selectedValue = select.value;
+            console.log("Selected event ID to send:", selectedValue);
             socket.send(JSON.stringify({
                 'qr_code': qr_code,
-                // 'eventid': selectedValue,
+                'eventid': selectedValue,
             }));
         } else {
             console.log('WebSocket connection is not open. Cannot send message.');
