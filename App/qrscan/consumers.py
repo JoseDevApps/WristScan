@@ -52,7 +52,7 @@ class QRConsumer(AsyncWebsocketConsumer):
             # cursor.execute("SELECT * FROM qrcodes_qrcode WHERE data = %s", [qr_code['decodedText']])
             # result = cursor.fetchone()
             cursor.execute("""
-                SELECT 1
+                SELECT *
                 FROM qrcodes_event_qr_codes AS ec
                 JOIN qrcodes_qrcode AS qr ON ec.qrcode_id = qr.id
                 WHERE ec.event_id = %s AND qr.data = %s
