@@ -99,3 +99,7 @@ class EventSelectorForm(forms.Form):
 
         if user:
             self.fields['event'].queryset = Event.objects.filter(created_by=user).order_by('-date')
+
+ 
+class InviteForm(forms.Form):
+    email = forms.EmailField(label="Guest\'s email")

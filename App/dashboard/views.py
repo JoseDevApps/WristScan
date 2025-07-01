@@ -15,7 +15,7 @@ from django.contrib import messages
 from django.urls import reverse
 from django.views.generic import TemplateView
 from .models import Product
-from qrcodes.models import Event, EventRole, QRCode, Ticket, Payment, TicketAssignment
+from qrcodes.models import Event, EventRole, QRCode, Ticket, Payment, TicketAssignment, EventInvite
 from qrcodes.tasks import send_event_qr_codes
 import tempfile
 from django.core.mail import send_mail
@@ -27,7 +27,7 @@ from io import BytesIO
 import sys
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from .forms import UserEmailForm, ShareQRCodeForm, EventUpdateForm,UpdateQRCodesForm, TicketAssignmentForm
-from .forms import MyPostForm, EventSelectorForm  # Este es tu formulario definido
+from .forms import MyPostForm, EventSelectorForm, InviteForm  # Este es tu formulario definido
 from django.contrib.auth import logout
 
 def force_logout_view(request):
@@ -264,6 +264,41 @@ def qrscan(request):
     form = EventSelectorForm(user=request.user)
     websocket_url = 'wss://app.manillasbolivia.com/ws/qr/'  # You can dynamically set this URL
     return render(request, 'dashboard/qrscan.html', {'websocket_url': websocket_url, 'user':user_name,'form':form})
+################################################
+#   Pagina compartir evento
+################################################
+@login_required
+def invite_user(request, event_id):
+    event = get_object_or_404(Event, id=event_id, created_by=request.user)
+
+    if request.method == "POST":
+        form = InviteForm(request.POST)
+        if form.is_valid():
+            email = form.cleaned_data["email"]
+
+            invite, created = EventInvite.objects.get_or_create(event=event, email=email)
+            registration_link = request.build_absolute_uri(
+                reverse("register") + f"?email={invite.email}"
+            )
+
+            # Enviar correo al invitado
+            send_mail(
+                subject=f"Te invitaron al evento: {event.name}",
+                message=(
+                    f"Hola,\n\nHas sido invitado al evento '{event.name}'. "
+                    f"Para registrarte y acceder, haz clic aquí: {registration_link}\n\n"
+                    "Gracias."
+                ),
+                from_email="noreply@tusitio.com",
+                recipient_list=[invite.email],
+            )
+
+            return render(request, "events/invite_success.html", {"event": event, "email": email})
+    else:
+        form = InviteForm()
+
+    return render(request, "events/invite_form.html", {"form": form, "event": event})
+
 
 ################################################
 #   Pagina de QR create event
