@@ -16,7 +16,7 @@ class QRConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         # Receive QR code from the WebSocket
         text_data_json = json.loads(text_data)
-        print(text_data_json.get('eventid'))
+        # print(text_data_json.get('eventid'))
         qr_code = text_data_json.get('qr_code')
         # eventid = text_data_json.get('eventid')
         # Process the QR code (e.g., validate it)
