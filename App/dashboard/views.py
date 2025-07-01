@@ -278,7 +278,7 @@ def invite_user(request, event_id):
 
             invite, created = EventInvite.objects.get_or_create(event=event, email=email)
             registration_link = request.build_absolute_uri(
-                reverse("register") + f"?email={invite.email}"
+                reverse("signup") + f"?email={invite.email}"
             )
 
             # Enviar correo al invitado
