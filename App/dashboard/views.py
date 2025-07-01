@@ -297,7 +297,7 @@ def invite_user(request, event_id):
     else:
         form = InviteForm()
 
-    return render(request, "events/invite_form.html", {"form": form, "event": event})
+    return render(request, "dashborad/invite.html", {"form": form, "event": event})
 
 
 ################################################

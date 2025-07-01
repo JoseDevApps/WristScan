@@ -336,15 +336,9 @@
                       </a>
                     </li>
                     <li>
-                      {% if qrcode.image %}
-                        <a class="dropdown-item" href="{{ qrcode.image.url }}" download="{{ qrcode.name }}">
-                          <i class="fas fa-file-download me-2"></i> Download Image
+                        <a class="dropdown-item" href="{{ url 'dashboard:invite_user' qrcode.id }}" >
+                          <i class="fas fa-file-download me-2"></i> Invite user
                         </a>
-                      {% else %}
-                        <button class="dropdown-item disabled">
-                          <i class="fas fa-file-download me-2"></i> No Image
-                        </button>
-                      {% endif %}
                     </li>
                     <li>
                       <a class="dropdown-item text-danger" href="#">

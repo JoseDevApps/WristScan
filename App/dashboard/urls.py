@@ -19,6 +19,7 @@ urlpatterns = [
     path('event/<int:event_id>/download_qr_zip/', views.download_qr_zip, name='download_qr_zip'),
     path('share', views.share_qr_codes, name="share"),
     path('tables', views.listdb, name="tables"),
+    path("events/<int:event_id>/invite/", views.invite_user, name="invite_user"),
     path('create-checkout-session/<int:pk>/', views.create_checkout_session, name='create_checkout_session'),
     path('cancel/', views.CancelView.as_view(), name='cancel'),
     path('success/', views.SuccessView.as_view(), name='success'),
