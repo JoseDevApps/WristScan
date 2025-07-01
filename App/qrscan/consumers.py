@@ -58,6 +58,7 @@ class QRConsumer(AsyncWebsocketConsumer):
                 WHERE ec.event_id = %s AND qr.data = %s
             """, [str(eventid), qr_code['decodedText']])
             result = cursor.fetchone() is not None
+            print('resultado')
             print(result)
             if result is None:
                 return None  # Return None if no result is found
