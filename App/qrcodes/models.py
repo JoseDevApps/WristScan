@@ -197,8 +197,6 @@ class QRCode(models.Model):
 
 
         # 🔹 3️⃣ Cargar QR en memoria y pegarlo sobre la imagen
-        
-
         background.paste(cropped_qr, position, cropped_qr)
 
         # 4️⃣ Dibujar texto con el ID del QR
