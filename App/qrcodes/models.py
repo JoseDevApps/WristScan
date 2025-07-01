@@ -282,3 +282,11 @@ class TicketAssignment(models.Model):
     def __str__(self):
         return f"{self.quantity} tickets of {self.ticket} assigned to {self.event or 'New Event'}"
     
+    class EventInvite(models.Model):
+        event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name="invites")
+        email = models.EmailField()
+        invited_at = models.DateTimeField(auto_now_add=True)
+        accepted = models.BooleanField(default=False)
+
+        def __str__(self):
+            return f"{self.email} invited to {self.event.name}"

@@ -52,7 +52,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "dashboard",
-    "qrcodes",
+    "qrcodes.apps.DashboardConfig",
     "payments",
     'channels',
     'qrscan',
