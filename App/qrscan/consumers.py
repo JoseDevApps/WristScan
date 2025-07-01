@@ -48,17 +48,17 @@ class QRConsumer(AsyncWebsocketConsumer):
     def query_qr_code(self, qr_code, eventid):
         with connection.cursor() as cursor:
             # Example raw SQL query
-            # cursor.execute("SELECT * FROM qrcodes_qrcode WHERE data = %s", [qr_code['decodedText']])
-            # result = cursor.fetchone()
-            cursor.execute("""
-                            SELECT 1
-                            FROM qrcodes_qrcode q
-                            INNER JOIN qrcodes_event_qr_codes eq
-                                ON q.id = eq.qrcode_id
-                            WHERE q.data = %s AND eq.event_id = %s
-                            LIMIT 1
-                        """, [qr_code, eventid])   
-            result = cursor.fetchone() is not None
+            cursor.execute("SELECT * FROM qrcodes_qrcode WHERE data = %s", [qr_code['decodedText']])
+            result = cursor.fetchone()
+            # cursor.execute("""
+            #                 SELECT 1
+            #                 FROM qrcodes_qrcode q
+            #                 INNER JOIN qrcodes_event_qr_codes eq
+            #                     ON q.id = eq.qrcode_id
+            #                 WHERE q.data = %s AND eq.event_id = %s
+            #                 LIMIT 1
+            #             """, [qr_code, eventid])   
+            # result = cursor.fetchone() is not None
 
             if result is None:
                 return None  # Return None if no result is found
