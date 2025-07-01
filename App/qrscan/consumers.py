@@ -25,7 +25,7 @@ class QRConsumer(AsyncWebsocketConsumer):
         if qr_code:
             # Check if the QR code already exists in the database
             existing_qr = await self.query_qr_code(qr_code,eventid)
-
+            print(existing_qr)
             if existing_qr is not None:
                 if existing_qr[7]=='nuevo':
                 # If QR code exists, send a response back that it's already processed
@@ -57,7 +57,7 @@ class QRConsumer(AsyncWebsocketConsumer):
                 JOIN qrcodes_qrcode AS qr ON ec.qrcode_id = qr.id
                 WHERE ec.event_id = %s AND qr.data = %s
                 LIMIT 1
-            """, [eventid, qr_code])
+            """, [eventid, qr_code['decodedText']])
             result = cursor.fetchone() is not None
             print(result)
             if result is None:
