@@ -22,7 +22,8 @@
                 </div>
                 <div class="text-center">
                     <h1>Thank You !</h1>
-                    <p>We've send the link to inbox. to access to the event :) </p>
+                    <h2>Invitación enviada</h2>
+                    <p>Se ha enviado una invitación a <strong>{{ email }}</strong> para el evento <strong>{{ event.name }}</strong>.</p>
                     <form action="{% url 'dashboard:tables' %}" method="GET">
                         {% csrf_token %}
                         <button type="submit" class="btn btn-primary w-100">Back Home</button>
