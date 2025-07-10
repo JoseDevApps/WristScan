@@ -210,10 +210,16 @@ def inicio(request):
     qr_codes_list = [qr for event in user_events for qr in event.qr_codes.all()]
     # available_qrs = user_events.qr_codes.filter(status_purchased="available")
     print(len(qr_codes_list))
+    paid_tickets_total = Ticket.objects.filter(
+        user_name=user_id,
+        is_paid=True
+        ).count()
+    
     total_qr_purchased_by_user = QRCode.objects.filter(
         event__created_by=user_id,
         status_purchased='purchased'
     ).count()
+    available_codes_count = paid_tickets_total - total_qr_purchased_by_user
     total_qr_used_by_user = QRCode.objects.filter(
         event__created_by=user_id,
         status_scan='concedido'
@@ -246,7 +252,7 @@ def inicio(request):
         return redirect(url)
     print(user_events)
     context = {'user':user_name, "NC":str(len(qr_codes_list)), "NE":str(len(user_events)), "purchased":events_with_purchased_qr_count, 'tp':total_qr_purchased_by_user,
-               'available':total_qr_available_by_user,'used':total_qr_used_by_user,
+               'available':available_codes_count,'used':total_qr_used_by_user,
                'form': form}
     return render(request, template, context)
 ################################################
