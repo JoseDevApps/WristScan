@@ -149,6 +149,10 @@ class QRCode(models.Model):
         ('available', 'available'),
         ('purchased', 'purchased'),
     )
+    STATUS_RECYCLE = (
+        ('available', 'available'),
+        ('recycled', 'recycled'),
+    )  
 
     data = models.CharField(max_length=255, unique=True)
     image = models.ImageField(upload_to="qrcodes/", blank=True)
@@ -157,7 +161,9 @@ class QRCode(models.Model):
     user_email = models.EmailField(max_length=255, blank=True)
     status_scan = models.CharField(max_length=200, default="nuevo", choices=STATUS)
     status_purchased = models.CharField(max_length=200, default="available", choices=STATUS_CHOICES)
+    status_recycled = models.CharField(max_length=200, default="available", choices=STATUS_RECYCLE)
     updated_at = models.DateTimeField(auto_now=True)
+    
     def process_qr_with_background(self, event_image):
         """Genera el QR en memoria y lo sobrepone en la imagen del evento."""
         if not self.id:
