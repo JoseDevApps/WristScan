@@ -219,7 +219,7 @@ def inicio(request):
         event__created_by=user_id,
         status_purchased='purchased'
     ).count()
-    available_codes_count = paid_tickets_total - total_qr_purchased_by_user
+    available_codes_count = paid_tickets_total 
     total_qr_used_by_user = QRCode.objects.filter(
         event__created_by=user_id,
         status_scan='concedido'
