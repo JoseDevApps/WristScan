@@ -22,7 +22,7 @@ from django.core.mail import send_mail
 from django.core.mail import EmailMessage
 from PIL import Image
 import io
-from django.db.models import Count, Q
+from django.db.models import Count, Q, Sum
 from io import BytesIO
 import sys
 from django.core.files.uploadedfile import InMemoryUploadedFile
@@ -213,7 +213,7 @@ def inicio(request):
     paid_tickets_total = Ticket.objects.filter(
         user_name=user_id,
         is_paid=True
-        ).count()
+        ).aggregate(total=Sum('quantity'))['total'] or 0
     
     total_qr_purchased_by_user = QRCode.objects.filter(
         event__created_by=user_id,
