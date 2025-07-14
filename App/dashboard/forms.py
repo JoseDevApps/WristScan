@@ -111,11 +111,11 @@ class AutoTicketAssignmentForm(forms.ModelForm):
         model = TicketAssignment
         fields = ['event', 'quantity']
         widgets = {
-            'event': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nombre del evento'}),
+            'event': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Events name'}),
             'quantity': forms.NumberInput(attrs={'class': 'form-control', 'min': 1}),
         }
         labels = {
-            'event': 'Nombre del evento',
+            'event': 'Events name',
         }
 
     def __init__(self, *args, **kwargs):
