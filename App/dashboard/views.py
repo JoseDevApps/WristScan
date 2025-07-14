@@ -353,9 +353,6 @@ def listdb(request):
     template = 'dashboard/tables_event.html'
     user_name = request.user
     user_id = request.user.id
-
-    
-    form = AutoTicketAssignmentForm(user=request.user)
     if request.method == "POST":
         form = AutoTicketAssignmentForm(request.POST, user=request.user)
         # ticket = get_object_or_404(Ticket, id=int(request.POST['ticket']))
@@ -430,10 +427,9 @@ def listdb(request):
     #         messages.error(request, "Please correct the errors below.")
     # else:
     #     form = TicketAssignmentForm()
-    user_events = Event.objects.filter(created_by=user_id)
-
-    context = {'events': user_events, 'user':user_name,'form':form}
-    return render(request, template, context)
+        user_events = Event.objects.filter(created_by=user_id)
+        context = {'events': user_events, 'user':user_name,'form':form}
+        return render(request, template, context)
 
 ################################################
 #   Vista de QR zip and download
