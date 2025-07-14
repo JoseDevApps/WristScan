@@ -358,10 +358,6 @@ def listdb(request):
     user_id = request.user.id
     if request.method == "POST":
         form = AutoTicketAssignmentForm(request.POST, user=request.user)
-        # ticket = get_object_or_404(Ticket, id=int(request.POST['ticket']))
-        # if form.is_valid():
-        # event_name = form.cleaned_data['event']
-        # quantity_to_assign = form.cleaned_data['quantity']
         event_name = request.POST['event']
         quantity_to_assign = int(request.POST['quantity'])
         # 1️⃣ Verificar si hay suficientes tickets disponibles
@@ -370,11 +366,10 @@ def listdb(request):
         print("Total>",total_unassigned)
         print("Asignado",quantity_to_assign)
         if total_unassigned < quantity_to_assign:
-            messages.error(request, f"Tienes solo {total_unassigned} tickets no asignados. No se puede crear el evento.")
+            form.add_error('quantity', f"Tienes solo {total_unassigned} tickets no asignados.")
             user_events = Event.objects.filter(created_by=user_id)
             context = {'events': user_events, 'user':user_name,'form':form}
             return render(request, template, context)
-            # return render(request, 'tickets/auto_assign_form.html', {'form': form})
 
         # 2️⃣ Crear imagen temporal en blanco
         image_save = Image.new('RGB', (300, 300), color='white')
@@ -414,23 +409,8 @@ def listdb(request):
 
         messages.success(request, f"Se asignaron {quantity_to_assign} códigos QR al evento '{event.name}' correctamente.")
         return redirect('dashboard:inicio')
-        # else:
-        #     messages.error(request, "Corrige los errores del formulario.")
     else:
         form = AutoTicketAssignmentForm(user=user_id)
-    #         ticket_assignment = TicketAssignment.objects.create(
-    #           ticket = ticket,
-    #           event = request.POST['event'],
-    #           quantity = int(request.POST['quantity'])
-    #         )
-    #         messages.success(request, f"Successfully assigned {request.POST['quantity']} tickets to event '{request.POST['event']}'.")
-    #         new_event_id = ticket_assignment.event_fk.id
-    #         send_event_qr_codes.delay(new_event_id)
-    #         return redirect('dashboard:inicio')  # Ajusta a tu URL
-    #     else:
-    #         messages.error(request, "Please correct the errors below.")
-    # else:
-    #     form = TicketAssignmentForm()
         user_events = Event.objects.filter(created_by=user_id)
         context = {'events': user_events, 'user':user_name,'form':form}
         return render(request, template, context)
