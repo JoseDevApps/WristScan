@@ -360,9 +360,10 @@ def listdb(request):
         form = AutoTicketAssignmentForm(request.POST, user=request.user)
         # ticket = get_object_or_404(Ticket, id=int(request.POST['ticket']))
         # if form.is_valid():
-        event_name = form.cleaned_data['event']
-        quantity_to_assign = form.cleaned_data['quantity']
-
+        # event_name = form.cleaned_data['event']
+        # quantity_to_assign = form.cleaned_data['quantity']
+        event_name = form['event']
+        quantity_to_assign = form['quantity']
         # 1️⃣ Verificar si hay suficientes tickets disponibles
         tickets = Ticket.objects.filter(user_name=user_id, is_paid=True)
         total_unassigned = sum(t.unassigned_quantity() for t in tickets)
