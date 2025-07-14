@@ -359,60 +359,60 @@ def listdb(request):
     if request.method == "POST":
         form = AutoTicketAssignmentForm(request.POST, user=request.user)
         # ticket = get_object_or_404(Ticket, id=int(request.POST['ticket']))
-        if form.is_valid():
-            event_name = form.cleaned_data['event']
-            quantity_to_assign = form.cleaned_data['quantity']
+        # if form.is_valid():
+        event_name = form.cleaned_data['event']
+        quantity_to_assign = form.cleaned_data['quantity']
 
-            # 1️⃣ Verificar si hay suficientes tickets disponibles
-            tickets = Ticket.objects.filter(user_name=user_id, is_paid=True)
-            total_unassigned = sum(t.unassigned_quantity() for t in tickets)
+        # 1️⃣ Verificar si hay suficientes tickets disponibles
+        tickets = Ticket.objects.filter(user_name=user_id, is_paid=True)
+        total_unassigned = sum(t.unassigned_quantity() for t in tickets)
 
-            if total_unassigned < quantity_to_assign:
-                messages.error(request, f"Tienes solo {total_unassigned} tickets no asignados. No se puede crear el evento.")
-                context = {'events': user_events, 'user':user_name,'form':form}
-                return render(request, template, context)
-                # return render(request, 'tickets/auto_assign_form.html', {'form': form})
+        if total_unassigned < quantity_to_assign:
+            messages.error(request, f"Tienes solo {total_unassigned} tickets no asignados. No se puede crear el evento.")
+            context = {'events': user_events, 'user':user_name,'form':form}
+            return render(request, template, context)
+            # return render(request, 'tickets/auto_assign_form.html', {'form': form})
 
-            # 2️⃣ Crear imagen temporal en blanco
-            image_save = Image.new('RGB', (300, 300), color='white')
-            buffer = io.BytesIO()
-            image_save.save(buffer, format="jpeg")
-            buffer.seek(0)
-            temp_image_file = InMemoryUploadedFile(
-                buffer, None, "temp_image.png", "image/png", sys.getsizeof(buffer), None
-            )
+        # 2️⃣ Crear imagen temporal en blanco
+        image_save = Image.new('RGB', (300, 300), color='white')
+        buffer = io.BytesIO()
+        image_save.save(buffer, format="jpeg")
+        buffer.seek(0)
+        temp_image_file = InMemoryUploadedFile(
+            buffer, None, "temp_image.png", "image/png", sys.getsizeof(buffer), None
+        )
 
-            # 3️⃣ Crear evento
-            event = Event.objects.create(
-                name=event_name,
-                created_by=user_id,
-                qr_code_count=quantity_to_assign,
-                image=temp_image_file
-            )
+        # 3️⃣ Crear evento
+        event = Event.objects.create(
+            name=event_name,
+            created_by=user_id,
+            qr_code_count=quantity_to_assign,
+            image=temp_image_file
+        )
 
-            # 4️⃣ Asignar a tickets disponibles
-            remaining = quantity_to_assign
-            for ticket in tickets:
-                unassigned = ticket.unassigned_quantity()
-                if unassigned > 0:
-                    assign_now = min(remaining, unassigned)
-                    TicketAssignment.objects.create(
-                        ticket=ticket,
-                        event=event.name,
-                        quantity=assign_now,
-                        event_fk=event
-                    )
-                    remaining -= assign_now
-                if remaining == 0:
-                    break
+        # 4️⃣ Asignar a tickets disponibles
+        remaining = quantity_to_assign
+        for ticket in tickets:
+            unassigned = ticket.unassigned_quantity()
+            if unassigned > 0:
+                assign_now = min(remaining, unassigned)
+                TicketAssignment.objects.create(
+                    ticket=ticket,
+                    event=event.name,
+                    quantity=assign_now,
+                    event_fk=event
+                )
+                remaining -= assign_now
+            if remaining == 0:
+                break
 
-            # 5️⃣ Enviar códigos QR
-            send_event_qr_codes.delay(event.id)
+        # 5️⃣ Enviar códigos QR
+        send_event_qr_codes.delay(event.id)
 
-            messages.success(request, f"Se asignaron {quantity_to_assign} códigos QR al evento '{event.name}' correctamente.")
-            return redirect('dashboard:inicio')
-        else:
-            messages.error(request, "Corrige los errores del formulario.")
+        messages.success(request, f"Se asignaron {quantity_to_assign} códigos QR al evento '{event.name}' correctamente.")
+        return redirect('dashboard:inicio')
+        # else:
+        #     messages.error(request, "Corrige los errores del formulario.")
     else:
         form = AutoTicketAssignmentForm(user=user_id)
     #         ticket_assignment = TicketAssignment.objects.create(
