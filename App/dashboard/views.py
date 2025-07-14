@@ -223,7 +223,10 @@ def inicio(request):
         event__created_by=user_id,
         status_recycled='recycled'
     ).count()
-    available_codes_count = paid_tickets_total - total_qr_purchased_by_user + total_qr_recycled_by_user
+    tickets = Ticket.objects.filter(user_name=user_id, is_paid=True)
+    total_unassigned = sum(t.unassigned_quantity() for t in tickets)
+    available_codes_count = total_unassigned + total_qr_recycled_by_user
+    
     total_qr_used_by_user = QRCode.objects.filter(
         event__created_by=user_id,
         status_scan='concedido'
