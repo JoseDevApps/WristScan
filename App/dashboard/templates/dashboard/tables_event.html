@@ -344,6 +344,11 @@
                       </a>
                     </li>
                     <li>
+                      <a class="dropdown-item" href="{% url 'dashboard:reciclar_qr_evento' qrcode.id %}">
+                        <i class="fas fa-pen me-2"></i> Recycle event
+                      </a>
+                    </li>
+                    <li>
                         <a class="dropdown-item" href="{% url 'dashboard:invite_user' qrcode.id %}" >
                           <i class="fas fa-file-download me-2"></i> Invite user
                         </a>
