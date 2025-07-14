@@ -368,6 +368,7 @@ def listdb(request):
         print("Asignado",quantity_to_assign)
         if total_unassigned < quantity_to_assign:
             messages.error(request, f"Tienes solo {total_unassigned} tickets no asignados. No se puede crear el evento.")
+            user_events = Event.objects.filter(created_by=user_id)
             context = {'events': user_events, 'user':user_name,'form':form}
             return render(request, template, context)
             # return render(request, 'tickets/auto_assign_form.html', {'form': form})
