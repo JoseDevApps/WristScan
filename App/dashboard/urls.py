@@ -13,7 +13,7 @@ urlpatterns = [
     path('create', views.create, name="create"),
     path('createdb', views.createdb, name="createdb"),
     path('assign', views.assign, name="assign"),
-
+    path('reciclar_qr_evento/<int:id>/', views.reciclar_qr_evento, name="reciclar_qr_evento"),
     path('update_user_email/<int:user_id>/', views.update_user_email, name='update_user_email'),
     path('update_event/<int:pk>/', views.updatedb, name='update_event'),
     path('event/<int:event_id>/download_qr_zip/', views.download_qr_zip, name='download_qr_zip'),

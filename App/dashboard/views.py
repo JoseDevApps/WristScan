@@ -28,6 +28,7 @@ import sys
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from .forms import UserEmailForm, ShareQRCodeForm, EventUpdateForm,UpdateQRCodesForm, TicketAssignmentForm, AutoTicketAssignmentForm
 from .forms import MyPostForm, EventSelectorForm, InviteForm  # Este es tu formulario definido
+from .forms import EventRecycleForm
 from django.contrib.auth import logout
 
 def force_logout_view(request):
@@ -349,9 +350,43 @@ class ProcessFormView(View):
             return redirect('dashboard:inicio')  # o cualquier otra vista
         return render(request, 'create_ticket.html', {'form': form})
 
+def recycle_available_qrs(event):
+    qrs_to_recycle = event.qr_codes.filter(
+        status_purchased="available",  # no fueron comprados
+        status_recycled="available"   # aún no están marcados como reciclados
+    )
+    count = qrs_to_recycle.count()
+    qrs_to_recycle.update(status_recycled="recycled")
+    return count
+
+################################################
+#   Pagina de QR para reciclaje
+################################################
+def reciclar_qr_evento(request, event_id):
+    event = get_object_or_404(Event, id=event_id, created_by=request.user)
+    recycled_count = recycle_available_qrs(event)
+    if request.method == "POST":
+        form = EventRecycleForm(request.POST, user=request.user, event_id=event_id)
+        if form.is_valid():
+            event = form.cleaned_data['event']
+            confirm = form.cleaned_data['recycle_confirm']
+            if confirm == 'yes':
+                recycled_count = recycle_available_qrs(event)
+                messages.success(request, f"♻️ Se reciclaron {recycled_count} QR disponibles del evento '{event.name}'.")
+            else:
+                messages.info(request, f"❌ Reciclaje cancelado para el evento '{event.name}'.")
+            return redirect('dashboard:inicio')
+            
+    else:
+        form = EventRecycleForm(user=request.user, event_id=event_id)
+
+    return render(request, "dashboard/reciclar_qr_evento.html", {"form": form, "event": event})
+   
+
 ################################################
 #   Pagina de QR view events form db
 ################################################
+@login_required
 def listdb(request):
     template = 'dashboard/tables_event.html'
     user_name = request.user

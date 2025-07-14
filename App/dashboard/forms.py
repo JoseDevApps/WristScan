@@ -130,3 +130,32 @@ class AutoTicketAssignmentForm(forms.ModelForm):
             if quantity > total_unassigned:
                 raise forms.ValidationError(f"Tienes solo {total_unassigned} tickets disponibles.")
         return quantity
+    
+
+class EventRecycleForm(forms.Form):
+    event = forms.ModelChoiceField(
+        queryset=Event.objects.none(),
+        widget=forms.HiddenInput(),  # 🔒 Hidden: can't be changed in UI
+        label="",
+        required=True
+    )
+
+    recycle_confirm = forms.ChoiceField(
+        choices=[('yes', 'Sí, deseo reciclar los códigos'), ('no', 'No, cancelar')],
+        widget=forms.RadioSelect,
+        label="¿Deseas reciclar los códigos QR disponibles de este evento?"
+    )
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        event_id = kwargs.pop('event_id', None)
+        super().__init__(*args, **kwargs)
+
+        if user:
+            self.fields['event'].queryset = Event.objects.filter(created_by=user)
+
+        if event_id:
+            try:
+                self.fields['event'].initial = Event.objects.get(id=event_id, created_by=user)
+            except Event.DoesNotExist:
+                pass

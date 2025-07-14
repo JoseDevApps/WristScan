@@ -61,7 +61,17 @@ class Ticket(models.Model):
         return sum(a.quantity for a in self.assignments.all())
 
     def unassigned_quantity(self):
-        return self.quantity - self.assigned_quantity()
+        # return self.quantity - self.assigned_quantity()
+        assigned = self.assigned_quantity()
+
+        # Contar QR reciclados que aún están disponibles
+        recycled_qr_available = QRCode.objects.filter(
+            event_name__in=self.assignments.values_list('event', flat=True),
+            status_purchased="available",
+            status_recycled="recycled"
+        ).count()
+
+        return (self.quantity - assigned) + recycled_qr_available
 
 
 # 💳 Pago del ticket
