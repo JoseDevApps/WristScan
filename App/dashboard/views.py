@@ -368,7 +368,9 @@ def listdb(request):
 
             if total_unassigned < quantity_to_assign:
                 messages.error(request, f"Tienes solo {total_unassigned} tickets no asignados. No se puede crear el evento.")
-                return render(request, 'tickets/auto_assign_form.html', {'form': form})
+                context = {'events': user_events, 'user':user_name,'form':form}
+                return render(request, template, context)
+                # return render(request, 'tickets/auto_assign_form.html', {'form': form})
 
             # 2️⃣ Crear imagen temporal en blanco
             image_save = Image.new('RGB', (300, 300), color='white')
