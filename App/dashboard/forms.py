@@ -103,3 +103,31 @@ class EventSelectorForm(forms.Form):
  
 class InviteForm(forms.Form):
     email = forms.EmailField(label="Guest email")
+
+class AutoTicketAssignmentForm(forms.ModelForm):
+    quantity = forms.IntegerField(min_value=1, label="Number of QRs to assign")
+
+    class Meta:
+        model = TicketAssignment
+        fields = ['event', 'quantity']
+        widgets = {
+            'event': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nombre del evento'}),
+            'quantity': forms.NumberInput(attrs={'class': 'form-control', 'min': 1}),
+        }
+        labels = {
+            'event': 'Nombre del evento',
+        }
+
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user', None)  # Pasaremos el user desde la vista
+        super().__init__(*args, **kwargs)
+
+    def clean_quantity(self):
+        quantity = self.cleaned_data['quantity']
+        if self.user:
+            from .models import Ticket  # evitar import circular
+            tickets = Ticket.objects.filter(user_name=self.user, is_paid=True)
+            total_unassigned = sum(t.unassigned_quantity() for t in tickets)
+            if quantity > total_unassigned:
+                raise forms.ValidationError(f"Tienes solo {total_unassigned} tickets disponibles.")
+        return quantity

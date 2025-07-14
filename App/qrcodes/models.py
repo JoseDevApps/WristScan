@@ -281,7 +281,8 @@ class TicketAssignment(models.Model):
             image=temp_image_file
         )
     def save(self, *args, **kwargs):
-        self.assign_qr_codes()
+        if not self.event_fk:
+            self.assign_qr_codes()
         super().save(*args, **kwargs)
 
 
