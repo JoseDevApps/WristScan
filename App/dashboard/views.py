@@ -385,7 +385,7 @@ def listdb(request):
         # 3️⃣ Crear evento
         event = Event.objects.create(
             name=event_name,
-            created_by=user_id,
+            created_by=user_name,
             qr_code_count=quantity_to_assign,
             image=temp_image_file
         )
