@@ -362,11 +362,11 @@ def recycle_available_qrs(event):
 ################################################
 #   Pagina de QR para reciclaje
 ################################################
-def reciclar_qr_evento(request, event_id):
-    event = get_object_or_404(Event, id=event_id, created_by=request.user)
+def reciclar_qr_evento(request, id):
+    event = get_object_or_404(Event, id=id, created_by=request.user)
     recycled_count = recycle_available_qrs(event)
     if request.method == "POST":
-        form = EventRecycleForm(request.POST, user=request.user, event_id=event_id)
+        form = EventRecycleForm(request.POST, user=request.user, event_id=id)
         if form.is_valid():
             event = form.cleaned_data['event']
             confirm = form.cleaned_data['recycle_confirm']
@@ -378,7 +378,7 @@ def reciclar_qr_evento(request, event_id):
             return redirect('dashboard:inicio')
             
     else:
-        form = EventRecycleForm(user=request.user, event_id=event_id)
+        form = EventRecycleForm(user=request.user, event_id=id)
 
     return render(request, "dashboard/reciclar_qr_evento.html", {"form": form, "event": event})
    
