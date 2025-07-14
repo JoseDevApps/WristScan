@@ -367,8 +367,8 @@ def listdb(request):
         # 1️⃣ Verificar si hay suficientes tickets disponibles
         tickets = Ticket.objects.filter(user_name=user_id, is_paid=True)
         total_unassigned = sum(t.unassigned_quantity() for t in tickets)
-        print(total_unassigned)
-        print(quantity_to_assign)
+        print("Total>",total_unassigned)
+        print("Asignado",quantity_to_assign)
         if total_unassigned < quantity_to_assign:
             messages.error(request, f"Tienes solo {total_unassigned} tickets no asignados. No se puede crear el evento.")
             context = {'events': user_events, 'user':user_name,'form':form}
