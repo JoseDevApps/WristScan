@@ -357,6 +357,7 @@ def listdb(request):
     
     form = AutoTicketAssignmentForm(user=request.user)
     if request.method == "POST":
+        form = AutoTicketAssignmentForm(request.POST, user=request.user)
         # ticket = get_object_or_404(Ticket, id=int(request.POST['ticket']))
         if form.is_valid():
             event_name = form.cleaned_data['event']
