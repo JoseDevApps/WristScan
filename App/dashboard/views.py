@@ -362,8 +362,8 @@ def listdb(request):
         # if form.is_valid():
         # event_name = form.cleaned_data['event']
         # quantity_to_assign = form.cleaned_data['quantity']
-        event_name = form['event']
-        quantity_to_assign = form['quantity']
+        event_name = request.POST['event']
+        quantity_to_assign = int(request.POST['quantity'])
         # 1️⃣ Verificar si hay suficientes tickets disponibles
         tickets = Ticket.objects.filter(user_name=user_id, is_paid=True)
         total_unassigned = sum(t.unassigned_quantity() for t in tickets)
