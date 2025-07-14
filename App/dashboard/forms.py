@@ -125,7 +125,6 @@ class AutoTicketAssignmentForm(forms.ModelForm):
     def clean_quantity(self):
         quantity = self.cleaned_data['quantity']
         if self.user:
-            from .models import Ticket  # evitar import circular
             tickets = Ticket.objects.filter(user_name=self.user, is_paid=True)
             total_unassigned = sum(t.unassigned_quantity() for t in tickets)
             if quantity > total_unassigned:
