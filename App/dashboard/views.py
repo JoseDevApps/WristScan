@@ -226,7 +226,7 @@ def inicio(request):
     ).count()
     tickets = Ticket.objects.filter(user_name=user_id, is_paid=True)
     total_unassigned = sum(t.unassigned_quantity() for t in tickets)
-    available_codes_count = total_unassigned + total_qr_recycled_by_user
+    available_codes_count = total_unassigned 
     
     total_qr_used_by_user = QRCode.objects.filter(
         event__created_by=user_id,
