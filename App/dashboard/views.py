@@ -402,7 +402,13 @@ def listdb(request):
         print("Asignado",quantity_to_assign)
         if total_unassigned < quantity_to_assign:
             messages.error(request, f"Tienes solo {total_unassigned} tickets no asignados. No se puede crear el evento.")
-            user_events = Event.objects.filter(created_by=user_id)
+            # user_events = Event.objects.filter(created_by=user_id)
+            user_events = Event.objects.filter(created_by=user_id).annotate(
+                recycled_count=Count(
+                    'qr_codes',
+                    filter=Q(qr_codes__status_recycled='recycled')
+                )
+    )
             context = {'events': user_events, 'user':user_name,'form':form}
             return render(request, template, context)
 
@@ -446,7 +452,13 @@ def listdb(request):
         return redirect('dashboard:inicio')
     else:
         form = AutoTicketAssignmentForm(user=user_id)
-        user_events = Event.objects.filter(created_by=user_id)
+        # user_events = Event.objects.filter(created_by=user_id)
+        user_events = Event.objects.filter(created_by=user_id).annotate(
+            recycled_count=Count(
+                'qr_codes',
+                filter=Q(qr_codes__status_recycled='recycled')
+            )
+    )
         context = {'events': user_events, 'user':user_name,'form':form}
         return render(request, template, context)
 

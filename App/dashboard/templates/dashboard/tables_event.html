@@ -273,6 +273,9 @@
         </div>
       </div>
       <!-- Table -->
+      <button id="toggleRecycledBtn" class="btn btn-secondary mb-3">
+        Show recycled events
+      </button>
       <table id="eventTable" class="table table-bordered table-striped">
           <thead>
               <tr>
@@ -283,35 +286,9 @@
           </thead>
           <tbody>
             {% for qrcode in events %}
-            <tr>
+            <tr class="{% if event.recycled_count > 0 %}recycled-row{% endif %}">
               <td>{{qrcode.name}}</td>
               <td>{{qrcode.qr_code_count}}</td>
-              <!-- <td>
-                <div class="text-center">
-                  <a href="{% url 'dashboard:download_qr_zip' qrcode.id %}" class="btn btn-primary">
-                    <i class="fas fa-download"></i>
-                  </a>
-                  <hr>
-                  <div class="share-container">
-                        <a href="https://api.whatsapp.com/send?text=Download QR Codes for {{ qrcode.name }}%0Ahttps://app.manillasbolivia.com/{% url 'dashboard:download_qr_zip' qrcode.id %}" target="_blank" rel="noopener noreferrer">
-                          <i class="fab fa-whatsapp"></i> 
-                        </a>
-                        <a href="https://t.me/share/url?url=https://app.manillasbolivia.com/{% url 'dashboard:download_qr_zip' qrcode.id %}&text=Download QR Codes for {{ qrcode.name }}" target="_blank" rel="noopener noreferrer">
-                          <i class="fab fa-telegram-plane"></i>
-                        </a>
-                        <a href="mailto:?subject=Download QR Codes for {{ qrcode.name }}&body=Get the QR Codes here: https://app.manillasbolivia.com/{% url 'dashboard:download_qr_zip' qrcode.id %}" target="_blank" rel="noopener noreferrer">
-                          <i class="fas fa-rss"></i> 
-                        </a>
-                 </div>
-                 <hr>
-
-                  <a href="{% url 'dashboard:update_event' qrcode.id %}" class="btn btn-primary">
-                    <i class="fas fa-pen"></i>
-                  </a>
-                    
-                  </button>
-                </div>
-              </td> -->
               <td>
                 <div class="dropdown text-center">
                   <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu{{ forloop.counter }}" data-bs-toggle="dropdown" aria-expanded="false">
@@ -388,6 +365,21 @@
   });
 </script>
 
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const btn = document.getElementById("toggleRecycledBtn");
+    let visible = false;
+
+    btn.addEventListener("click", function() {
+      visible = !visible;
+      document.querySelectorAll("tr.recycled-row")
+        .forEach(row => row.style.display = visible ? "" : "none");
+      btn.textContent = visible 
+        ? "Hide recycled events" 
+        : "Show recycled events";
+    });
+  });
+</script>
 
 
 {% endblock %}
