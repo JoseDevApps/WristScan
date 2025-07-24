@@ -353,33 +353,39 @@
 
 <script>
   $(document).ready(function() {
-      $('#eventTable').DataTable({
-          "paging": true,       // Enable pagination
-          "searching": true,    // Enable search
-          "ordering": true,     // Enable sorting
-          "info": true,         // Show info text
-          "lengthMenu": [5, 10, 25, 50, 100], // Pagination options
-          "pageLength": 5,      // Default items per page
-      });
-      
-  });
-</script>
+    // 1️⃣ Inicializa DataTables
+    var table = $('#eventTable').DataTable({
+      paging:   true,
+      searching:true,
+      ordering: true,
+      info:     true,
+      lengthMenu: [5,10,25,50,100],
+      pageLength:5
+    });
 
-<script>
-  document.addEventListener("DOMContentLoaded", function() {
-    const btn = document.getElementById("toggleRecycledBtn");
-    let visible = false;
+    // 2️⃣ Oculta filas recicladas desde el inicio
+    $('.recycled-row').hide();
 
-    btn.addEventListener("click", function() {
-      visible = !visible;
-      document.querySelectorAll("tr.recycled-row")
-        .forEach(row => row.style.display = visible ? "" : "none");
-      btn.textContent = visible 
-        ? "Hide recycled events" 
-        : "Show recycled events";
+    // 3️⃣ Control del botón
+    var showing = false;
+    $('#toggleRecycledBtn').on('click', function() {
+      showing = !showing;
+
+      if (showing) {
+        $('.recycled-row').show();
+        $(this).text('Hide recycled events');
+      } else {
+        $('.recycled-row').hide();
+        $(this).text('Show recycled events');
+      }
+
+      // 4️⃣ Re-dibuja la tabla sin cambiar de página
+      table.draw(false);
     });
   });
 </script>
+
+
 
 
 {% endblock %}

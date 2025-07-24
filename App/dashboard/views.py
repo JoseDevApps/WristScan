@@ -409,6 +409,7 @@ def listdb(request):
                     filter=Q(qr_codes__status_recycled='recycled')
                 )
              )
+            print(user_events)
             context = {'events': user_events, 'user':user_name,'form':form}
             return render(request, template, context)
 
