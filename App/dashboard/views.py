@@ -375,7 +375,7 @@ def reciclar_qr_evento(request, id):
                 messages.success(request, f"♻️ Se reciclaron {recycled_count} QR disponibles del evento '{event.name}'.")
             else:
                 messages.info(request, f"❌ Reciclaje cancelado para el evento '{event.name}'.")
-            return redirect('dashboard:inicio')
+            return redirect('dashboard:tables')
             
     else:
         form = EventRecycleForm(user=request.user, event_id=id)
