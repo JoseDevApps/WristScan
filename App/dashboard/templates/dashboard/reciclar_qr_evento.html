@@ -226,12 +226,11 @@
    <!-- **************** -->
 
    <div class="container">
-      <h2>♻️ Recycle unsold QR codes for {{ event.name }}</h2>
-
+      <h2>♻️ Reciclar QR no vendidos de {{ event.name }}</h2>
+      <p>Hay <strong>{{ recyclable_count }}</strong> códigos disponibles para reciclar.</p>
       <form method="post">
         {% csrf_token %}
-        <p><strong>Evento:</strong> {{ form.event.initial.name }}</p>
-        {{ form.event }} {# Campo oculto #}
+        {{ form.event }}        {# campo hidden #}
         {{ form.recycle_confirm }}
         <button type="submit" class="btn btn-success mt-3">Confirmar reciclaje</button>
       </form>
