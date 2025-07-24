@@ -362,26 +362,57 @@ def recycle_available_qrs(event):
 ################################################
 #   Pagina de QR para reciclaje
 ################################################
+# def reciclar_qr_evento(request, id):
+#     event = get_object_or_404(Event, id=id, created_by=request.user)
+#     recycled_count = recycle_available_qrs(event)
+#     if request.method == "POST":
+#         form = EventRecycleForm(request.POST, user=request.user, event_id=id)
+#         if form.is_valid():
+#             event = form.cleaned_data['event']
+#             confirm = form.cleaned_data['recycle_confirm']
+#             if confirm == 'yes':
+#                 recycled_count = recycle_available_qrs(event)
+#                 messages.success(request, f"♻️ Se reciclaron {recycled_count} QR disponibles del evento '{event.name}'.")
+#             else:
+#                 messages.info(request, f"❌ Reciclaje cancelado para el evento '{event.name}'.")
+#             return redirect('dashboard:tables')
+            
+#     else:
+#         form = EventRecycleForm(user=request.user, event_id=id)
+
+#     return render(request, "dashboard/reciclar_qr_evento.html", {"form": form, "event": event})
+   
 def reciclar_qr_evento(request, id):
     event = get_object_or_404(Event, id=id, created_by=request.user)
-    recycled_count = recycle_available_qrs(event)
+
+    # 1️⃣ Solo contamos, no reciclamos
+    recyclable_count = count_available_to_recycle(event)
+
     if request.method == "POST":
         form = EventRecycleForm(request.POST, user=request.user, event_id=id)
         if form.is_valid():
-            event = form.cleaned_data['event']
             confirm = form.cleaned_data['recycle_confirm']
             if confirm == 'yes':
+                # 2️⃣ Reciclamos aquí, y **solo** si confirmó sí
                 recycled_count = recycle_available_qrs(event)
-                messages.success(request, f"♻️ Se reciclaron {recycled_count} QR disponibles del evento '{event.name}'.")
+                messages.success(
+                    request,
+                    f"♻️ Se reciclaron {recycled_count} QR disponibles del evento '{event.name}'."
+                )
             else:
-                messages.info(request, f"❌ Reciclaje cancelado para el evento '{event.name}'.")
+                messages.info(
+                    request,
+                    f"❌ Reciclaje cancelado para el evento '{event.name}'."
+                )
             return redirect('dashboard:tables')
-            
     else:
         form = EventRecycleForm(user=request.user, event_id=id)
 
-    return render(request, "dashboard/reciclar_qr_evento.html", {"form": form, "event": event})
-   
+    return render(request, "dashboard/reciclar_qr_evento.html", {
+        "form": form,
+        "event": event,
+        "recyclable_count": recyclable_count,  # opcional, para mostrar “hay X a reciclar”
+    })
 
 ################################################
 #   Pagina de QR view events form db
