@@ -381,7 +381,12 @@ def recycle_available_qrs(event):
 #         form = EventRecycleForm(user=request.user, event_id=id)
 
 #     return render(request, "dashboard/reciclar_qr_evento.html", {"form": form, "event": event})
-   
+def count_available_to_recycle(event):
+    return event.qr_codes.filter(
+        status_purchased="available",
+        status_recycled="available"
+    ).count()
+
 def reciclar_qr_evento(request, id):
     event = get_object_or_404(Event, id=id, created_by=request.user)
 
