@@ -286,7 +286,7 @@
           </thead>
           <tbody>
             {% for qrcode in events %}
-            <tr class="{% if event.recycled_count > 0 %}recycled-row{% endif %}">
+            <tr class="{% if qrcode.recycled_count > 0 %}recycled-row{% endif %}">
               <td>{{qrcode.name}}</td>
               <td>{{qrcode.qr_code_count}}</td>
               <td>
