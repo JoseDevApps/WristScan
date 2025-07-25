@@ -312,7 +312,24 @@ def invite_user(request, event_id):
         form = InviteForm()
 
     return render(request, "dashboard/invite.html", {"form": form, "event": event})
+################################################
+# QR SCAN para invitados
+################################################
+@login_required
+def qrscan_invited(request):
+    accepted = EventInvite.objects.filter(
+        email=request.user.email,
+        accepted=True
+    ).select_related('event')
+    if not accepted:
+        from django.core.exceptions import PermissionDenied
+        raise PermissionDenied
 
+    invited_events = [inv.event for inv in accepted]
+    form = EventSelectorForm(user=request.user, events=invited_events)
+    return render(request, 'dashboard/qrscan_invited.html', {
+        'form': form, 'user': request.user
+    })
 
 ################################################
 #   Pagina de QR create event
@@ -359,28 +376,6 @@ def recycle_available_qrs(event):
     qrs_to_recycle.update(status_recycled="recycled")
     return count
 
-################################################
-#   Pagina de QR para reciclaje
-################################################
-# def reciclar_qr_evento(request, id):
-#     event = get_object_or_404(Event, id=id, created_by=request.user)
-#     recycled_count = recycle_available_qrs(event)
-#     if request.method == "POST":
-#         form = EventRecycleForm(request.POST, user=request.user, event_id=id)
-#         if form.is_valid():
-#             event = form.cleaned_data['event']
-#             confirm = form.cleaned_data['recycle_confirm']
-#             if confirm == 'yes':
-#                 recycled_count = recycle_available_qrs(event)
-#                 messages.success(request, f"♻️ Se reciclaron {recycled_count} QR disponibles del evento '{event.name}'.")
-#             else:
-#                 messages.info(request, f"❌ Reciclaje cancelado para el evento '{event.name}'.")
-#             return redirect('dashboard:tables')
-            
-#     else:
-#         form = EventRecycleForm(user=request.user, event_id=id)
-
-#     return render(request, "dashboard/reciclar_qr_evento.html", {"form": form, "event": event})
 def count_available_to_recycle(event):
     return event.qr_codes.filter(
         status_purchased="available",

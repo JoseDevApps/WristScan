@@ -10,6 +10,7 @@ urlpatterns = [
 
     path('qrgen', views.qrgen, name="qrgen"),
     path('qrscan', views.qrscan, name="qrscan"),
+    path('qrscan/invited/', views.qrscan_invited, name='qrscan_invited'),
     path('create', views.create, name="create"),
     path('createdb', views.createdb, name="createdb"),
     path('assign', views.assign, name="assign"),
