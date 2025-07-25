@@ -266,7 +266,7 @@ class EventRole(models.Model):
     class Meta:
         unique_together = ("user", "event")  # Un usuario no puede tener múltiples roles en el mismo evento
     def __str__(self) -> str:
-        return self.user
+        return str(self.user)
 
 # 🔗 Relación de tickets distribuidos entre eventos
 class TicketAssignment(models.Model):
