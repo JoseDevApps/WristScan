@@ -306,4 +306,4 @@ class EventInvite(models.Model):
     accepted = models.BooleanField(default=False)
 
     def __str__(self):
-        return f"{self.email} invited to {self.event.name}"
+        return f"{self.email} invited"
