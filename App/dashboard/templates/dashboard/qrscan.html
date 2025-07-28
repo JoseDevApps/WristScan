@@ -365,7 +365,13 @@
             type: 'pie',
             data: {
               labels: ['Nuevo','Concedido'],
-              datasets: [{ data: [counts.nuevo, counts.concedido] }]
+              datasets: [{ 
+                data: [counts.nuevo, counts.concedido], 
+                backgroundColor: [
+                  '#1A1E37', // Nuevo → azul
+                  '#49AAF7'  // Concedido → celeste
+                ]
+               }],
             },
             options: { responsive: true }
           });
