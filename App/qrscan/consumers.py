@@ -3,7 +3,7 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from asgiref.sync import sync_to_async
 from django.db import connection
 from datetime import datetime, timezone, timedelta
-from qrcodes.models import QRCode, Event
+
 class QRConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         # Accept the WebSocket connection
@@ -14,6 +14,7 @@ class QRConsumer(AsyncWebsocketConsumer):
         pass
 
     async def receive(self, text_data):
+        from qrcodes.models import QRCode, Event
         try: 
             # Receive QR code from the WebSocket
             text_data_json = json.loads(text_data)
@@ -106,6 +107,8 @@ class QRConsumer(AsyncWebsocketConsumer):
     
     @sync_to_async
     def fetch_report(self, eventid):
+            
+        from qrcodes.models import QRCode, Event   # ← lazy import
         # Last 5 conceded
         last5 = list(
             QRCode.objects
