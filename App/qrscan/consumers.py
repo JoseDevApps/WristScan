@@ -105,25 +105,64 @@ class QRConsumer(AsyncWebsocketConsumer):
             
         return None
     
+    # @sync_to_async
+    # def fetch_report(self, eventid):
+            
+    #     from qrcodes.models import QRCode, Event   # ← lazy import
+    #     # Last 5 conceded
+    #     last5 = list(
+    #         QRCode.objects
+    #               .filter(event_fk__id=eventid, status_scan='concedido')
+    #               .order_by('-updated_at')
+    #               .values('data', 'updated_at')[:5]
+    #     )
+    #     # Counts
+    #     total = QRCode.objects.filter(event_fk__id=eventid, status_scan__in=['nuevo','concedido']).count()
+    #     conceded = QRCode.objects.filter(event_fk__id=eventid, status_scan='concedido').count()
+    #     nuevo = total - conceded
+    #     return {
+    #         'last5': [
+    #             {'data': r['data'], 'updated_at': r['updated_at'].isoformat()}
+    #             for r in last5
+    #         ],
+    #         'counts': {'nuevo': nuevo, 'concedido': conceded}
+    #     }
     @sync_to_async
     def fetch_report(self, eventid):
-            
-        from qrcodes.models import QRCode, Event   # ← lazy import
-        # Last 5 conceded
-        last5 = list(
-            QRCode.objects
-                  .filter(event_fk__id=eventid, status_scan='concedido')
-                  .order_by('-updated_at')
-                  .values('data', 'updated_at')[:5]
-        )
-        # Counts
-        total = QRCode.objects.filter(event_fk__id=eventid, status_scan__in=['nuevo','concedido']).count()
-        conceded = QRCode.objects.filter(event_fk__id=eventid, status_scan='concedido').count()
-        nuevo = total - conceded
+        with connection.cursor() as cursor:
+            # 1) Last 5 conceded scans
+            cursor.execute("""
+                SELECT qp.data, qp.updated_at
+                  FROM qrcodes_event_qr_codes ec
+                  JOIN qrcodes_qrcode qp
+                    ON ec.qrcode_id = qp.id
+                 WHERE ec.event_id = %s
+                   AND qp.status_scan = 'concedido'
+                 ORDER BY qp.updated_at DESC
+                 LIMIT 5
+            """, [str(eventid)])
+            rows = cursor.fetchall()
+            last5 = [
+                {'data': data, 'updated_at': updated_at.isoformat()}
+                for data, updated_at in rows
+            ]
+
+            # 2) Counts of nuevo vs concedido
+            cursor.execute("""
+                SELECT
+                  SUM(CASE WHEN qp.status_scan = 'nuevo' THEN 1 ELSE 0 END)   AS nuevo_count,
+                  SUM(CASE WHEN qp.status_scan = 'concedido' THEN 1 ELSE 0 END) AS concedido_count
+                  FROM qrcodes_event_qr_codes ec
+                  JOIN qrcodes_qrcode qp
+                    ON ec.qrcode_id = qp.id
+                 WHERE ec.event_id = %s
+            """, [str(eventid)])
+            nuevo_count, concedido_count = cursor.fetchone()
+
         return {
-            'last5': [
-                {'data': r['data'], 'updated_at': r['updated_at'].isoformat()}
-                for r in last5
-            ],
-            'counts': {'nuevo': nuevo, 'concedido': conceded}
+            'last5': last5,
+            'counts': {
+                'nuevo':   nuevo_count   or 0,
+                'concedido': concedido_count or 0
+            }
         }
