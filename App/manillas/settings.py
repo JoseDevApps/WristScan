@@ -194,8 +194,11 @@ EMAIL_HOST_PASSWORD = 'kUyRVUsKBJ9C'
 
 
 PASSWORD_RESET_TIMEOUT = 3600
-MY_SITE_DOMAIN = "http://app.manillasbolivia.com/"
-MY_SITE_PROTOCOL = "http"  # Change to "http" if not using HTTPS
+MY_SITE_DOMAIN = "https://app.manillasbolivia.com/"
+MY_SITE_PROTOCOL = "https"  # Change to "http" if not using HTTPS
+
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+USE_X_FORWARDED_HOST = True
 
 # Payments
 STRIPE_PUBLIC_KEY = "pk_test_51QeLxw4DIjWPcBFH08xjrIaXripqa0yUNjXCQNKFMi3U3mgNxOB7lrtYnGmr2DCUIHVLEBFV23FEAaEG1EREPQnY00IGe1cNdC"
