@@ -14,7 +14,6 @@ class QRConsumer(AsyncWebsocketConsumer):
         pass
 
     async def receive(self, text_data):
-        from qrcodes.models import QRCode, Event
         try: 
             # Receive QR code from the WebSocket
             text_data_json = json.loads(text_data)
