@@ -244,7 +244,7 @@
     <div id="reportModal" class="modal">
       <div class="modal-content">
         <span class="close-report">&times;</span>
-        <h2>Reporte de escaneos</h2>
+        <h2>Scan Report</h2>
 
         <!-- Tabla de los últimos 5 escaneos -->
         <table id="reportTable" class="table table-sm mt-3">
@@ -298,10 +298,32 @@
 
     let isSocketOpen = false;
 
+    // Grab modal elements
+    const reportModal   = document.getElementById('reportModal');
+    const openReportBtn = document.getElementById('openReportBtn');
+    const closeReport   = document.querySelector('.close-report');
+
+    // open modal + fetch when clicking the button
+    openReportBtn.addEventListener('click', () => {
+      reportModal.style.display = 'block';
+      fetchReport();
+    });
+
+    // close modal when clicking the “×”
+    closeReport.addEventListener('click', () => {
+      reportModal.style.display = 'none';
+    });
+
+    // close modal when clicking outside of it
+    window.addEventListener('click', e => {
+      if (e.target === reportModal) {
+        reportModal.style.display = 'none';
+      }
+    });
+
     socket.onopen = function(event) {
         console.log('WebSocket connection opened.');
         isSocketOpen = true;
-        fetchReport();
     };
     // Re-fetch si cambias de evento mientras el modal está abierto
       document.getElementById('id_event').addEventListener('change', () => {
