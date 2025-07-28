@@ -227,7 +227,7 @@ def inicio(request):
     tickets = Ticket.objects.filter(user_name=user_id, is_paid=True)
     total_unassigned = sum(t.unassigned_quantity() for t in tickets)
     available_codes_count = total_unassigned 
-    
+    total_tickets_purchased= tickets.count()
     total_qr_used_by_user = QRCode.objects.filter(
         event__created_by=user_id,
         status_scan='concedido'
@@ -259,7 +259,7 @@ def inicio(request):
         url = reverse('dashboard:create_checkout_session', kwargs={'pk': ticket_db.id })
         return redirect(url)
     print(user_events)
-    context = {'user':user_name, "NC":str(len(qr_codes_list)), "NE":str(len(user_events)), "purchased":events_with_purchased_qr_count, 'tp':total_qr_purchased_by_user,
+    context = {'user':user_name, "NC":str(len(qr_codes_list)), "NE":str(len(user_events)), "purchased":events_with_purchased_qr_count, 'tp':total_tickets_purchased,
                'available':available_codes_count,'used':total_qr_used_by_user, 'recycle':total_qr_recycled_by_user,
                'form': form}
     return render(request, template, context)

@@ -233,7 +233,7 @@
           <div class="col col-stats ms-3 ms-sm-0">
             <div class="numbers">
               <p class="card-category">Purchased</p>
-              <h4 class="card-title">{{tp}}</h4>
+              <h4 class="card-title">{{available}}</h4>
             </div>
           </div>
         </div>
@@ -343,37 +343,6 @@
             </div>
           </div>
 
-
-            <!-- <div class="table-responsive">
-              <table
-                id="add-row"
-                class="display table table-striped table-hover"
-              >
-                <thead>
-                  <tr>
-                    <th>Name of event</th>
-                    <th># of QR codes</th>
-                    <th># of QR purchased</th>
-                    <th>Exportar QR</th>
-                  </tr>
-                </thead>
-               
-                <tbody>
-                  {% for event in purchased %}
-                  <tr>
-                    <td>{{event.name}} </td>
-                    <td>{{event.total_qr_count}}</td>
-                    <td>{{event.purchased_qr_count}}</td>
-                    <td>
-                      <a href="{% url 'dashboard:export_qr_codes' event.id %}" class="btn btn-sm btn-outline-primary">
-                        Descargar Excel
-                      </a>
-                    </td>
-                  </tr>
-                  {% endfor %}
-                </tbody>
-              </table>
-            </div> -->
           </div>
         </div>
       </div> 
