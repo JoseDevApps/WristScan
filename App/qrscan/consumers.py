@@ -14,47 +14,64 @@ class QRConsumer(AsyncWebsocketConsumer):
         pass
 
     async def receive(self, text_data):
-        # Receive QR code from the WebSocket
-        text_data_json = json.loads(text_data)
-        print(text_data_json.get('eventid'))
-        qr_code = text_data_json.get('qr_code')
-        eventid = text_data_json.get('eventid')
-        # report##########
-        action = text_data_json.get('action')
-        if action == 'fetch_report' and eventid:
-            report = await self.fetch_report(eventid)
+        try: 
+            # Receive QR code from the WebSocket
+            text_data_json = json.loads(text_data)
+            print(text_data_json.get('eventid'))
+            qr_code = text_data_json.get('qr_code')
+            eventid = text_data_json.get('eventid')
+            # report##########
+            action = text_data_json.get('action')
+            if action == 'fetch_report' and eventid:
+                report = await self.fetch_report(eventid)
+                await self.send(text_data=json.dumps({
+                    'action': 'report',
+                    'report': report
+                }))
+                return
+            #######################
+            # Process the QR code (e.g., validate it)
+            # You can also interact with the database or perform any task here.
+            if not qr_code or not eventid:
+                # if missing, just send an error message but keep the socket open
+                await self.send(text_data=json.dumps({
+                    'action': 'error',
+                    'message': 'Missing qr_code or eventid'
+                }))
+                return
+            
+            print(qr_code['decodedText'])
+            if qr_code:
+                # Check if the QR code already exists in the database
+                existing_qr = await self.query_qr_code(qr_code,eventid)
+                print(existing_qr)
+                if existing_qr is not None:
+                    if existing_qr[7]=='nuevo':
+                    # If QR code exists, send a response back that it's already processed
+                        response_message = f'APROVADO'
+                    if existing_qr[7]=='concedido':
+                        date = datetime.now(timezone.utc).astimezone(timezone(timedelta(hours=-4))) - existing_qr[8].astimezone(timezone(timedelta(hours=-4)))
+                        print(date)
+                        hours, remainder = divmod(date.total_seconds(), 3600)
+                        minutes, _ = divmod(remainder, 60)
+                        response_message = f'DUPLICADO - escaneado hace:\n{hours} horas y {minutes} minutos'
+
+                else:
+                    response_message = "DENEGADO"
+
+            # Send response back to the WebSocket client
             await self.send(text_data=json.dumps({
-                'action': 'report',
-                'report': report
+                'message': response_message
             }))
-            return
-        #######################
-        # Process the QR code (e.g., validate it)
-        # You can also interact with the database or perform any task here.
-        print(qr_code['decodedText'])
-        if qr_code:
-            # Check if the QR code already exists in the database
-            existing_qr = await self.query_qr_code(qr_code,eventid)
-            print(existing_qr)
-            if existing_qr is not None:
-                if existing_qr[7]=='nuevo':
-                # If QR code exists, send a response back that it's already processed
-                    response_message = f'APROVADO'
-                if existing_qr[7]=='concedido':
-                    date = datetime.now(timezone.utc).astimezone(timezone(timedelta(hours=-4))) - existing_qr[8].astimezone(timezone(timedelta(hours=-4)))
-                    print(date)
-                    hours, remainder = divmod(date.total_seconds(), 3600)
-                    minutes, _ = divmod(remainder, 60)
-                    response_message = f'DUPLICADO - escaneado hace:\n{hours} horas y {minutes} minutos'
 
-            else:
-                response_message = "DENEGADO"
-
-        # Send response back to the WebSocket client
-        await self.send(text_data=json.dumps({
-            # 'message': f'QR code {qr_code} processed successfully!'
-            'message': response_message
-        }))
+        except Exception as e:
+            # catch *any* error, send it back as a WS message, but do NOT close the socket
+            await self.send(text_data=json.dumps({
+                'action': 'error',
+                'message': str(e)
+            }))
+            # optionally log:
+            print("WebSocket error:", e)
     @sync_to_async
     def query_qr_code(self, qr_code, eventid):
         with connection.cursor() as cursor:
