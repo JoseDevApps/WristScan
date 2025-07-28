@@ -233,6 +233,34 @@
     <div id="qr-reader" style="width: 500px;"></div>
     <div id="qr-reader-results"></div>
 
+    <!-- Botón para abrir el modal de reporte -->
+    <div class="text-end my-3">
+      <button id="openReportBtn" class="btn btn-info">
+        View scan report
+      </button>
+    </div>
+
+    <!-- Modal de Reporte -->
+    <div id="reportModal" class="modal">
+      <div class="modal-content">
+        <span class="close-report">&times;</span>
+        <h2>Reporte de escaneos</h2>
+
+        <!-- Tabla de los últimos 5 escaneos -->
+        <table id="reportTable" class="table table-sm mt-3">
+          <thead>
+            <tr><th>QR Data</th><th>Fecha de escaneo</th></tr>
+          </thead>
+          <tbody>
+            <!-- Se llenará por JS -->
+          </tbody>
+        </table>
+
+        <!-- Gráfico de estado -->
+        <canvas id="statusChart" width="300" height="300" class="mt-4"></canvas>
+      </div>
+    </div>
+
     <!-- Modal HTML -->
     <div id="qrModal" class="modal">
         <div class="modal-content">
@@ -252,6 +280,10 @@
     
   </div>
 
+
+  <!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
   <script>
     // get request:
     
@@ -269,9 +301,54 @@
     socket.onopen = function(event) {
         console.log('WebSocket connection opened.');
         isSocketOpen = true;
+        fetchReport();
     };
+    // Re-fetch si cambias de evento mientras el modal está abierto
+      document.getElementById('id_event').addEventListener('change', () => {
+        if (reportModal.style.display === 'block') {
+          fetchReport();
+        }
+      });
+
+    function fetchReport(){
+      const sel = document.getElementById('id_event');
+      if(isSocketOpen && sel.value){
+        socket.send(JSON.stringify({
+          action: 'fetch_report',
+          eventid: sel.value
+        }));
+      }
+    }
 
     socket.onmessage = function(event) {
+
+        const msg = JSON.parse(event.data);
+
+        if (msg.action === 'report') {
+          // 1) Actualizar tabla
+          const tbody = document.querySelector('#reportTable tbody');
+          tbody.innerHTML = '';
+          msg.report.last5.forEach(item => {
+            const dt = new Date(item.updated_at).toLocaleString();
+            tbody.insertAdjacentHTML('beforeend',
+              `<tr><td>${item.data}</td><td>${dt}</td></tr>`
+            );
+          });
+
+          // 2) Actualizar gráfico
+          const counts = msg.report.counts;
+          if (window._statusChart) { window._statusChart.destroy(); }
+          const ctx = document.getElementById('statusChart').getContext('2d');
+          window._statusChart = new Chart(ctx, {
+            type: 'pie',
+            data: {
+              labels: ['Nuevo','Concedido'],
+              datasets: [{ data: [counts.nuevo, counts.concedido] }]
+            },
+            options: { responsive: true }
+          });
+        }
+
         const data = JSON.parse(event.data);
         console.log('Message from server:', data.message);
         let select = document.getElementById('id_event');

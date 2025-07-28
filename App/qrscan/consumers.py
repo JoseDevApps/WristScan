@@ -3,7 +3,7 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from asgiref.sync import sync_to_async
 from django.db import connection
 from datetime import datetime, timezone, timedelta
-
+from qrcodes.models import QRCode, Event
 class QRConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         # Accept the WebSocket connection
@@ -19,6 +19,16 @@ class QRConsumer(AsyncWebsocketConsumer):
         print(text_data_json.get('eventid'))
         qr_code = text_data_json.get('qr_code')
         eventid = text_data_json.get('eventid')
+        # report##########
+        action = text_data_json.get('action')
+        if action == 'fetch_report' and eventid:
+            report = await self.fetch_report(eventid)
+            await self.send(text_data=json.dumps({
+                'action': 'report',
+                'report': report
+            }))
+            return
+        #######################
         # Process the QR code (e.g., validate it)
         # You can also interact with the database or perform any task here.
         print(qr_code['decodedText'])
@@ -76,3 +86,24 @@ class QRConsumer(AsyncWebsocketConsumer):
                 return result2
             
         return None
+    
+    @sync_to_async
+    def fetch_report(self, eventid):
+        # Last 5 conceded
+        last5 = list(
+            QRCode.objects
+                  .filter(event_fk__id=eventid, status_scan='concedido')
+                  .order_by('-updated_at')
+                  .values('data', 'updated_at')[:5]
+        )
+        # Counts
+        total = QRCode.objects.filter(event_fk__id=eventid, status_scan__in=['nuevo','concedido']).count()
+        conceded = QRCode.objects.filter(event_fk__id=eventid, status_scan='concedido').count()
+        nuevo = total - conceded
+        return {
+            'last5': [
+                {'data': r['data'], 'updated_at': r['updated_at'].isoformat()}
+                for r in last5
+            ],
+            'counts': {'nuevo': nuevo, 'concedido': conceded}
+        }
