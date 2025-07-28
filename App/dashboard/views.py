@@ -30,6 +30,7 @@ from .forms import UserEmailForm, ShareQRCodeForm, EventUpdateForm,UpdateQRCodes
 from .forms import MyPostForm, EventSelectorForm, InviteForm  # Este es tu formulario definido
 from .forms import EventRecycleForm
 from django.contrib.auth import logout
+from fpdf import FPDF
 
 def force_logout_view(request):
     logout(request)
@@ -64,6 +65,31 @@ def create_temp_file(uploaded_file):
     print(f"✅ Temporary file created: {temp_file.name}")
 
     return temp_file
+################################################
+#   Compartir pdf
+################################################
+
+@login_required
+def download_available_qr_pdf(request, event_id):
+    # 1️⃣ Load the event and its available QR codes
+    event = get_object_or_404(Event, id=event_id, created_by=request.user)
+    available_qrs = event.qr_codes.filter(status_purchased='available')
+    if not available_qrs.exists():
+        return HttpResponse("No available QR codes to export.", status=404)
+
+    # 2️⃣ Create an 8×8 cm PDF
+    pdf = FPDF(unit='cm', format=(8, 8))
+    for qr in available_qrs:
+        pdf.add_page()
+        # Draw the QR image to fill the full 8×8 cm page
+        pdf.image(qr.image.path, x=0, y=0, w=8, h=8)
+
+    # 3️⃣ Return the PDF as a download
+    pdf_bytes = pdf.output(dest='S').encode('latin1')
+    response = HttpResponse(pdf_bytes, content_type='application/pdf')
+    filename = f"qr_available_{event.name}.pdf"
+    response['Content-Disposition'] = f'attachment; filename="{filename}"'
+    return response
 
 ################################################
 #   Compartir QR

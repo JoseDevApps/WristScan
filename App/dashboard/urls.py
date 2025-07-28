@@ -18,6 +18,7 @@ urlpatterns = [
     path('update_user_email/<int:user_id>/', views.update_user_email, name='update_user_email'),
     path('update_event/<int:pk>/', views.updatedb, name='update_event'),
     path('event/<int:event_id>/download_qr_zip/', views.download_qr_zip, name='download_qr_zip'),
+    path('export_qr_codes_pdf/<int:event_id>/', views.download_available_qr_pdf, name='export_qr_codes_pdf'),
     path('share', views.share_qr_codes, name="share"),
     path('tables', views.listdb, name="tables"),
     path("events/<int:event_id>/invite/", views.invite_user, name="invite_user"),
