@@ -274,10 +274,26 @@ def qrgen(request):
 #   Pagina de QR Escaner
 ################################################
 def qrscan(request):
-    user_name = request.user
-    form = EventSelectorForm(user=request.user)
-    websocket_url = 'wss://app.manillasbolivia.com/ws/qr/'  # You can dynamically set this URL
-    return render(request, 'dashboard/qrscan.html', {'websocket_url': websocket_url, 'user':user_name,'form':form})
+    # user_name = request.user
+    # form = EventSelectorForm(user=request.user)
+    # websocket_url = 'wss://app.manillasbolivia.com/ws/qr/'  # You can dynamically set this URL
+    # return render(request, 'dashboard/qrscan.html', {'websocket_url': websocket_url, 'user':user_name,'form':form})
+    user = request.user
+
+    # Si el usuario tiene eventos como monitor, le pasamos solo esos
+    monitored = user.monitored_events.all()
+    if monitored.exists():
+        form = EventSelectorForm(events=monitored)
+    else:
+        # Comprador: seguimos con la lógica original
+        form = EventSelectorForm(user=user)
+
+    websocket_url = 'wss://app.manillasbolivia.com/ws/qr/'
+    return render(request, 'dashboard/qrscan.html', {
+        'websocket_url': websocket_url,
+        'user': user,
+        'form': form
+    }) 
 ################################################
 #   Pagina compartir evento
 ################################################

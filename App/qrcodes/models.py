@@ -101,7 +101,13 @@ class Event(models.Model):
     qr_codes = models.ManyToManyField("QRCode", blank=True)
     qr_code_count = models.PositiveIntegerField(default=1)
     image = models.ImageField(upload_to="qrmask/", blank=True, null=True)
-
+    monitors = models.ManyToManyField(
+        settings.AUTH_USER_MODEL,
+        through='EventRole',
+        through_fields=('event', 'user'),
+        related_name='monitored_events',
+        blank=True,
+    )
     def update_qr_codes(self, new_total_qr_count):
         """Updates an event with more QR codes if needed."""
         if not self.image:

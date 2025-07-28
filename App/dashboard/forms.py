@@ -93,12 +93,7 @@ class EventSelectorForm(forms.Form):
         empty_label="Choose one of your events...",
     )
 
-    # def __init__(self, *args, **kwargs):
-    #     user = kwargs.pop('user', None)  # extrae el usuario
-    #     super().__init__(*args, **kwargs)
 
-    #     if user:
-    #         self.fields['event'].queryset = Event.objects.filter(created_by=user).order_by('-date')
     def __init__(self, *args, user=None, events=None, **kwargs):
         super().__init__(*args, **kwargs)
         # Si llega lista de eventos (invitado), limitémosla:
