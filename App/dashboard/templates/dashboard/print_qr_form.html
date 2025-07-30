@@ -188,10 +188,11 @@
   <!--  Tablas -->
    <!-- **************** -->
 
-  <div class="container py-4">
+<div class="container py-4">
   <h2>Print QR Codes for “{{ event.name }}”</h2>
   <p>Available: <strong>{{ available_count }}</strong> QR codes</p>
-  <form method="post">
+
+  <form id="printForm" method="post">
     {% csrf_token %}
     <div class="mb-3">
       {{ form.quantity.label_tag }}
@@ -201,11 +202,10 @@
         <div class="text-danger">{{ error }}</div>
       {% endfor %}
     </div>
-    <button type="submit" class="btn btn-success">Generate PDF & Mark Purchased</button>
-    <a href="{% url 'dashboard:tables' %}" class="btn btn-secondary">Cancel</a>
+    <button type="submit" class="btn btn-success">Generate & Download PDF</button>
+    <a href="{% url 'dashboard:inicio' %}" class="btn btn-secondary">Cancel</a>
   </form>
 </div>
-  
 
 
   </div>
@@ -213,21 +213,24 @@
 <!-- SCRIPTS DE USUARIO -->
 
 <script>
-  document.addEventListener("DOMContentLoaded", function () {
-      const spinner = document.getElementById("spinner");
+document.getElementById('printForm').addEventListener('submit', function(e) {
+  e.preventDefault();
 
-      document.querySelectorAll("form").forEach(form => {
-          form.addEventListener("submit", function () {
-              spinner.style.display = "block";
-          });
-      });
+  const qty = document.getElementById('id_quantity').value;
+  const eventId = "{{ event.id }}";
+  const downloadUrl = "{% url 'dashboard:download_available_qr_pdf' event.id %}" + "?quantity=" + qty;
 
-      document.querySelectorAll("a").forEach(link => {
-          link.addEventListener("click", function () {
-              spinner.style.display = "block";
-          });
-      });
-  });
+  // 1) Trigger the PDF download via hidden iframe
+  let iframe = document.createElement('iframe');
+  iframe.style.display = 'none';
+  iframe.src = downloadUrl;
+  document.body.appendChild(iframe);
+
+  // 2) After a short delay, redirect to inicio
+  setTimeout(function() {
+    window.location = "{% url 'dashboard:inicio' %}";
+  }, 500);
+});
 </script>
 
 <script>
