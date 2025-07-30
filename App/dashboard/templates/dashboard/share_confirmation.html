@@ -24,7 +24,7 @@
                     <h1>Thank You !</h1>
                     <p>Successfully shared {{ codes_shared|length }} QR codes for the event "{{ event.name }}" with {{ recipient_email }}.</p>
                     <p>Remaining available QR codes for this event: {{ remaining_codes }}.</p>
-                    <form action="{% url 'dashboard:inicio' %}" method="POST">
+                    <form action="{% url 'dashboard:inicio' %}" method="GET">
                         {% csrf_token %}
                         <button type="submit" class="btn btn-primary w-100">Back Home</button>
                     </form>
