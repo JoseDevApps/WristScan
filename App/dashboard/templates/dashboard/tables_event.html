@@ -283,6 +283,11 @@
                       </a>
                     </li>
                     <li>
+                      <a class="dropdown-item" href="{% url 'dashboard:export_qr_codes' qrcode.id %}">
+                        <i class="fas fa-envelope me-2"></i> Share excel
+                      </a>
+                    </li>
+                    <li>
                       <a class="dropdown-item" href="{% url 'dashboard:update_event' qrcode.id %}">
                         <i class="fas fa-pen me-2"></i> Edit Event
                       </a>
