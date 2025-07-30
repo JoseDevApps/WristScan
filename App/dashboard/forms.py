@@ -7,15 +7,11 @@ class UserEmailForm(forms.ModelForm):
         fields = ['user_email']
 
 class ShareQRCodeForm(forms.Form):
-    event = forms.ModelChoiceField(queryset=Event.objects.none(), label="Select Event")
     recipient_email = forms.EmailField(label="Recipient Email")
-    number_of_codes = forms.IntegerField(label="Number of QR Codes to Share", min_value=1)
-
-    def __init__(self, *args, **kwargs):
-        user = kwargs.pop('user', None)
-        super().__init__(*args, **kwargs)
-        if user:
-            self.fields['event'].queryset = Event.objects.filter(created_by=user)
+    number_of_codes   = forms.IntegerField(
+        label="Number of QR Codes to Share",
+        min_value=1
+    )
 
 class EventUpdateForm(forms.Form):
     class Meta:

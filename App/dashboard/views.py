@@ -157,65 +157,132 @@ def download_available_qr_pdf(request, event_id):
 ################################################
 #   Compartir QR
 ################################################
-def share_qr_codes(request):
-    if not request.user.is_authenticated:
-        return redirect('login')
+# def share_qr_codes(request):
+#     if not request.user.is_authenticated:
+#         return redirect('login')
+
+#     if request.method == 'POST':
+#         form = ShareQRCodeForm(request.POST, user=request.user)
+#         if form.is_valid():
+#             event = form.cleaned_data['event']
+#             recipient_email = form.cleaned_data['recipient_email']
+#             number_of_codes = form.cleaned_data['number_of_codes']
+
+#             available_qr_codes = event.qr_codes.filter(status_purchased='available')[:number_of_codes]
+#             available_count = available_qr_codes.count()
+
+#             if available_count < number_of_codes:
+#                 form.add_error('number_of_codes', f'Only {available_count} QR codes are available.')
+#             else:
+#                 zip_buffer = BytesIO()
+#                 with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zip_file:
+#                     codes_shared = []
+#                     for qr_code in available_qr_codes:
+#                         print('start updating')
+#                         qr_code.status_purchased = 'purchased'
+#                         qr_code.user_email = recipient_email
+#                         qr_code.save()
+#                         qr_code_path = os.path.join(settings.MEDIA_ROOT, 'qrcodes/', f"qr_{qr_code.id}_.png")
+#                         print(qr_code_path)
+#                         print(qr_code.id)
+#                         if os.path.exists(qr_code_path):
+#                             print("zip files")
+#                             print(qr_code.data)
+#                             zip_file.write(qr_code_path, f"qr_{qr_code.id}_.png")
+#                         codes_shared.append(qr_code.data)
+#                 zip_buffer.seek(0)
+#                 # Send email to the recipient
+#                 subject = f"QR Codes for Event: {event.name}"
+#                 message = f"You have been granted access to the event: {event.name}\n\n" \
+#                           f"Attached are your {number_of_codes} QR codes."
+
+#                 email = EmailMessage(
+#                     subject,
+#                     message,
+#                     'minusmaya@zohomail.com',
+#                     [recipient_email]
+#                 )
+#                 email.attach(f"{event.name}_QR_Codes.zip", zip_buffer.getvalue(), "application/zip")
+#                 email.send()
+
+#                 return render(request, 'dashboard/share_confirmation.html', {
+#                     'event': event,
+#                     'recipient_email': recipient_email,
+#                     'codes_shared': codes_shared,
+#                     'remaining_codes': event.qr_codes.filter(status_purchased='available').count()
+#                 })
+#     else:
+#         form = ShareQRCodeForm(user=request.user)
+
+#     return render(request, 'dashboard/shareqr.html', {'form': form})
+
+def share_qr_codes(request, event_id):
+    # 🔒 only owner can share
+    event = get_object_or_404(Event, id=event_id, created_by=request.user)
 
     if request.method == 'POST':
-        form = ShareQRCodeForm(request.POST, user=request.user)
+        form = ShareQRCodeForm(request.POST)
         if form.is_valid():
-            event = form.cleaned_data['event']
             recipient_email = form.cleaned_data['recipient_email']
             number_of_codes = form.cleaned_data['number_of_codes']
 
-            available_qr_codes = event.qr_codes.filter(status_purchased='available')[:number_of_codes]
-            available_count = available_qr_codes.count()
-
-            if available_count < number_of_codes:
-                form.add_error('number_of_codes', f'Only {available_count} QR codes are available.')
+            # grab only “available” codes
+            available = event.qr_codes.filter(status_purchased='available')[:number_of_codes]
+            if available.count() < number_of_codes:
+                form.add_error('number_of_codes',
+                    f'Only {available.count()} QR codes are available.'
+                )
             else:
+                # build the ZIP in memory
                 zip_buffer = BytesIO()
-                with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zip_file:
+                with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zf:
                     codes_shared = []
-                    for qr_code in available_qr_codes:
-                        print('start updating')
-                        qr_code.status_purchased = 'purchased'
-                        qr_code.user_email = recipient_email
-                        qr_code.save()
-                        qr_code_path = os.path.join(settings.MEDIA_ROOT, 'qrcodes/', f"qr_{qr_code.id}_.png")
-                        print(qr_code_path)
-                        print(qr_code.id)
-                        if os.path.exists(qr_code_path):
-                            print("zip files")
-                            print(qr_code.data)
-                            zip_file.write(qr_code_path, f"qr_{qr_code.id}_.png")
-                        codes_shared.append(qr_code.data)
-                zip_buffer.seek(0)
-                # Send email to the recipient
-                subject = f"QR Codes for Event: {event.name}"
-                message = f"You have been granted access to the event: {event.name}\n\n" \
-                          f"Attached are your {number_of_codes} QR codes."
+                    for qr in available:
+                        qr.status_purchased = 'purchased'
+                        qr.user_email = recipient_email
+                        qr.save()
 
+                        # write the image file into the zip
+                        path = os.path.join(settings.MEDIA_ROOT,
+                                            'qrcodes',
+                                            f"qr_{qr.id}_.png")
+                        if os.path.exists(path):
+                            zf.write(path, os.path.basename(path))
+                        codes_shared.append(qr.data)
+
+                zip_buffer.seek(0)
+
+                # send email
+                subject = f"QR Codes for Event: {event.name}"
+                message = (
+                    f"You have been granted access to the event: {event.name}\n\n"
+                    f"Attached are your {number_of_codes} QR codes."
+                )
                 email = EmailMessage(
-                    subject,
-                    message,
-                    'minusmaya@zohomail.com',
+                    subject, message,
+                    settings.DEFAULT_FROM_EMAIL,
                     [recipient_email]
                 )
-                email.attach(f"{event.name}_QR_Codes.zip", zip_buffer.getvalue(), "application/zip")
+                email.attach(f"{event.name}_QR_Codes.zip",
+                             zip_buffer.getvalue(),
+                             "application/zip")
                 email.send()
 
                 return render(request, 'dashboard/share_confirmation.html', {
-                    'event': event,
+                    'event':          event,
                     'recipient_email': recipient_email,
-                    'codes_shared': codes_shared,
-                    'remaining_codes': event.qr_codes.filter(status_purchased='available').count()
+                    'codes_shared':    codes_shared,
+                    'remaining_codes': event.qr_codes.filter(
+                                           status_purchased='available'
+                                       ).count()
                 })
     else:
-        form = ShareQRCodeForm(user=request.user)
+        form = ShareQRCodeForm()
 
-    return render(request, 'dashboard/shareqr.html', {'form': form})
-
+    return render(request, 'dashboard/shareqr.html', {
+        'event': event,
+        'form':  form
+    })
 ################################################
 #   Pagina de bienvenida report
 ################################################
