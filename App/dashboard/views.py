@@ -28,6 +28,7 @@ import sys
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from .forms import UserEmailForm, ShareQRCodeForm, EventUpdateForm,UpdateQRCodesForm, TicketAssignmentForm, AutoTicketAssignmentForm
 from .forms import MyPostForm, EventSelectorForm, InviteForm  # Este es tu formulario definido
+from .forms import PrintQRForm
 from .forms import EventRecycleForm
 from django.contrib.auth import logout
 from fpdf import FPDF
@@ -71,25 +72,66 @@ def create_temp_file(uploaded_file):
 
 @login_required
 def download_available_qr_pdf(request, event_id):
-    # 1️⃣ Load the event and its available QR codes
+    # # 1️⃣ Load the event and its available QR codes
+    # event = get_object_or_404(Event, id=event_id, created_by=request.user)
+    # available_qrs = event.qr_codes.filter(status_purchased='available')
+    # if not available_qrs.exists():
+    #     return HttpResponse("No available QR codes to export.", status=404)
+
+    # # 2️⃣ Create an 8×8 cm PDF
+    # pdf = FPDF(unit='cm', format=(8, 8))
+    # for qr in available_qrs:
+    #     pdf.add_page()
+    #     # Draw the QR image to fill the full 8×8 cm page
+    #     pdf.image(qr.image.path, x=0, y=0, w=8, h=8)
+
+    # # 3️⃣ Return the PDF as a download
+    # pdf_bytes = pdf.output(dest='S').encode('latin1')
+    # response = HttpResponse(pdf_bytes, content_type='application/pdf')
+    # filename = f"qr_available_{event.name}.pdf"
+    # response['Content-Disposition'] = f'attachment; filename="{filename}"'
+    # return response
+    # 1️⃣ Cargar evento y sus QR disponibles
     event = get_object_or_404(Event, id=event_id, created_by=request.user)
-    available_qrs = event.qr_codes.filter(status_purchased='available')
-    if not available_qrs.exists():
+    available_qs = event.qr_codes.filter(status_purchased='available')
+    available_count = available_qs.count()
+
+    if available_count == 0:
         return HttpResponse("No available QR codes to export.", status=404)
 
-    # 2️⃣ Create an 8×8 cm PDF
-    pdf = FPDF(unit='cm', format=(8, 8))
-    for qr in available_qrs:
-        pdf.add_page()
-        # Draw the QR image to fill the full 8×8 cm page
-        pdf.image(qr.image.path, x=0, y=0, w=8, h=8)
+    if request.method == 'POST':
+        form = PrintQRForm(available_count, request.POST)
+        if form.is_valid():
+            qty = form.cleaned_data['quantity']
+            # Seleccionar los primeros `qty` códigos disponibles
+            qrs_to_print = list(available_qs[:qty])
 
-    # 3️⃣ Return the PDF as a download
-    pdf_bytes = pdf.output(dest='S').encode('latin1')
-    response = HttpResponse(pdf_bytes, content_type='application/pdf')
-    filename = f"qr_available_{event.name}.pdf"
-    response['Content-Disposition'] = f'attachment; filename="{filename}"'
-    return response
+            # 2️⃣ Generar un PDF de páginas 8×8 cm
+            pdf = FPDF(unit='cm', format=(8, 8))
+            for qr in qrs_to_print:
+                pdf.add_page()
+                pdf.image(qr.image.path, x=0, y=0, w=8, h=8)
+
+            # 3️⃣ Marcar como “purchased”
+            QRCode.objects.filter(id__in=[qr.id for qr in qrs_to_print]) \
+                            .update(status_purchased='purchased')
+
+            # 4️⃣ Devolver PDF
+            pdf_bytes = pdf.output(dest='S').encode('latin1')
+            filename = f"qr_print_{event.name}.pdf"
+            response = HttpResponse(pdf_bytes, content_type='application/pdf')
+            response['Content-Disposition'] = f'attachment; filename="{filename}"'
+            return response
+
+    else:
+        # GET: mostrar formulario con el valor inicial igual al total disponible
+        form = PrintQRForm(available_count, initial={'quantity': available_count})
+
+    return render(request, 'dashboard/print_qr_form.html', {
+        'event': event,
+        'form': form,
+        'available_count': available_count,
+    })
 
 ################################################
 #   Compartir QR

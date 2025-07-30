@@ -166,3 +166,18 @@ class EventRecycleForm(forms.Form):
                 self.fields['event'].initial = Event.objects.get(id=event_id, created_by=user)
             except Event.DoesNotExist:
                 pass
+
+
+class PrintQRForm(forms.Form):
+    quantity = forms.IntegerField(
+        label="How many QR codes to print",
+        min_value=1,
+        widget=forms.NumberInput(attrs={'class': 'form-control'})
+    )
+
+    def __init__(self, available_count, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Limitar el valor máximo al número de QR disponibles
+        self.fields['quantity'].max_value = available_count
+        self.fields['quantity'].widget.attrs.update({'max': available_count})
+        self.fields['quantity'].help_text = f"Available: {available_count}"
