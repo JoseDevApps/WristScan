@@ -218,7 +218,7 @@ document.getElementById('printForm').addEventListener('submit', function(e) {
 
   const qty = document.getElementById('id_quantity').value;
   const eventId = "{{ event.id }}";
-  const downloadUrl = "{% url 'dashboard:download_available_qr_pdf' event.id %}" + "?quantity=" + qty;
+  const downloadUrl = "{% url 'dashboard:export_qr_codes_pdf' event.id %}" + "?quantity=" + qty;
 
   // 1) Trigger the PDF download via hidden iframe
   let iframe = document.createElement('iframe');
