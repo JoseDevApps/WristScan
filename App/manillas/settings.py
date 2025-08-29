@@ -59,7 +59,6 @@ INSTALLED_APPS = [
     "payments",
     'channels',
     'qrscan',
-    "django.contrib.gis", ###
 ]
 
 MIDDLEWARE = [
