@@ -17,7 +17,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Ruta al directorio geoip
 GEOIP_PATH = BASE_DIR / "geoip"
 # Si usas la versión avanzada con proxies confiables:
-TRUSTED_PROXY_CIDRS = ["127.0.0.1/32", "10.0.0.0/8", "172.16.0.0/12"]
+TRUSTED_PROXY_CIDRS = ["127.0.0.1/32", "10.0.0.0/8", "172.16.0.0/12","82.180.132.0/23",]
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
@@ -68,7 +68,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "manillas.middleware.geoip_simple.GeoIPRealIPMiddleware",
+    "manillas.middleware.geoip_simple.geoip_trusted_headers",
  ]
 
 ROOT_URLCONF = "manillas.urls"
