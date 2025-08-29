@@ -68,7 +68,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "manillas.middleware.geoip_simple.geoip_trusted_headers",
+    "manillas.middleware.geoip_simple.TrustedGeoIPMiddleware",
  ]
 
 ROOT_URLCONF = "manillas.urls"
