@@ -777,3 +777,14 @@ class CancelView(TemplateView):
 def qr_app(request):
     template = 'dashboard/qrapp.html'
     return render(request, template, )
+
+
+################################################
+#   Geotest
+################################################
+def geo_test(request):
+    return JsonResponse({
+        "ip": request.META.get("REMOTE_ADDR"),
+        "country_code": getattr(request, "country_code", None),
+        "country_name": getattr(request, "country_name", None),
+    })

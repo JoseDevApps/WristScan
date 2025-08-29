@@ -14,7 +14,10 @@ from pathlib import Path
 import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
+# Ruta al directorio geoip
+GEOIP_PATH = BASE_DIR / "geoip"
+# Si usas la versión avanzada con proxies confiables:
+TRUSTED_PROXY_CIDRS = ["127.0.0.1/32", "10.0.0.0/8", "172.16.0.0/12"]
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
@@ -56,6 +59,7 @@ INSTALLED_APPS = [
     "payments",
     'channels',
     'qrscan',
+    "django.contrib.gis", ###
 ]
 
 MIDDLEWARE = [
@@ -66,7 +70,8 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-]
+    "manillasbolivia.middleware.geoip_simple.SimpleGeoIPMiddleware",
+ ]
 
 ROOT_URLCONF = "manillas.urls"
 

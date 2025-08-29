@@ -7,7 +7,7 @@ urlpatterns = [
     path('export_qr_summary/', views.export_qr_summary_to_excel, name="export_qr_summary"),
     # path('export_qr_codes/', views.export_qr_codes_to_excel, name="export_qr_codes"),
     path('export_qr_codes/<int:event_id>/', views.export_qr_codes_to_excel, name='export_qr_codes'),
-
+    path("geo-test/", views.geo_test, name="geo_test"),
     path('qrgen', views.qrgen, name="qrgen"),
     path('qrscan', views.qrscan, name="qrscan"),
     path('qrscan/invited/', views.qrscan_invited, name='qrscan_invited'),

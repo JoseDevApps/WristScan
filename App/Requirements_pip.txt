@@ -8,3 +8,4 @@ channels
 channels_redis
 openpyxl
 fpdf
+geoip2>=4.7.0
