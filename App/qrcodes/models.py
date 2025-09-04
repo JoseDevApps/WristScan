@@ -179,11 +179,31 @@ class QRCode(models.Model):
     status_purchased = models.CharField(max_length=200, default="available", choices=STATUS_CHOICES)
     status_recycled = models.CharField(max_length=200, default="available", choices=STATUS_RECYCLE)
     updated_at = models.DateTimeField(auto_now=True)
+    # Nuevo: control del banner superior
+    top_banner = models.ImageField(upload_to="ads/", blank=True, null=True,
+                                   help_text="Banner superior 720x120")
+    enable_top_banner = models.BooleanField(default=True,
+                                   help_text="Si está activo, se muestra el banner superior")
+
+    mask_banner = models.ImageField(upload_to="ads/", blank=True, null=True,
+                                    help_text="Banner máscara 720x1150 aprox")
+    footer_text = models.CharField(max_length=120, blank=True, default="",
+                                   help_text="Texto del footer")
+    footer_bg = models.CharField(max_length=7, blank=True, default="#111111")
+    footer_fg = models.CharField(max_length=7, blank=True, default="#FFFFFF")
+
     
     def process_qr_with_background(self, event_image):
         """Genera el QR en memoria y lo sobrepone en la imagen del evento."""
         if not self.id:
             super().save()  # Ensure the instance has an ID before proceeding
+
+        # --- Constantes ---
+        CANVAS_W, CANVAS_H = 720, 1330
+        TOP_H = 120
+        FOOTER_H = 60
+        QR_SIZE = 330
+        
         # 🔹 1️⃣ Generar QR en memoria
         qr = qrcode.make(self.data)
         qr_buffer = BytesIO()

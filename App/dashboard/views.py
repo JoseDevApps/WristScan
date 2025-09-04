@@ -778,7 +778,12 @@ def qr_app(request):
     template = 'dashboard/qrapp.html'
     return render(request, template, )
 
-
+################################################
+#   Pagina de Terminos y condiciones APK 2
+################################################
+def qr_app2(request):
+    template = 'dashboard/qrapp2.html'
+    return render(request, template, )
 ################################################
 #   Geotest
 ################################################

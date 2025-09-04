@@ -1,0 +1,148 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Privacy Policy - MBcheck</title>
+  <style>
+    :root { color-scheme: light; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.6;
+      margin: 0;
+      background-color: #f9f9f9;
+      color: #333;
+    }
+    header {
+      background-color: #07C5F4;
+      color: white;
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+    header img { height: 40px; }
+    header h1 { margin: 0; font-size: 1.5rem; }
+    .container {
+      max-width: 900px;
+      margin: 2rem auto;
+      padding: 2rem;
+      background-color: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+    h2 { color: #07C5F4; margin-top: 2rem; }
+    ul { padding-left: 1.5rem; }
+    .meta { font-size: 0.95rem; color: #666; margin-top: 0.5rem; }
+    footer {
+      background-color: #07C5F4;
+      color: white;
+      text-align: center;
+      padding: 1rem;
+      margin-top: 2rem;
+    }
+    a { color: #07C5F4; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+  <header role="banner">
+    <!-- Ajusta el path del logo si corresponde -->
+    <img src="{% static 'dashboard/img/MBcheck.png' %}" alt="MBcheck Logo" />
+    <h1>MBcheck Privacy Policy</h1>
+  </header>
+
+  <main class="container" role="main">
+    <p class="meta"><strong>Effective date:</strong> 2025-09-03 • <strong>Last updated:</strong> 2025-09-03</p>
+
+    <h2>1. Introduction</h2>
+    <p>
+      This Privacy Policy for <strong>MBcheck</strong> (the QR code verification application) explains how we collect,
+      use, disclose, and protect information when you use our services, including our website at
+      <a href="https://uniqbo.com">uniqbo.com</a>.
+    </p>
+
+    <h2>2. Information We Collect</h2>
+    <p>We collect two categories of information from users:</p>
+    <ul>
+      <li><strong>Personally Identifiable Information (PII):</strong> name, email address, telephone number, postal address, billing details, and any other data you provide.</li>
+      <li><strong>Non-Personal Information:</strong> device type, operating system, IP address, timestamps of use, and QR codes used (including hashed or tokenized identifiers where applicable).</li>
+    </ul>
+
+    <h2>3. Use of Data</h2>
+    <p>We use personal data for the following purposes:</p>
+    <ul>
+      <li>To personalize your experience and respond to inquiries.</li>
+      <li>To provide, maintain, and improve the app’s functionality and security.</li>
+      <li>To send service updates, announcements, and—where permitted—promotions and news via email.</li>
+      <li>To perform analytics and usage statistics (in aggregate where feasible).</li>
+      <li>To comply with applicable laws and regulations.</li>
+    </ul>
+    <p><em>Permissions are used strictly to enable application features; we do not sell personal data.</em></p>
+
+    <h2>4. Disclosure of Data</h2>
+    <p>We do not disclose personal data except:</p>
+    <ul>
+      <li>With your explicit consent.</li>
+      <li>When required by law, court order, or legal process.</li>
+      <li>To protect the rights, property, or safety of MBcheck, our users, or the public.</li>
+      <li>With trusted service providers under confidentiality and data processing agreements.</li>
+      <li>When requested by competent authorities, in accordance with due process.</li>
+    </ul>
+
+    <h2>5. Security</h2>
+    <p>
+      We implement administrative, technical, and physical safeguards—such as strong passwords, encryption in transit and at rest where applicable, and firewalls—to protect personal data.
+      However, no method of transmission or storage is 100% secure.
+    </p>
+
+    <h2>6. Users’ Rights</h2>
+    <p>Subject to applicable law, users may:</p>
+    <ul>
+      <li>Access their personal data.</li>
+      <li>Rectify inaccuracies or update information.</li>
+      <li>Request deletion (erasure) of personal data.</li>
+      <li>Object to or restrict processing in certain situations.</li>
+      <li>Withdraw consent at any time where processing is based on consent.</li>
+    </ul>
+    <p>To exercise these rights, contact us using the details below.</p>
+
+    <h2>7. Minors</h2>
+    <p>
+      MBcheck is not intended for individuals under 13 years of age. If we learn that we have collected personal data from a child under 13,
+      we will delete such information promptly.
+    </p>
+
+    <h2>8. International Transfers</h2>
+    <p>
+      If personal data is transferred across borders, we take appropriate measures to ensure adequate protection consistent with applicable data protection laws.
+    </p>
+
+    <h2>9. Data Retention</h2>
+    <p>
+      We retain personal data only for as long as necessary to fulfill the purposes outlined in this policy or as required by law.
+      We then securely delete or anonymize the data.
+    </p>
+
+    <h2>10. Changes to this Privacy Policy</h2>
+    <p>
+      We may update this policy from time to time. Material changes will be communicated through in-app notices, email, or other appropriate channels.
+      The “Effective date” above reflects when the current version took effect.
+    </p>
+
+    <h2>11. Contact</h2>
+    <p>
+      For questions or requests regarding this Privacy Policy, contact us at
+      <a href="mailto:admin@uniqbo.com">admin@uniqbo.com</a> or call +591 78889899.
+    </p>
+  </main>
+
+  <footer role="contentinfo">
+    &copy; 2025 MBcheck | All Rights Reserved
+  </footer>
+
+</body>
+</html>
