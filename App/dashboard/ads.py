@@ -1,20 +1,8 @@
+# ads.py
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 from PIL import Image
-
-class Product(models.Model):
-    name = models.CharField(max_length=100)
-    price = models.IntegerField(default=0)  # cents
-    file = models.FileField(upload_to="product_files/", blank=True, null=True)
-    url = models.URLField()
-
-    def __str__(self):
-        return self.name
-    
-    def get_display_price(self):
-        return "{0:.0f}".format(self.price / 100)
-    
 
 TOP_BANNER_RECOMMENDED_W = 720
 TOP_BANNER_RECOMMENDED_H = 120
