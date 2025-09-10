@@ -128,10 +128,10 @@ class AutoTicketAssignmentForm(forms.ModelForm):
     re_render_now = forms.BooleanField(required=False, initial=False, label="Re-render ahora")
     country_code = forms.CharField(required=False, max_length=8, label="Country code (ej. BO)")
     country_name = forms.CharField(required=False, max_length=64, label="Country name (ej. Bolivia)")
-    valid_from   = forms.CharField(required=False, label="Valid from (UTC-4) YYYY-MM-DDTHH:MM:SS")
-    valid_until  = forms.CharField(required=False, label="Valid until (UTC-4) YYYY-MM-DDTHH:MM:SS")
-    grace_minutes = forms.IntegerField(required=False, min_value=0, initial=0, label="Grace minutes")
-    font_path    = forms.CharField(required=False, label="Fuente TTF opcional")
+    # valid_from   = forms.CharField(required=False, label="Valid from (UTC-4) YYYY-MM-DDTHH:MM:SS")
+    # valid_until  = forms.CharField(required=False, label="Valid until (UTC-4) YYYY-MM-DDTHH:MM:SS")
+    # grace_minutes = forms.IntegerField(required=False, min_value=0, initial=0, label="Grace minutes")
+    # font_path    = forms.CharField(required=False, label="Fuente TTF opcional")
 
     class Meta:
         model = TicketAssignment
