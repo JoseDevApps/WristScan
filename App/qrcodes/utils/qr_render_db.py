@@ -10,7 +10,7 @@ from PIL import Image, ImageDraw, ImageFont, ImageOps
 import qrcode
 
 from qrcodes.models import QRCode
-from ads.ads_selector import get_banner_for_country
+from dashboard.ads_selector import get_banner_for_country
 
 CANVAS_W, CANVAS_H = 720, 1330
 TOP_H = 120
