@@ -110,6 +110,29 @@ class InviteForm(forms.Form):
 class AutoTicketAssignmentForm(forms.ModelForm):
     quantity = forms.IntegerField(min_value=1, label="Number of QRs to assign")
 
+    # Nuevo: modo gratis con Ads
+    free_with_ads = forms.BooleanField(
+        required=False,
+        label="Crear gratis con publicidad",
+        help_text="Permite crear el evento aunque no tengas tickets disponibles."
+    )
+
+    # Nuevo: subir máscara central
+    mask_image = forms.ImageField(
+        required=False,
+        label="Máscara (720x1150)",
+        help_text="PNG/JPG. Se normaliza a 720x1150."
+    )
+
+    # Nuevo: re-render inmediato (limitado)
+    re_render_now = forms.BooleanField(required=False, initial=False, label="Re-render ahora")
+    country_code = forms.CharField(required=False, max_length=8, label="Country code (ej. BO)")
+    country_name = forms.CharField(required=False, max_length=64, label="Country name (ej. Bolivia)")
+    valid_from   = forms.CharField(required=False, label="Valid from (UTC-4) YYYY-MM-DDTHH:MM:SS")
+    valid_until  = forms.CharField(required=False, label="Valid until (UTC-4) YYYY-MM-DDTHH:MM:SS")
+    grace_minutes = forms.IntegerField(required=False, min_value=0, initial=0, label="Grace minutes")
+    font_path    = forms.CharField(required=False, label="Fuente TTF opcional")
+
     class Meta:
         model = TicketAssignment
         fields = ['event', 'quantity']
@@ -125,16 +148,42 @@ class AutoTicketAssignmentForm(forms.ModelForm):
         self.user = kwargs.pop('user', None)  # Pasaremos el user desde la vista
         super().__init__(*args, **kwargs)
 
-    def clean_quantity(self):
-        quantity = self.cleaned_data['quantity']
-        if self.user:
-            tickets = Ticket.objects.filter(user_name=self.user, is_paid=True)
-            total_unassigned = sum(t.unassigned_quantity() for t in tickets)
-            if quantity > total_unassigned:
-                raise forms.ValidationError(f"Tienes solo {total_unassigned} tickets disponibles.")
-        return quantity
-    
+    # def clean_quantity(self):
+    #     quantity = self.cleaned_data['quantity']
+    #     if self.user:
+    #         tickets = Ticket.objects.filter(user_name=self.user, is_paid=True)
+    #         total_unassigned = sum(t.unassigned_quantity() for t in tickets)
+    #         if quantity > total_unassigned:
+    #             raise forms.ValidationError(f"Tienes solo {total_unassigned} tickets disponibles.")
+    #     return quantity
+    def _get_user_id(self):
+        if hasattr(self.user, 'id'):
+            return self.user.id
+        return self.user
 
+    def clean_quantity(self):
+        qty = self.cleaned_data['quantity']
+        if self.cleaned_data.get('free_with_ads'):
+            return qty
+        uid = self._get_user_id()
+        if uid is not None:
+            tickets = Ticket.objects.filter(user_name=uid, is_paid=True)
+            total_unassigned = sum(t.unassigned_quantity() for t in tickets)
+            if qty > total_unassigned:
+                raise forms.ValidationError(f"Tienes solo {total_unassigned} tickets disponibles.")
+        return qty
+
+    def clean_mask_image(self):
+        f = self.cleaned_data.get('mask_image')
+        if not f:
+            return f
+        max_mb = 5
+        if hasattr(f, 'size') and f.size > max_mb * 1024 * 1024:
+            raise forms.ValidationError(f"La imagen excede {max_mb} MB.")
+        if hasattr(f, 'content_type') and f.content_type not in ('image/png', 'image/jpeg', 'image/jpg'):
+            raise forms.ValidationError("Formato no soportado. Usa PNG o JPG.")
+        return f
+    
 class EventRecycleForm(forms.Form):
     event = forms.ModelChoiceField(
         queryset=Event.objects.none(),

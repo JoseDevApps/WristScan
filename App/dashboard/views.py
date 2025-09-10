@@ -32,6 +32,13 @@ from .forms import PrintQRForm
 from .forms import EventRecycleForm
 from django.contrib.auth import logout
 from fpdf import FPDF
+from qrcodes.utils.event_mask import save_event_mask
+from qrcodes.utils.qr_render_db import compose_qr_from_db
+from qrcodes.utils.footer_presets import get_footer_preset
+from .ads_selector import get_banner_for_country
+from django.utils.timezone import localtime
+from .ads_selector import get_banner_for_country  # tu selector
+from django.utils import timezone
 
 def force_logout_view(request):
     logout(request)
@@ -485,34 +492,116 @@ def reciclar_qr_evento(request, id):
 ################################################
 #   Pagina de QR view events form db
 ################################################
+# @login_required
+# def listdb(request):
+#     template = 'dashboard/tables_event.html'
+#     user_name = request.user
+#     user_id = request.user.id
+#     if request.method == "POST":
+#         form = AutoTicketAssignmentForm(request.POST, user=request.user)
+#         event_name = request.POST['event']
+#         quantity_to_assign = int(request.POST['quantity'])
+#         # 1️⃣ Verificar si hay suficientes tickets disponibles
+#         tickets = Ticket.objects.filter(user_name=user_id, is_paid=True)
+#         total_unassigned = sum(t.unassigned_quantity() for t in tickets)
+#         print("Total>",total_unassigned)
+#         print("Asignado",quantity_to_assign)
+#         if total_unassigned < quantity_to_assign:
+#             messages.error(request, f"Tienes solo {total_unassigned} tickets no asignados. No se puede crear el evento.")
+#             # user_events = Event.objects.filter(created_by=user_id)
+#             user_events = Event.objects.filter(created_by=user_id).annotate(
+#                 recycled_count=Count(
+#                     'qr_codes',
+#                     filter=Q(qr_codes__status_recycled='recycled')
+#                 )
+#              )
+#             print(user_events)
+#             context = {'events': user_events, 'user':user_name,'form':form}
+#             return render(request, template, context)
+
+#         # 2️⃣ Crear imagen temporal en blanco
+#         image_save = Image.new('RGB', (300, 300), color='white')
+#         buffer = io.BytesIO()
+#         image_save.save(buffer, format="jpeg")
+#         buffer.seek(0)
+#         temp_image_file = InMemoryUploadedFile(
+#             buffer, None, "temp_image.png", "image/png", sys.getsizeof(buffer), None
+#         )
+
+#         # 3️⃣ Crear evento
+#         event = Event.objects.create(
+#             name=event_name,
+#             created_by=user_name,
+#             qr_code_count=quantity_to_assign,
+#             image=temp_image_file
+#         )
+
+#         # 4️⃣ Asignar a tickets disponibles
+#         remaining = quantity_to_assign
+#         for ticket in tickets:
+#             unassigned = ticket.unassigned_quantity()
+#             if unassigned > 0:
+#                 assign_now = min(remaining, unassigned)
+#                 TicketAssignment.objects.create(
+#                     ticket=ticket,
+#                     event=event.name,
+#                     quantity=assign_now,
+#                     event_fk=event
+#                 )
+#                 remaining -= assign_now
+#             if remaining == 0:
+#                 break
+
+#         # 5️⃣ Enviar códigos QR
+#         send_event_qr_codes.delay(event.id)
+
+#         messages.success(request, f"Se asignaron {quantity_to_assign} códigos QR al evento '{event.name}' correctamente.")
+#         return redirect('dashboard:inicio')
+#     else:
+#         form = AutoTicketAssignmentForm(user=user_id)
+#         # user_events = Event.objects.filter(created_by=user_id)
+#         user_events = Event.objects.filter(created_by=user_id).annotate(
+#             recycled_count=Count(
+#                 'qr_codes',
+#                 filter=Q(qr_codes__status_recycled='recycled')
+#             )
+#     )
+#         context = {'events': user_events, 'user':user_name,'form':form}
+#         return render(request, template, context)
+
 @login_required
 def listdb(request):
     template = 'dashboard/tables_event.html'
     user_name = request.user
     user_id = request.user.id
+
     if request.method == "POST":
-        form = AutoTicketAssignmentForm(request.POST, user=request.user)
-        event_name = request.POST['event']
-        quantity_to_assign = int(request.POST['quantity'])
-        # 1️⃣ Verificar si hay suficientes tickets disponibles
+        form = AutoTicketAssignmentForm(request.POST, request.FILES, user=request.user)
+        if not form.is_valid():
+            messages.error(request, "Formulario inválido.")
+            user_events = Event.objects.filter(created_by=user_id).annotate(
+                recycled_count=Count('qr_codes', filter=Q(qr_codes__status_recycled='recycled'))
+            )
+            return render(request, template, {'events': user_events, 'user': user_name, 'form': form})
+
+        event_name = form.cleaned_data['event']
+        quantity_to_assign = int(form.cleaned_data['quantity'])
+        free_with_ads = form.cleaned_data.get('free_with_ads') is True
+
+        # 1) verificar tickets
         tickets = Ticket.objects.filter(user_name=user_id, is_paid=True)
         total_unassigned = sum(t.unassigned_quantity() for t in tickets)
-        print("Total>",total_unassigned)
-        print("Asignado",quantity_to_assign)
-        if total_unassigned < quantity_to_assign:
-            messages.error(request, f"Tienes solo {total_unassigned} tickets no asignados. No se puede crear el evento.")
-            # user_events = Event.objects.filter(created_by=user_id)
-            user_events = Event.objects.filter(created_by=user_id).annotate(
-                recycled_count=Count(
-                    'qr_codes',
-                    filter=Q(qr_codes__status_recycled='recycled')
-                )
-             )
-            print(user_events)
-            context = {'events': user_events, 'user':user_name,'form':form}
-            return render(request, template, context)
 
-        # 2️⃣ Crear imagen temporal en blanco
+        if total_unassigned < quantity_to_assign and not free_with_ads:
+            messages.error(request,
+                f"Tienes solo {total_unassigned} tickets no asignados. "
+                f"Marca 'Crear gratis con publicidad' para continuar.")
+            user_events = Event.objects.filter(created_by=user_id).annotate(
+                recycled_count=Count('qr_codes', filter=Q(qr_codes__status_recycled='recycled'))
+            )
+            return render(request, template, {'events': user_events, 'user': user_name, 'form': form})
+
+        # 2) imagen temporal (respetar pipeline actual)
         image_save = Image.new('RGB', (300, 300), color='white')
         buffer = io.BytesIO()
         image_save.save(buffer, format="jpeg")
@@ -521,7 +610,7 @@ def listdb(request):
             buffer, None, "temp_image.png", "image/png", sys.getsizeof(buffer), None
         )
 
-        # 3️⃣ Crear evento
+        # 3) crear evento
         event = Event.objects.create(
             name=event_name,
             created_by=user_name,
@@ -529,37 +618,149 @@ def listdb(request):
             image=temp_image_file
         )
 
-        # 4️⃣ Asignar a tickets disponibles
-        remaining = quantity_to_assign
-        for ticket in tickets:
-            unassigned = ticket.unassigned_quantity()
-            if unassigned > 0:
-                assign_now = min(remaining, unassigned)
-                TicketAssignment.objects.create(
-                    ticket=ticket,
-                    event=event.name,
-                    quantity=assign_now,
-                    event_fk=event
+        # 4) si NO es free → asignar a tickets
+        if not free_with_ads:
+            remaining = quantity_to_assign
+            for ticket in tickets:
+                unassigned = ticket.unassigned_quantity()
+                if unassigned > 0:
+                    assign_now = min(remaining, unassigned)
+                    TicketAssignment.objects.create(
+                        ticket=ticket,
+                        event=event.name,
+                        quantity=assign_now,
+                        event_fk=event
+                    )
+                    remaining -= assign_now
+                if remaining == 0:
+                    break
+
+        # 5) máscara subida (opcional)
+        mask_file = form.cleaned_data.get("mask_image")
+        if mask_file:
+            dest_path = save_event_mask(event.id, mask_file)
+            updated = event.qr_codes.update(mask_banner=dest_path)
+            messages.success(request, f"Máscara aplicada a {updated} QR(s) del evento '{event.name}'.")
+
+        # 6) FREE con Ads → aplicar top banner/footer por país (auto)
+        if free_with_ads:
+            country_code = (form.cleaned_data.get("country_code") or "").strip() or getattr(request, "country_code", None)
+            country_name = (form.cleaned_data.get("country_name") or "").strip() or getattr(request, "country_name", None)
+            ad = None
+            try:
+                ad = get_banner_for_country(country_code, country_name)
+            except Exception:
+                ad = None
+
+            preset = get_footer_preset(country_code, country_name)
+            updates = {
+                "enable_top_banner": True,
+                "footer_text": preset["text"],
+                "footer_bg": preset["bg"],
+                "footer_fg": preset["fg"],
+            }
+            if ad and ad.image:
+                updates["top_banner"] = ad.image.name
+            updated = event.qr_codes.update(**updates)
+            messages.success(request, f"Se aplicó publicidad por país y footer a {updated} QR(s).")
+
+        # 7) re-render inmediato (opcional)
+        if form.cleaned_data.get("re_render_now"):
+            country_code = (form.cleaned_data.get("country_code") or "").strip() or getattr(request, "country_code", None)
+            country_name = (form.cleaned_data.get("country_name") or "").strip() or getattr(request, "country_name", None)
+            valid_from   = (form.cleaned_data.get("valid_from") or "").strip() or None
+            valid_until  = (form.cleaned_data.get("valid_until") or "").strip() or None
+            grace_minutes = form.cleaned_data.get("grace_minutes") or 0
+            font_path    = (form.cleaned_data.get("font_path") or "").strip() or None
+
+            qrs = event.qr_codes.only("id", "data")
+            MAX_INLINE = 200
+            count = 0
+            for qr in qrs[:MAX_INLINE]:
+                compose_qr_from_db(
+                    qr,
+                    country_code=country_code,
+                    country_name=country_name,
+                    valid_from_str=valid_from,
+                    valid_until_str=valid_until,
+                    grace_minutes=grace_minutes,
+                    font_path=font_path,
                 )
-                remaining -= assign_now
-            if remaining == 0:
-                break
+                count += 1
+            remaining = max(qrs.count() - MAX_INLINE, 0)
+            if remaining > 0:
+                messages.info(request, f"Se regeneraron {count} imágenes. Quedan {remaining}. Usa la acción de Admin o Celery para lotes grandes.")
+            else:
+                messages.success(request, f"Re-render completado para {count} QR(s).")
 
-        # 5️⃣ Enviar códigos QR
-        send_event_qr_codes.delay(event.id)
+        # 8) notificación por email (solo si NO es free, mantén tu lógica)
+        if not free_with_ads:
+            send_event_qr_codes.delay(event.id)
 
-        messages.success(request, f"Se asignaron {quantity_to_assign} códigos QR al evento '{event.name}' correctamente.")
+        origen = "gratis con Ads" if free_with_ads else "con tus tickets"
+        messages.success(request, f"Evento '{event.name}' creado {origen}.")
         return redirect('dashboard:inicio')
+
+    # GET sin cambios
     else:
-        form = AutoTicketAssignmentForm(user=user_id)
-        # user_events = Event.objects.filter(created_by=user_id)
+        # form = AutoTicketAssignmentForm(user=user_id)
+        # user_events = Event.objects.filter(created_by=user_id).annotate(
+        #     recycled_count=Count('qr_codes', filter=Q(qr_codes__status_recycled='recycled'))
+        # )
+        # context = {'events': user_events, 'user': user_name, 'form': form}
+        # return render(request, template, context)
+        # === AUTOCOMPLETE desde AdPlacement ===
+        detected_cc = getattr(request, "country_code", None)
+        detected_cn = getattr(request, "country_name", None)
+        ad = None
+        try:
+            ad = get_banner_for_country(detected_cc, detected_cn)
+        except Exception:
+            ad = None
+
+        # Si tu modelo AdPlacement incluye estos campos opcionales, los usamos:
+        # - country (texto)
+        # - starts_at, ends_at (DateTimeField)
+        # - grace_minutes (IntegerField, opcional)
+        # - font_path (CharField, opcional)
+        initial = {}
+        if ad:
+            # country_code / country_name
+            # Si tu modelo AdPlacement guarda solo "country" textual, úsalo para name y deja code al detectado
+            initial["country_code"] = (detected_cc or "").strip()
+            initial["country_name"] = (getattr(ad, "country", None) or detected_cn or "").strip()
+
+            # Fechas: normalizamos a 'YYYY-MM-DDTHH:MM:SS' en UTC-4 o localtime (elige tu criterio)
+            def to_iso_local(dt):
+                if not dt:
+                    return ""
+                # Si manejas todo en UTC internamente, puedes usar dt.astimezone(...) a UTC-4
+                # Aquí usamos localtime por simplicidad; ajusta si prefieres zona fija
+                return localtime(dt).strftime("%Y-%m-%dT%H:%M:%S")
+
+            initial["valid_from"] = to_iso_local(getattr(ad, "starts_at", None))
+            initial["valid_until"] = to_iso_local(getattr(ad, "ends_at", None))
+            initial["grace_minutes"] = getattr(ad, "grace_minutes", 0) or 0
+            initial["font_path"] = getattr(ad, "font_path", "") or ""
+
+        # Si no hay AdPlacement, sugerimos el país detectado y dejamos lo demás vacío
+        if not initial:
+            initial = {
+                "country_code": (detected_cc or "").strip(),
+                "country_name": (detected_cn or "").strip(),
+                "valid_from": "",
+                "valid_until": "",
+                "grace_minutes": 0,
+                "font_path": "",
+            }
+
+        # IMPORTANTE: pásale initial y user al form
+        form = AutoTicketAssignmentForm(user=user_id, initial=initial)
+
         user_events = Event.objects.filter(created_by=user_id).annotate(
-            recycled_count=Count(
-                'qr_codes',
-                filter=Q(qr_codes__status_recycled='recycled')
-            )
-    )
-        context = {'events': user_events, 'user':user_name,'form':form}
+            recycled_count=Count('qr_codes', filter=Q(qr_codes__status_recycled='recycled'))
+        )
+        context = {'events': user_events, 'user': user_name, 'form': form}
         return render(request, template, context)
 
 ################################################

@@ -88,10 +88,20 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "dashboard.context_processors.top_banner_context",
             ],
         },
     },
 ]
+# Feature flag (por defecto apagado; enciéndelo para probar)
+FEATURE_TOP_BANNER_RUNTIME = False
+FOOTER_PRESETS_BY_COUNTRY = {
+    "BO": {"text": "Uniqbo.com", "bg": "#000000", "fg": "#FFFFFF"},
+    "Bolivia": {"text": "Uniqbo.com", "bg": "#000000", "fg": "#FFFFFF"},
+    "*": {"text": "Uniqbo.com", "bg": "#000000", "fg": "#FFFFFF"},
+}
+
+
 
 WSGI_APPLICATION = "manillas.wsgi.application"
 
