@@ -296,86 +296,133 @@
           </div>
 
 
-             <!-- Modal 1: Selección de plan -->
-            <div class="modal fade" id="modalPlanSelect" aria-hidden="true" aria-labelledby="modalPlanSelectLabel" tabindex="-1">
-              <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <h5 class="modal-title" id="modalPlanSelectLabel">Selecciona tu plan</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                  </div>
-                  <div class="modal-body">
-                    <p>Elige una de las siguientes opciones:</p>
-                    <div class="d-grid gap-2">
-                      <button class="btn btn-outline-primary" id="btnPlanGratuito">Plan gratuito con anuncios</button>
-                      <button class="btn btn-outline-success" id="btnPlanPago">Plan de pago sin anuncios</button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+<!-- Trigger -->
+<a class="btn btn-primary" data-bs-toggle="modal" href="#modalPlanSelect" role="button">
+  Seleccionar plan
+</a>
 
-            <!-- Modal 2: Formulario plan gratuito -->
-            <div class="modal fade" id="modalGratuito" aria-hidden="true" aria-labelledby="modalGratuitoLabel" tabindex="-1">
-              <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                  <form id="formGratuito">
-                    <div class="modal-header">
-                      <h5 class="modal-title" id="modalGratuitoLabel">Plan gratuito con anuncios</h5>
-                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                    </div>
-                    <div class="modal-body">
-                      <div class="mb-3">
-                        <label for="nombreGratis" class="form-label">Nombre</label>
-                        <input type="text" class="form-control" id="nombreGratis" required>
-                      </div>
-                      <div class="mb-3">
-                        <label for="emailGratis" class="form-label">Correo electrónico</label>
-                        <input type="email" class="form-control" id="emailGratis" required>
-                      </div>
-                      <p class="text-muted">Aceptas que verás anuncios personalizados según tu perfil.</p>
-                    </div>
-                    <div class="modal-footer">
-                      <button type="submit" class="btn btn-primary">Continuar</button>
-                    </div>
-                  </form>
-                </div>
-              </div>
-            </div>
+<!-- Modal 1: Selección de plan -->
+<div class="modal fade" id="modalPlanSelect" aria-hidden="true" aria-labelledby="modalPlanSelectLabel" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalPlanSelectLabel">Selecciona tu plan</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <p id="planHelp">Elige una de las siguientes opciones:</p>
+        <div class="d-grid gap-2">
+          <button class="btn btn-outline-primary" id="btnPlanGratuito" aria-describedby="planHelp">
+            Plan gratuito con anuncios
+          </button>
+          <button class="btn btn-outline-success" id="btnPlanPago" aria-describedby="planHelp">
+            Plan de pago sin anuncios
+          </button>
+        </div>
+      </div>
+      <div class="modal-footer justify-content-between">
+        <small class="text-muted ms-1">Podrás volver atrás si te equivocas.</small>
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
 
-            <!-- Modal 3: Formulario plan de pago -->
-            <div class="modal fade" id="modalPago" aria-hidden="true" aria-labelledby="modalPagoLabel" tabindex="-1">
-              <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                  <form id="formPago">
-                    <div class="modal-header">
-                      <h5 class="modal-title" id="modalPagoLabel">Plan sin anuncios</h5>
-                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                    </div>
-                    <div class="modal-body">
-                      <div class="mb-3">
-                        <label for="nombrePago" class="form-label">Nombre completo</label>
-                        <input type="text" class="form-control" id="nombrePago" required>
-                      </div>
-                      <div class="mb-3">
-                        <label for="emailPago" class="form-label">Correo electrónico</label>
-                        <input type="email" class="form-control" id="emailPago" required>
-                      </div>
-                      <div class="mb-3">
-                        <label for="tarjeta" class="form-label">Número de tarjeta</label>
-                        <input type="text" class="form-control" id="tarjeta" placeholder="**** **** **** ****" required>
-                      </div>
-                    </div>
-                    <div class="modal-footer">
-                      <button type="submit" class="btn btn-success">Pagar ahora</button>
-                    </div>
-                  </form>
-                </div>
-              </div>
-            </div>
+<!-- Modal 2: Formulario plan gratuito -->
+<div class="modal fade" id="modalGratuito" data-bs-backdrop="static" data-bs-keyboard="false"
+     aria-hidden="true" aria-labelledby="modalGratuitoLabel" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <form id="formGratuito" novalidate>
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalGratuitoLabel">Plan gratuito con anuncios</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="nombreGratis" class="form-label">Nombre</label>
+            <input type="text" class="form-control" id="nombreGratis" name="nombreGratis"
+                   autocomplete="name" required />
+            <div class="invalid-feedback">Por favor, ingresa tu nombre.</div>
+          </div>
+          <div class="mb-3">
+            <label for="emailGratis" class="form-label">Correo electrónico</label>
+            <input type="email" class="form-control" id="emailGratis" name="emailGratis"
+                   autocomplete="email" inputmode="email" required />
+            <div class="invalid-feedback">Ingresa un correo válido.</div>
+          </div>
+          <p class="text-muted small">
+            Aceptas ver anuncios personalizados según tu perfil.
+          </p>
+        </div>
+        <div class="modal-footer justify-content-between">
+          <button type="button" class="btn btn-outline-secondary" data-action="back-to-plan">Atrás</button>
+          <button type="submit" class="btn btn-primary">
+            <span class="spinner-border spinner-border-sm me-1 d-none" id="spGratis" aria-hidden="true"></span>
+            Continuar
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
 
-            <!-- Botón inicial para abrir el selector de plan -->
-            <a class="btn btn-primary" data-bs-toggle="modal" href="#modalPlanSelect" role="button">Seleccionar plan</a>
+<!-- Modal 3: Formulario plan de pago -->
+<div class="modal fade" id="modalPago" data-bs-backdrop="static" data-bs-keyboard="false"
+     aria-hidden="true" aria-labelledby="modalPagoLabel" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <form id="formPago" novalidate>
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalPagoLabel">Plan sin anuncios</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="nombrePago" class="form-label">Nombre completo</label>
+            <input type="text" class="form-control" id="nombrePago" name="nombrePago"
+                   autocomplete="name" required />
+            <div class="invalid-feedback">Ingresa tu nombre completo.</div>
+          </div>
+          <div class="mb-3">
+            <label for="emailPago" class="form-label">Correo electrónico</label>
+            <input type="email" class="form-control" id="emailPago" name="emailPago"
+                   autocomplete="email" inputmode="email" required />
+            <div class="invalid-feedback">Ingresa un correo válido.</div>
+          </div>
+          <div class="mb-3">
+            <label for="tarjeta" class="form-label">Número de tarjeta</label>
+            <input type="text" class="form-control" id="tarjeta" name="tarjeta"
+                   inputmode="numeric" autocomplete="cc-number" placeholder="**** **** **** ****"
+                   maxlength="19" required />
+            <div class="invalid-feedback">Ingresa un número de tarjeta válido.</div>
+            <div class="form-text" id="planResumen"></div>
+          </div>
+        </div>
+        <div class="modal-footer justify-content-between">
+          <button type="button" class="btn btn-outline-secondary" data-action="back-to-plan">Atrás</button>
+          <button type="submit" class="btn btn-success">
+            <span class="spinner-border spinner-border-sm me-1 d-none" id="spPago" aria-hidden="true"></span>
+            Pagar ahora
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Toast de confirmación -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1080">
+  <div id="toastOk" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="polite" aria-atomic="true">
+    <div class="d-flex">
+      <div class="toast-body">
+        ¡Listo! Tu elección se registró correctamente.
+      </div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Cerrar"></button>
+    </div>
+  </div>
+</div>
+
         <!--  -->
 
            {% if messages %}
@@ -427,72 +474,141 @@
 
     </div>
 
-
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const modalPlanSelectEl = document.getElementById('modalPlanSelect');
-    const modalGratuitoEl = document.getElementById('modalGratuito');
-    const modalPagoEl = document.getElementById('modalPago');
+  (function () {
+    // Helpers Bootstrap
+    const getModal = (id) => bootstrap.Modal.getOrCreateInstance(document.getElementById(id));
+    const showModal = (id) => getModal(id).show();
+    const hideModal = (id) => getModal(id).hide();
 
-    const modalPlanSelect = new bootstrap.Modal(modalPlanSelectEl);
-    const modalGratuito = new bootstrap.Modal(modalGratuitoEl);
-    const modalPago = new bootstrap.Modal(modalPagoEl);
+    // Estado simple
+    const state = { plan: null, email: null };
 
-    // Limpia backdrop y estado del body si Bootstrap falla en hacerlo
-    function limpiarBackdrop() {
-      document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
-      document.body.classList.remove('modal-open');
-      document.body.style.overflow = '';
-      document.body.style.paddingRight = '';
-    }
-
-    // Mostrar modal gratuito sin acumular eventos
+    // Botones del selector
     document.getElementById('btnPlanGratuito').addEventListener('click', () => {
-      modalPlanSelectEl.addEventListener('hidden.bs.modal', function handle() {
-        modalGratuito.show();
-        modalPlanSelectEl.removeEventListener('hidden.bs.modal', handle);
-      });
-      modalPlanSelect.hide();
+      state.plan = 'gratuito';
+      hideModal('modalPlanSelect');
+      showModal('modalGratuito');
+      setTimeout(() => document.getElementById('nombreGratis').focus(), 250);
     });
 
-    // Mostrar modal pago sin acumular eventos
     document.getElementById('btnPlanPago').addEventListener('click', () => {
-      modalPlanSelectEl.addEventListener('hidden.bs.modal', function handle() {
-        modalPago.show();
-        modalPlanSelectEl.removeEventListener('hidden.bs.modal', handle);
-      });
-      modalPlanSelect.hide();
+      state.plan = 'pago';
+      hideModal('modalPlanSelect');
+      showModal('modalPago');
+      const resumen = document.getElementById('planResumen');
+      resumen.textContent = 'Has elegido: Plan sin anuncios';
+      setTimeout(() => document.getElementById('nombrePago').focus(), 250);
     });
 
-    // Formulario gratuito
-    document.getElementById('formGratuito').addEventListener('submit', function (e) {
+    // Botones "Atrás" en formularios -> vuelven al selector
+    document.querySelectorAll('[data-action="back-to-plan"]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const form = btn.closest('form');
+        if (form) form.classList.remove('was-validated');
+        hideModal('modalGratuito');
+        hideModal('modalPago');
+        showModal('modalPlanSelect');
+      });
+    });
+
+    // Validación Bootstrap + spinner
+    const validateAndSpin = (form, spinnerId) => {
+      form.classList.add('was-validated');
+      if (!form.checkValidity()) return false;
+      document.getElementById(spinnerId).classList.remove('d-none');
+      return true;
+    };
+    const stopSpin = (spinnerId) => document.getElementById(spinnerId).classList.add('d-none');
+
+    // Luhn para tarjeta
+    const isValidCard = (num) => {
+      const digits = num.replace(/\s+/g, '');
+      if (!/^\d{13,19}$/.test(digits)) return false;
+      let sum = 0, alt = false;
+      for (let i = digits.length - 1; i >= 0; i--) {
+        let n = parseInt(digits[i], 10);
+        if (alt) { n *= 2; if (n > 9) n -= 9; }
+        sum += n; alt = !alt;
+      }
+      return sum % 10 === 0;
+    };
+
+    // Máscara simple para tarjeta (**** **** **** ****)
+    const tarjetaInput = document.getElementById('tarjeta');
+    tarjetaInput.addEventListener('input', (e) => {
+      let v = e.target.value.replace(/\D/g, '').slice(0,19);
+      v = v.replace(/(\d{4})(?=\d)/g, '$1 ');
+      e.target.value = v;
+    });
+
+    // Form gratuito
+    document.getElementById('formGratuito').addEventListener('submit', async (e) => {
       e.preventDefault();
-      modalGratuito.hide();
-      modalGratuitoEl.addEventListener('hidden.bs.modal', function handle() {
-        limpiarBackdrop();
-        alert('Gracias por elegir el plan gratuito.');
-        modalGratuitoEl.removeEventListener('hidden.bs.modal', handle);
-      });
+      const form = e.currentTarget;
+      if (!validateAndSpin(form, 'spGratis')) return;
+
+      const nombre = document.getElementById('nombreGratis').value.trim();
+      const email = document.getElementById('emailGratis').value.trim();
+      state.email = email;
+
+      try {
+        // Simula una llamada API
+        await new Promise(r => setTimeout(r, 800));
+        hideModal('modalGratuito');
+        new bootstrap.Toast(document.getElementById('toastOk')).show();
+        // Reset
+        form.reset(); form.classList.remove('was-validated');
+      } catch (err) {
+        console.error(err);
+      } finally {
+        stopSpin('spGratis');
+      }
     });
 
-    // Formulario pago
-    document.getElementById('formPago').addEventListener('submit', function (e) {
+    // Form pago
+    document.getElementById('formPago').addEventListener('submit', async (e) => {
       e.preventDefault();
-      modalPago.hide();
-      modalPagoEl.addEventListener('hidden.bs.modal', function handle() {
-        limpiarBackdrop();
-        alert('Pago procesado con éxito. ¡Bienvenido al plan sin anuncios!');
-        modalPagoEl.removeEventListener('hidden.bs.modal', handle);
-      });
+      const form = e.currentTarget;
+      // Validación nativa
+      if (!validateAndSpin(form, 'spPago')) return;
+
+      const tarjeta = document.getElementById('tarjeta');
+      const num = tarjeta.value.replace(/\s+/g, '');
+      if (!isValidCard(num)) {
+        tarjeta.setCustomValidity('Tarjeta inválida');
+        form.classList.add('was-validated');
+        stopSpin('spPago');
+        tarjeta.reportValidity();
+        tarjeta.addEventListener('input', () => tarjeta.setCustomValidity(''), { once: true });
+        return;
+      }
+
+      const email = document.getElementById('emailPago').value.trim();
+      state.email = email;
+
+      try {
+        // Simula pago
+        await new Promise(r => setTimeout(r, 1100));
+        hideModal('modalPago');
+        new bootstrap.Toast(document.getElementById('toastOk')).show();
+        form.reset(); form.classList.remove('was-validated');
+      } catch (err) {
+        console.error(err);
+      } finally {
+        stopSpin('spPago');
+      }
     });
 
-    // Extra safety: limpieza manual al cerrar cualquier modal
-    ['modalPlanSelect', 'modalGratuito', 'modalPago'].forEach(id => {
-      const el = document.getElementById(id);
-      el.addEventListener('hidden.bs.modal', limpiarBackdrop);
+    // Calidad de vida: cerrar un modal y evitar foco “perdido”
+    ['modalGratuito', 'modalPago', 'modalPlanSelect'].forEach(id => {
+      document.getElementById(id).addEventListener('hidden.bs.modal', () => {
+        document.activeElement?.blur?.();
+      });
     });
-  });
+  })();
 </script>
+
 
 
 
