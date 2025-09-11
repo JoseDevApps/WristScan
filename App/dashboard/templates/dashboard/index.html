@@ -296,49 +296,87 @@
           </div>
 
 
-                  <!-- Modal 1: Selección de plan -->
-        <div class="modal fade" id="exampleModalToggle" aria-hidden="true" aria-labelledby="exampleModalToggleLabel" tabindex="-1">
-          <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalToggleLabel">Selecciona tu plan</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-              </div>
-              <div class="modal-body">
-                <p>Elige una de las siguientes opciones para continuar:</p>
-                <div class="d-grid gap-2">
-                  <!-- Botón para plan con anuncios -->
-                  <button class="btn btn-outline-primary" id="withAdsBtn">Plan gratuito con anuncios</button>
-
-                  <!-- Botón para plan sin anuncios -->
-                  <button class="btn btn-outline-success" id="withoutAdsBtn">Plan de pago sin anuncios</button>
+             <!-- Modal 1: Selección de plan -->
+            <div class="modal fade" id="modalPlanSelect" aria-hidden="true" aria-labelledby="modalPlanSelectLabel" tabindex="-1">
+              <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="modalPlanSelectLabel">Selecciona tu plan</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                  </div>
+                  <div class="modal-body">
+                    <p>Elige una de las siguientes opciones:</p>
+                    <div class="d-grid gap-2">
+                      <button class="btn btn-outline-primary" id="btnPlanGratuito">Plan gratuito con anuncios</button>
+                      <button class="btn btn-outline-success" id="btnPlanPago">Plan de pago sin anuncios</button>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </div>
 
-        <!-- Modal 2: Continuación del plan con anuncios -->
-        <div class="modal fade" id="exampleModalToggle2" aria-hidden="true" aria-labelledby="exampleModalToggleLabel2" tabindex="-1">
-          <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalToggleLabel2">Plan con anuncios</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-              </div>
-              <div class="modal-body">
-                <p>Has seleccionado el plan gratuito con anuncios. Continúa con tu experiencia.</p>
-              </div>
-              <div class="modal-footer">
-                <button class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            <!-- Modal 2: Formulario plan gratuito -->
+            <div class="modal fade" id="modalGratuito" aria-hidden="true" aria-labelledby="modalGratuitoLabel" tabindex="-1">
+              <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                  <form id="formGratuito">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="modalGratuitoLabel">Plan gratuito con anuncios</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                    </div>
+                    <div class="modal-body">
+                      <div class="mb-3">
+                        <label for="nombreGratis" class="form-label">Nombre</label>
+                        <input type="text" class="form-control" id="nombreGratis" required>
+                      </div>
+                      <div class="mb-3">
+                        <label for="emailGratis" class="form-label">Correo electrónico</label>
+                        <input type="email" class="form-control" id="emailGratis" required>
+                      </div>
+                      <p class="text-muted">Aceptas que verás anuncios personalizados según tu perfil.</p>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="submit" class="btn btn-primary">Continuar</button>
+                    </div>
+                  </form>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
 
-        <!-- Botón para abrir el primer modal -->
-        <a class="btn btn-primary" data-bs-toggle="modal" href="#exampleModalToggle" role="button">Seleccionar plan</a>
+            <!-- Modal 3: Formulario plan de pago -->
+            <div class="modal fade" id="modalPago" aria-hidden="true" aria-labelledby="modalPagoLabel" tabindex="-1">
+              <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                  <form id="formPago">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="modalPagoLabel">Plan sin anuncios</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                    </div>
+                    <div class="modal-body">
+                      <div class="mb-3">
+                        <label for="nombrePago" class="form-label">Nombre completo</label>
+                        <input type="text" class="form-control" id="nombrePago" required>
+                      </div>
+                      <div class="mb-3">
+                        <label for="emailPago" class="form-label">Correo electrónico</label>
+                        <input type="email" class="form-control" id="emailPago" required>
+                      </div>
+                      <div class="mb-3">
+                        <label for="tarjeta" class="form-label">Número de tarjeta</label>
+                        <input type="text" class="form-control" id="tarjeta" placeholder="**** **** **** ****" required>
+                      </div>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="submit" class="btn btn-success">Pagar ahora</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
 
+            <!-- Botón inicial para abrir el selector de plan -->
+            <a class="btn btn-primary" data-bs-toggle="modal" href="#modalPlanSelect" role="button">Seleccionar plan</a>
+        <!--  -->
 
            {% if messages %}
               <div class="messages">
