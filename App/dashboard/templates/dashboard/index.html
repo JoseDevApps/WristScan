@@ -368,45 +368,40 @@
 </div>
 
 <!-- Modal 3: Formulario plan de pago -->
+<!-- Modal 3: Formulario plan de pago (Django POST) -->
 <div class="modal fade" id="modalPago" data-bs-backdrop="static" data-bs-keyboard="false"
-     aria-hidden="true" aria-labelledby="modalPagoLabel" tabindex="-1">
+     tabindex="-1" aria-labelledby="modalPagoLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
-      <form id="formPago" novalidate>
+      <form id="formPago" method="POST" action="{% url 'dashboard:inicio' %}" data-behavior="server-post" novalidate>
+        {% csrf_token %}
         <div class="modal-header">
-          <h5 class="modal-title" id="modalPagoLabel">Plan sin anuncios</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+          <h5 class="modal-title" id="modalPagoLabel">Buy QR Codes</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
+
         <div class="modal-body">
-            <div class="modal-dialog">
-              <form method="POST" action="{% url 'dashboard:inicio' %}">
-                {% csrf_token %}
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <h5 class="modal-title" id="modalLabel">Buy QR Codes</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                  </div>
-                  <div class="modal-body">
-                    {{ form.as_p }}
-                  </div>
-                  <div class="modal-footer">
-                    <button type="submit" class="btn btn-info">Send</button>
-                  </div>
-                </div>
-              </form>
-            </div>
+          {{ form.non_field_errors }}
+          {{ form.as_p }}
+          <!-- Mantén este resumen si lo usas desde el selector -->
+          <div class="form-text" id="planResumen"></div>
+
+          <!-- Guarda el plan elegido (opcional para tu view) -->
+          <input type="hidden" name="selected_plan" id="selected_plan" value="pago">
         </div>
+
         <div class="modal-footer justify-content-between">
           <button type="button" class="btn btn-outline-secondary" data-action="back-to-plan">Atrás</button>
-          <button type="submit" class="btn btn-success">
+          <button type="submit" class="btn btn-info">
             <span class="spinner-border spinner-border-sm me-1 d-none" id="spPago" aria-hidden="true"></span>
-            Pagar ahora
+            Send
           </button>
         </div>
       </form>
     </div>
   </div>
 </div>
+
 
 <!-- Toast de confirmación -->
 <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1080">
