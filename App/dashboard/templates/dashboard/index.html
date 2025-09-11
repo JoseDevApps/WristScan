@@ -1,4 +1,20 @@
 {% extends 'base.html' %}
+<style>
+  .plan-card {
+    transition: transform .12s ease, box-shadow .12s ease;
+    border-radius: .75rem;
+  }
+  .plan-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 .5rem 1rem rgba(0,0,0,.08);
+  }
+  #btnPlanGratuito:focus .plan-card,
+  #btnPlanPago:focus .plan-card {
+    outline: 2px solid rgba(13,110,253,.4);
+    outline-offset: 2px;
+  }
+</style>
+
 {% block title %}Manillas Bolivia{% endblock %}
 {% load static %}
 {% block content %}
