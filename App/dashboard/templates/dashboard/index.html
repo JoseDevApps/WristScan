@@ -294,6 +294,52 @@
               <span>GET CODES</span>
             </button>
           </div>
+
+
+                  <!-- Modal 1: Selección de plan -->
+        <div class="modal fade" id="exampleModalToggle" aria-hidden="true" aria-labelledby="exampleModalToggleLabel" tabindex="-1">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalToggleLabel">Selecciona tu plan</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+              </div>
+              <div class="modal-body">
+                <p>Elige una de las siguientes opciones para continuar:</p>
+                <div class="d-grid gap-2">
+                  <!-- Botón para plan con anuncios -->
+                  <button class="btn btn-outline-primary" id="withAdsBtn">Plan gratuito con anuncios</button>
+
+                  <!-- Botón para plan sin anuncios -->
+                  <button class="btn btn-outline-success" id="withoutAdsBtn">Plan de pago sin anuncios</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal 2: Continuación del plan con anuncios -->
+        <div class="modal fade" id="exampleModalToggle2" aria-hidden="true" aria-labelledby="exampleModalToggleLabel2" tabindex="-1">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalToggleLabel2">Plan con anuncios</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+              </div>
+              <div class="modal-body">
+                <p>Has seleccionado el plan gratuito con anuncios. Continúa con tu experiencia.</p>
+              </div>
+              <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Botón para abrir el primer modal -->
+        <a class="btn btn-primary" data-bs-toggle="modal" href="#exampleModalToggle" role="button">Seleccionar plan</a>
+
+
            {% if messages %}
               <div class="messages">
                 {% for message in messages %}
