@@ -1,4 +1,10 @@
 {% extends 'base.html' %}
+<style>
+  .plan-card { transition: transform .12s ease, box-shadow .12s ease; }
+  .plan-card:hover { transform: translateY(-2px); box-shadow: 0 .5rem 1rem rgba(0,0,0,.08); }
+  #btnPlanGratuito:focus .plan-card,
+  #btnPlanPago:focus .plan-card { outline: 2px solid rgba(13,110,253,.5); outline-offset: 2px; }
+</style>
 {% block title %}Manillas Bolivia{% endblock %}
 {% load static %}
 {% block content %}
@@ -306,16 +312,74 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <p id="planHelp">Choose one of the following options:</p>
-        <div class="d-grid gap-2">
-          <button class="btn btn-outline-primary" id="btnPlanGratuito" aria-describedby="planHelp">
-            Free plan with ads
-          </button>
-          <button class="btn btn-outline-success" id="btnPlanPago" aria-describedby="planHelp">
-            Paid plan without ads
-          </button>
+  <p id="planHelp">Choose one of the following options:</p>
+
+  <div class="row g-3">
+    <!-- Card: Free with ads -->
+    <div class="col-12 col-md-6">
+      <button type="button"
+              id="btnPlanGratuito"
+              aria-describedby="planHelp"
+              class="btn p-0 w-100 text-start border-0">
+        <div class="card h-100 shadow-sm plan-card">
+          <!-- Imagen referencial -->
+          <img src="https://via.placeholder.com/640x360?text=Free+Plan+%28Ads%29"
+               class="card-img-top" alt="Free plan with ads preview">
+          <div class="card-body">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+              <span class="badge bg-primary">Free</span>
+              <!-- Ícono ads (megáfono) en SVG inline -->
+              <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M3 10v4a2 2 0 0 0 2 2h2v3a1 1 0 0 0 1.6.8L12 18h2a6 6 0 0 0 6-6V6l-6 3H7a2 2 0 0 0-2 2z" fill="currentColor"/>
+              </svg>
+            </div>
+            <h6 class="card-title mb-1">Free plan — with ads</h6>
+            <p class="card-text small text-muted mb-2">
+              Basic features with sponsored messages.
+            </p>
+            <ul class="small mb-0 ps-3">
+              <li>Starter limits</li>
+              <li>Community support</li>
+            </ul>
+          </div>
         </div>
-      </div>
+      </button>
+    </div>
+
+    <!-- Card: Paid without ads -->
+    <div class="col-12 col-md-6">
+      <button type="button"
+              id="btnPlanPago"
+              aria-describedby="planHelp"
+              class="btn p-0 w-100 text-start border-0">
+        <div class="card h-100 shadow-sm plan-card border-success">
+          <!-- Imagen referencial -->
+          <img src="https://via.placeholder.com/640x360?text=Paid+Plan+%28No+Ads%29"
+               class="card-img-top" alt="Paid plan without ads preview">
+          <div class="card-body">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+              <span class="badge bg-success">No ads</span>
+              <!-- Ícono no-ads (megáfono tachado) -->
+              <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M3 10v4a2 2 0 0 0 2 2h2v3a1 1 0 0 0 1.6.8L12 18h2a6 6 0 0 0 6-6V6l-6 3H7a2 2 0 0 0-2 2z" fill="currentColor" opacity="0.5"/>
+                <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/>
+                <line x1="6" y1="18" x2="18" y2="6" stroke="currentColor" stroke-width="2"/>
+              </svg>
+            </div>
+            <h6 class="card-title mb-1">Paid plan — without ads</h6>
+            <p class="card-text small text-muted mb-2">
+              Full experience, priority support.
+            </p>
+            <ul class="small mb-0 ps-3">
+              <li>Advanced limits</li>
+              <li>Priority support</li>
+            </ul>
+          </div>
+        </div>
+      </button>
+    </div>
+  </div>
+</div>
       <div class="modal-footer justify-content-between">
         <small class="text-muted ms-1">You can go back if you make a mistake.</small>
         <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
