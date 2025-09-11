@@ -475,141 +475,208 @@
     </div>
 
 <script>
-  (function () {
-    // Helpers Bootstrap
-    const getModal = (id) => bootstrap.Modal.getOrCreateInstance(document.getElementById(id));
-    const showModal = (id) => getModal(id).show();
-    const hideModal = (id) => getModal(id).hide();
+(() => {
+  // --- Helpers Bootstrap ---
+  const getModal = (id) => bootstrap.Modal.getOrCreateInstance(document.getElementById(id));
+  const byId = (id) => document.getElementById(id);
 
-    // Estado simple
-    const state = { plan: null, email: null };
+  // Limpia backdrops huérfanos y modal-open si fuera necesario
+  const cleanupBackdrops = () => {
+    const openAny = document.querySelector('.modal.show');
+    if (!openAny) {
+      document.body.classList.remove('modal-open');
+      document.body.style.removeProperty('overflow'); // por si quedó fijado
+      document.body.style.removeProperty('padding-right');
+      document.querySelectorAll('.modal-backdrop').forEach(b => b.remove());
+    } else {
+      // Si hay más de un backdrop, deja solo el último
+      const bds = [...document.querySelectorAll('.modal-backdrop')];
+      if (bds.length > 1) bds.slice(0, -1).forEach(b => b.remove());
+    }
+  };
 
-    // Botones del selector
-    document.getElementById('btnPlanGratuito').addEventListener('click', () => {
-      state.plan = 'gratuito';
-      hideModal('modalPlanSelect');
-      showModal('modalGratuito');
-      setTimeout(() => document.getElementById('nombreGratis').focus(), 250);
-    });
+  // Resetea un form dentro de un modal (valores, validación, spinners, customValidity)
+  const resetFormInModal = (modalEl) => {
+    const form = modalEl.querySelector('form');
+    if (!form) return;
+    form.reset();
+    form.classList.remove('was-validated');
+    // Spinners conocidos
+    form.querySelectorAll('.spinner-border').forEach(sp => sp.classList.add('d-none'));
+    // Limpiar mensajes auxiliares
+    const resumen = form.querySelector('#planResumen');
+    if (resumen) resumen.textContent = '';
+    // Limpiar customValidity en inputs
+    form.querySelectorAll('input').forEach(inp => inp.setCustomValidity(''));
+  };
 
-    document.getElementById('btnPlanPago').addEventListener('click', () => {
-      state.plan = 'pago';
-      hideModal('modalPlanSelect');
-      showModal('modalPago');
-      const resumen = document.getElementById('planResumen');
-      resumen.textContent = 'Has elegido: Plan sin anuncios';
-      setTimeout(() => document.getElementById('nombrePago').focus(), 250);
-    });
+  // Transición SEGURO: espera a que el modal origen termine de ocultarse
+  const transitionModal = (fromId, toId, focusSelector) => {
+    const fromEl = byId(fromId);
+    const toEl = byId(toId);
+    const from = getModal(fromId);
+    const to = getModal(toId);
 
-    // Botones "Atrás" en formularios -> vuelven al selector
-    document.querySelectorAll('[data-action="back-to-plan"]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const form = btn.closest('form');
-        if (form) form.classList.remove('was-validated');
-        hideModal('modalGratuito');
-        hideModal('modalPago');
-        showModal('modalPlanSelect');
-      });
-    });
+    // Si el origen no está abierto, simplemente abre el destino
+    if (!fromEl.classList.contains('show')) {
+      cleanupBackdrops();
+      to.show();
+      if (focusSelector) setTimeout(() => byId(focusSelector)?.focus(), 200);
+      return;
+    }
 
-    // Validación Bootstrap + spinner
-    const validateAndSpin = (form, spinnerId) => {
-      form.classList.add('was-validated');
-      if (!form.checkValidity()) return false;
-      document.getElementById(spinnerId).classList.remove('d-none');
-      return true;
+    const onHidden = () => {
+      fromEl.removeEventListener('hidden.bs.modal', onHidden);
+      cleanupBackdrops();
+      to.show();
+      if (focusSelector) setTimeout(() => byId(focusSelector)?.focus(), 200);
     };
-    const stopSpin = (spinnerId) => document.getElementById(spinnerId).classList.add('d-none');
+    fromEl.addEventListener('hidden.bs.modal', onHidden, { once: true });
+    from.hide();
+  };
 
-    // Luhn para tarjeta
-    const isValidCard = (num) => {
-      const digits = num.replace(/\s+/g, '');
-      if (!/^\d{13,19}$/.test(digits)) return false;
-      let sum = 0, alt = false;
-      for (let i = digits.length - 1; i >= 0; i--) {
-        let n = parseInt(digits[i], 10);
-        if (alt) { n *= 2; if (n > 9) n -= 9; }
-        sum += n; alt = !alt;
-      }
-      return sum % 10 === 0;
-    };
+  // Cierra y limpia TODO
+  const closeAllModals = () => {
+    document.querySelectorAll('.modal.show').forEach(m => getModal(m.id).hide());
+    // Espera al ciclo para que Bootstrap quite el backdrop y luego limpia por si quedó algo.
+    setTimeout(cleanupBackdrops, 250);
+  };
 
-    // Máscara simple para tarjeta (**** **** **** ****)
-    const tarjetaInput = document.getElementById('tarjeta');
+  // --- Estado simple (si lo necesitas) ---
+  const state = { plan: null, email: null };
+
+  // --- Selección de plan ---
+  byId('btnPlanGratuito').addEventListener('click', () => {
+    state.plan = 'gratuito';
+    transitionModal('modalPlanSelect', 'modalGratuito', 'nombreGratis');
+  });
+
+  byId('btnPlanPago').addEventListener('click', () => {
+    state.plan = 'pago';
+    byId('planResumen').textContent = 'Has elegido: Plan sin anuncios';
+    transitionModal('modalPlanSelect', 'modalPago', 'nombrePago');
+  });
+
+  // --- Botones Atrás -> vuelven al selector, con limpieza segura ---
+  document.querySelectorAll('[data-action="back-to-plan"]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const currentModal = btn.closest('.modal');
+      resetFormInModal(currentModal);
+      transitionModal(currentModal.id, 'modalPlanSelect');
+    });
+  });
+
+  // --- Validación nativa + spinners ---
+  const validateAndSpin = (form, spinnerId) => {
+    form.classList.add('was-validated');
+    if (!form.checkValidity()) return false;
+    if (spinnerId) byId(spinnerId).classList.remove('d-none');
+    return true;
+  };
+  const stopSpin = (spinnerId) => spinnerId && byId(spinnerId).classList.add('d-none');
+
+  // --- Luhn para tarjeta ---
+  const isValidCard = (num) => {
+    const digits = num.replace(/\s+/g, '');
+    if (!/^\d{13,19}$/.test(digits)) return false;
+    let sum = 0, alt = false;
+    for (let i = digits.length - 1; i >= 0; i--) {
+      let n = digits.charCodeAt(i) - 48;
+      if (alt) { n *= 2; if (n > 9) n -= 9; }
+      sum += n; alt = !alt;
+    }
+    return sum % 10 === 0;
+  };
+
+  // --- Máscara tarjeta ---
+  const tarjetaInput = byId('tarjeta');
+  if (tarjetaInput) {
     tarjetaInput.addEventListener('input', (e) => {
       let v = e.target.value.replace(/\D/g, '').slice(0,19);
       v = v.replace(/(\d{4})(?=\d)/g, '$1 ');
       e.target.value = v;
     });
+  }
 
-    // Form gratuito
-    document.getElementById('formGratuito').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const form = e.currentTarget;
-      if (!validateAndSpin(form, 'spGratis')) return;
+  // --- Submit GRATUITO ---
+  byId('formGratuito').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const form = e.currentTarget;
+    if (!validateAndSpin(form, 'spGratis')) return;
 
-      const nombre = document.getElementById('nombreGratis').value.trim();
-      const email = document.getElementById('emailGratis').value.trim();
-      state.email = email;
+    state.email = byId('emailGratis').value.trim();
 
-      try {
-        // Simula una llamada API
-        await new Promise(r => setTimeout(r, 800));
-        hideModal('modalGratuito');
-        new bootstrap.Toast(document.getElementById('toastOk')).show();
-        // Reset
-        form.reset(); form.classList.remove('was-validated');
-      } catch (err) {
-        console.error(err);
-      } finally {
-        stopSpin('spGratis');
+    try {
+      await new Promise(r => setTimeout(r, 600)); // tu llamada API real aquí
+      // Cierra actual; el reset se hará en 'hidden'
+      getModal('modalGratuito').hide();
+      setTimeout(() => new bootstrap.Toast(byId('toastOk')).show(), 250);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      stopSpin('spGratis');
+    }
+  });
+
+  // --- Submit PAGO ---
+  byId('formPago').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const form = e.currentTarget;
+    if (!validateAndSpin(form, 'spPago')) return;
+
+    const num = byId('tarjeta').value.replace(/\s+/g, '');
+    if (!isValidCard(num)) {
+      byId('tarjeta').setCustomValidity('Tarjeta inválida');
+      form.classList.add('was-validated');
+      stopSpin('spPago');
+      byId('tarjeta').reportValidity();
+      byId('tarjeta').addEventListener('input', () => byId('tarjeta').setCustomValidity(''), { once: true });
+      return;
+    }
+
+    state.email = byId('emailPago').value.trim();
+
+    try {
+      await new Promise(r => setTimeout(r, 900)); // tu cobro real aquí
+      getModal('modalPago').hide();
+      setTimeout(() => new bootstrap.Toast(byId('toastOk')).show(), 250);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      stopSpin('spPago');
+    }
+  });
+
+  // --- Eventos globales: al ocultar cualquier modal, limpia y previene congelamiento ---
+  ['modalPlanSelect', 'modalGratuito', 'modalPago'].forEach(id => {
+    const el = byId(id);
+
+    // Si el modal es "static" y el usuario presiona ESC o clic fuera, Bootstrap dispara hidePrevented: lo forzamos a cerrar si así lo quieres
+    el.addEventListener('hidePrevented.bs.modal', () => {
+      // Opcional: comenta la siguiente línea si quieres mantener el bloqueo "static"
+      getModal(id).hide();
+    });
+
+    // Al quedar oculto: reset de formularios y limpieza de backdrops
+    el.addEventListener('hidden.bs.modal', () => {
+      resetFormInModal(el);
+      cleanupBackdrops();
+      // Si NO queda ningún modal abierto, también limpiamos estado
+      if (!document.querySelector('.modal.show')) {
+        Object.assign(state, { plan: null, email: null });
       }
     });
 
-    // Form pago
-    document.getElementById('formPago').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const form = e.currentTarget;
-      // Validación nativa
-      if (!validateAndSpin(form, 'spPago')) return;
+    // Al mostrarse: por si venías de un estado raro, sanea backdrops
+    el.addEventListener('shown.bs.modal', cleanupBackdrops);
+  });
 
-      const tarjeta = document.getElementById('tarjeta');
-      const num = tarjeta.value.replace(/\s+/g, '');
-      if (!isValidCard(num)) {
-        tarjeta.setCustomValidity('Tarjeta inválida');
-        form.classList.add('was-validated');
-        stopSpin('spPago');
-        tarjeta.reportValidity();
-        tarjeta.addEventListener('input', () => tarjeta.setCustomValidity(''), { once: true });
-        return;
-      }
+  // Botones "Cerrar" estándar: ya traen data-bs-dismiss="modal" en tu HTML; el reset se aplica en 'hidden'
 
-      const email = document.getElementById('emailPago').value.trim();
-      state.email = email;
-
-      try {
-        // Simula pago
-        await new Promise(r => setTimeout(r, 1100));
-        hideModal('modalPago');
-        new bootstrap.Toast(document.getElementById('toastOk')).show();
-        form.reset(); form.classList.remove('was-validated');
-      } catch (err) {
-        console.error(err);
-      } finally {
-        stopSpin('spPago');
-      }
-    });
-
-    // Calidad de vida: cerrar un modal y evitar foco “perdido”
-    ['modalGratuito', 'modalPago', 'modalPlanSelect'].forEach(id => {
-      document.getElementById(id).addEventListener('hidden.bs.modal', () => {
-        document.activeElement?.blur?.();
-      });
-    });
-  })();
+  // Utilidad pública si quieres cerrarlo todo desde fuera:
+  window.closeAllModals = closeAllModals;
+})();
 </script>
-
-
 
 
 {% endblock %}
