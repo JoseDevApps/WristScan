@@ -426,49 +426,72 @@
 
 
     </div>
-  <script>
+
+
+    <script>
   document.addEventListener('DOMContentLoaded', function () {
     const modalPlanSelectEl = document.getElementById('modalPlanSelect');
     const modalGratuitoEl = document.getElementById('modalGratuito');
     const modalPagoEl = document.getElementById('modalPago');
 
-    const modalPlanSelect = bootstrap.Modal.getOrCreateInstance(modalPlanSelectEl);
+    const modalPlanSelect = new bootstrap.Modal(modalPlanSelectEl);
     const modalGratuito = new bootstrap.Modal(modalGratuitoEl);
     const modalPago = new bootstrap.Modal(modalPagoEl);
 
-    // Botón "Plan gratuito con anuncios"
+    function limpiarBackdrop() {
+      document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+      document.body.classList.remove('modal-open');
+      document.body.style = ''; // Limpia estilos inline que puedan bloquear el scroll
+    }
+
+    // Botón: Plan gratuito
     document.getElementById('btnPlanGratuito').addEventListener('click', function () {
       modalPlanSelect.hide();
+
       modalPlanSelectEl.addEventListener('hidden.bs.modal', function handler() {
+        limpiarBackdrop();
         modalGratuito.show();
         modalPlanSelectEl.removeEventListener('hidden.bs.modal', handler);
       });
     });
 
-    // Botón "Plan de pago sin anuncios"
+    // Botón: Plan de pago
     document.getElementById('btnPlanPago').addEventListener('click', function () {
       modalPlanSelect.hide();
+
       modalPlanSelectEl.addEventListener('hidden.bs.modal', function handler() {
+        limpiarBackdrop();
         modalPago.show();
         modalPlanSelectEl.removeEventListener('hidden.bs.modal', handler);
       });
     });
 
-    // Envío del formulario gratuito
+    // Formulario gratuito
     document.getElementById('formGratuito').addEventListener('submit', function (e) {
       e.preventDefault();
       alert('Gracias por elegir el plan gratuito.');
       modalGratuito.hide();
+
+      modalGratuitoEl.addEventListener('hidden.bs.modal', function handler() {
+        limpiarBackdrop();
+        modalGratuitoEl.removeEventListener('hidden.bs.modal', handler);
+      });
     });
 
-    // Envío del formulario de pago
+    // Formulario pago
     document.getElementById('formPago').addEventListener('submit', function (e) {
       e.preventDefault();
       alert('Pago procesado con éxito. ¡Bienvenido al plan sin anuncios!');
       modalPago.hide();
+
+      modalPagoEl.addEventListener('hidden.bs.modal', function handler() {
+        limpiarBackdrop();
+        modalPagoEl.removeEventListener('hidden.bs.modal', handler);
+      });
     });
   });
 </script>
+
 
 
 {% endblock %}
