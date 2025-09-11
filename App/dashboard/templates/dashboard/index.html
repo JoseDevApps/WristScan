@@ -491,9 +491,11 @@
     form.reset();
     form.classList.remove('was-validated');
     form.querySelectorAll('.spinner-border').forEach(sp => sp.classList.add('d-none'));
-    form.querySelectorAll('input').forEach(inp => inp.setCustomValidity(''));
+    form.querySelectorAll('input,select,textarea').forEach(inp => inp.setCustomValidity?.(''));
     const resumen = form.querySelector('#planResumen');
     if (resumen) resumen.textContent = '';
+    // Rehabilita controles por si quedaron deshabilitados tras un intento de POST
+    form.querySelectorAll('button, input, select, textarea').forEach(el => el.disabled = false);
   };
 
   // Dispone todas las instancias activas (evita focus-traps colgados)
@@ -517,12 +519,9 @@
 
   // Abre un modal garantizando estado limpio (usado para "reabrir desde cero")
   const openFreshModal = async (targetId, focusId) => {
-    // 1) Cierra lo abierto y espera
     await waitAllHidden();
-    // 2) Limpia residuos e instancias
     disposeAllModals();
     hardBackdropCleanup();
-    // 3) Abre nuevo
     const el = byId(targetId);
     const m = getOrCreate(el, { backdrop: true, keyboard: true, focus: true });
     m.show();
@@ -550,10 +549,15 @@
   byId('btnPlanGratuito')?.addEventListener('click', () => {
     transitionModal('modalPlanSelect', 'modalGratuito', 'nombreGratis');
   });
+
   byId('btnPlanPago')?.addEventListener('click', () => {
-    byId('planResumen').textContent = 'Has elegido: Plan sin anuncios';
-    transitionModal('modalPlanSelect', 'modalPago', 'nombrePago');
+    const resumen = byId('planResumen');
+    if (resumen) resumen.textContent = 'Has elegido: Plan sin anuncios';
+    // Si quieres pasar el plan al servidor:
+    byId('selected_plan')?.setAttribute('value', 'pago');
+    transitionModal('modalPlanSelect', 'modalPago', 'nombrePago'); // si tu form Django no tiene este id, quita el focusId
   });
+
   $$('[data-action="back-to-plan"]').forEach(btn => {
     btn.addEventListener('click', () => {
       const current = btn.closest('.modal');
@@ -562,16 +566,19 @@
     });
   });
 
-  // ----- Validación + spinner (igual que antes) -----
+  // ----- Validación + spinner -----
   const validateAndSpin = (form, spinnerId) => {
     form.classList.add('was-validated');
     if (!form.checkValidity()) return false;
-    spinnerId && byId(spinnerId).classList.remove('d-none');
+    spinnerId && byId(spinnerId)?.classList.remove('d-none');
     return true;
   };
-  const stopSpin = (spinnerId) => spinnerId && byId(spinnerId).classList.add('d-none');
+  const stopSpin = (spinnerId) => spinnerId && byId(spinnerId)?.classList.add('d-none');
 
-  // Luhn + máscara tarjeta
+  // ----- Máscara y Luhn OPCIONALES (solo si existe el campo de tarjeta) -----
+  const getCardInput = () => byId('tarjeta') || byId('id_tarjeta');
+  const cardInput = getCardInput();
+
   const isValidCard = (num) => {
     const d = num.replace(/\s+/g, '');
     if (!/^\d{13,19}$/.test(d)) return false;
@@ -583,39 +590,79 @@
     }
     return sum%10===0;
   };
-  byId('tarjeta')?.addEventListener('input', (e) => {
-    let v = e.target.value.replace(/\D/g,'').slice(0,19).replace(/(\d{4})(?=\d)/g,'$1 ');
-    e.target.value = v;
-  });
 
-  // Submits
+  if (cardInput) {
+    cardInput.addEventListener('input', (e) => {
+      let v = e.target.value.replace(/\D/g,'').slice(0,19).replace(/(\d{4})(?=\d)/g,'$1 ');
+      e.target.value = v;
+    });
+  }
+
+  // ----- Submit GRATUITO (permanece en AJAX simulado) -----
   byId('formGratuito')?.addEventListener('submit', async (e) => {
     e.preventDefault();
     const form = e.currentTarget;
     if (!validateAndSpin(form, 'spGratis')) return;
     try {
-      await new Promise(r => setTimeout(r, 600)); // API real
+      await new Promise(r => setTimeout(r, 600)); // API real aquí
       instance(byId('modalGratuito')).hide();
       setTimeout(() => new bootstrap.Toast(byId('toastOk')).show(), 220);
     } finally {
       stopSpin('spGratis');
     }
   });
-  byId('formPago')?.addEventListener('submit', async (e) => {
-    e.preventDefault();
+
+  // ----- Submit PAGO (ahora soporta POST clásico a Django) -----
+  const formPagoEl = byId('formPago');
+  formPagoEl?.addEventListener('submit', async (e) => {
     const form = e.currentTarget;
-    if (!validateAndSpin(form, 'spPago')) return;
-    const num = byId('tarjeta').value.replace(/\s+/g,'');
-    if (!isValidCard(num)) {
-      byId('tarjeta').setCustomValidity('Tarjeta inválida');
+
+    // ¿Es POST al servidor?
+    if (form.dataset.behavior === 'server-post') {
+      // Validación HTML5 básica
       form.classList.add('was-validated');
-      stopSpin('spPago');
-      byId('tarjeta').reportValidity();
-      byId('tarjeta').addEventListener('input', () => byId('tarjeta').setCustomValidity(''), { once: true });
-      return;
+      if (!form.checkValidity()) {
+        e.preventDefault(); // bloquea si no válido
+        return;
+      }
+
+      // Si hay campo tarjeta y quieres validar Luhn del lado cliente ANTES del POST:
+      if (cardInput) {
+        const raw = cardInput.value.replace(/\s+/g,'');
+        if (!isValidCard(raw)) {
+          e.preventDefault();
+          cardInput.setCustomValidity('Tarjeta inválida');
+          form.classList.add('was-validated');
+          cardInput.reportValidity();
+          cardInput.addEventListener('input', () => cardInput.setCustomValidity(''), { once: true });
+          return;
+        }
+      }
+
+      // Spinner + bloqueo para evitar doble submit; NO preventDefault → deja que Django procese
+      byId('spPago')?.classList.remove('d-none');
+      form.querySelectorAll('button, input, select, textarea').forEach(el => el.disabled = true);
+      return; // Deja continuar el POST
     }
+
+    // --- Si NO es server-post, sigue tu flujo AJAX previo (opcional) ---
+    e.preventDefault();
+    if (!validateAndSpin(form, 'spPago')) return;
+
+    if (cardInput) {
+      const num = cardInput.value.replace(/\s+/g,'');
+      if (!isValidCard(num)) {
+        cardInput.setCustomValidity('Tarjeta inválida');
+        form.classList.add('was-validated');
+        stopSpin('spPago');
+        cardInput.reportValidity();
+        cardInput.addEventListener('input', () => cardInput.setCustomValidity(''), { once: true });
+        return;
+      }
+    }
+
     try {
-      await new Promise(r => setTimeout(r, 900)); // Cobro real
+      await new Promise(r => setTimeout(r, 900)); // Cobro real en AJAX
       instance(byId('modalPago')).hide();
       setTimeout(() => new bootstrap.Toast(byId('toastOk')).show(), 220);
     } finally {
@@ -629,7 +676,6 @@
     if (!el) return;
     el.addEventListener('hidden.bs.modal', () => {
       resetFormIn(el);
-      // Si no queda ninguno abierto, destruimos instancias y limpiamos duro
       if ($$('.modal.show').length === 0) {
         disposeAllModals();
         hardBackdropCleanup();
@@ -638,14 +684,15 @@
   });
 
   // ----- Reabrir desde cero (botón "Seleccionar plan") -----
-  // Si usas <a data-bs-toggle="modal" href="#modalPlanSelect">, a veces dispara antes del cleanup.
-  // Mejor enganchar manualmente:
   const trigger = document.querySelector('[data-bs-toggle="modal"][href="#modalPlanSelect"]');
   if (trigger) {
     trigger.removeAttribute('data-bs-toggle');
     trigger.removeAttribute('href');
     trigger.addEventListener('click', () => openFreshModal('modalPlanSelect'));
   }
+
+  // Seguridad extra al recargar tras POST: borra residuos si el servidor re-renderiza la misma página
+  document.addEventListener('DOMContentLoaded', hardBackdropCleanup);
 })();
 </script>
 
