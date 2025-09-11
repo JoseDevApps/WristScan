@@ -288,13 +288,6 @@
       <div class="col-md-12">
         <div class="card p-4">
 
-          <!-- <div class="container text-center">
-            <button class="btn btn-primary btn-lg d-flex align-items-center justify-content-center gap-2 mx-auto"
-                    data-bs-toggle="modal" data-bs-target="#postFormModal" style="min-width: 200px;">
-              <i class="fas fa-qrcode"></i>
-              <span>GET CODES</span>
-            </button>
-          </div> -->
 
            <div class="container text-center">
             <button class="btn btn-primary btn-lg d-flex align-items-center justify-content-center gap-2 mx-auto"
@@ -304,71 +297,65 @@
             </button>
           </div>
 
-
-<!-- Trigger -->
-<!-- <a class="btn btn-primary" data-bs-toggle="modal" href="#modalPlanSelect" role="button">
-  Seleccionar plan
-</a> -->
-
-<!-- Modal 1: Selección de plan -->
+<!-- Modal 1: Plan selection -->
 <div class="modal fade" id="modalPlanSelect" aria-hidden="true" aria-labelledby="modalPlanSelectLabel" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="modalPlanSelectLabel">Selecciona tu plan</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        <h5 class="modal-title" id="modalPlanSelectLabel">Select your plan</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <p id="planHelp">Elige una de las siguientes opciones:</p>
+        <p id="planHelp">Choose one of the following options:</p>
         <div class="d-grid gap-2">
           <button class="btn btn-outline-primary" id="btnPlanGratuito" aria-describedby="planHelp">
-            Plan gratuito con anuncios
+            Free plan with ads
           </button>
           <button class="btn btn-outline-success" id="btnPlanPago" aria-describedby="planHelp">
-            Plan de pago sin anuncios
+            Paid plan without ads
           </button>
         </div>
       </div>
       <div class="modal-footer justify-content-between">
-        <small class="text-muted ms-1">Podrás volver atrás si te equivocas.</small>
-        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
+        <small class="text-muted ms-1">You can go back if you make a mistake.</small>
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Modal 2: Formulario plan gratuito -->
+<!-- Modal 2: Free plan form -->
 <div class="modal fade" id="modalGratuito" data-bs-backdrop="static" data-bs-keyboard="false"
      aria-hidden="true" aria-labelledby="modalGratuitoLabel" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <form id="formGratuito" novalidate>
         <div class="modal-header">
-          <h5 class="modal-title" id="modalGratuitoLabel">Plan gratuito con anuncios</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+          <h5 class="modal-title" id="modalGratuitoLabel">Free plan with ads</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
           <div class="mb-3">
-            <label for="nombreGratis" class="form-label">Nombre</label>
+            <label for="nombreGratis" class="form-label">Name</label>
             <input type="text" class="form-control" id="nombreGratis" name="nombreGratis"
                    autocomplete="name" required />
-            <div class="invalid-feedback">Por favor, ingresa tu nombre.</div>
+            <div class="invalid-feedback">Please enter your name.</div>
           </div>
           <div class="mb-3">
-            <label for="emailGratis" class="form-label">Correo electrónico</label>
+            <label for="emailGratis" class="form-label">Email address</label>
             <input type="email" class="form-control" id="emailGratis" name="emailGratis"
                    autocomplete="email" inputmode="email" required />
-            <div class="invalid-feedback">Ingresa un correo válido.</div>
+            <div class="invalid-feedback">Enter a valid email.</div>
           </div>
           <p class="text-muted small">
-            Aceptas ver anuncios personalizados según tu perfil.
+            You agree to see personalized ads based on your profile.
           </p>
         </div>
         <div class="modal-footer justify-content-between">
-          <button type="button" class="btn btn-outline-secondary" data-action="back-to-plan">Atrás</button>
+          <button type="button" class="btn btn-outline-secondary" data-action="back-to-plan">Back</button>
           <button type="submit" class="btn btn-primary">
             <span class="spinner-border spinner-border-sm me-1 d-none" id="spGratis" aria-hidden="true"></span>
-            Continuar
+            Continue
           </button>
         </div>
       </form>
@@ -376,31 +363,29 @@
   </div>
 </div>
 
-<!-- Modal 3: Formulario plan de pago -->
-<!-- Modal 3: Formulario plan de pago (Django POST) -->
+<!-- Modal 3: Paid plan form (Django POST) -->
 <div class="modal fade" id="modalPago" data-bs-backdrop="static" data-bs-keyboard="false"
      tabindex="-1" aria-labelledby="modalPagoLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <form method="POST" action="{% url 'dashboard:inicio' %}">
-                {% csrf_token %}
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <h5 class="modal-title" id="modalLabel">Buy QR Codes</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                  </div>
-                  <div class="modal-body">
-                    {{ form.as_p }}
-                  </div>
-                  <div class="modal-footer">
-                    <button type="submit" class="btn btn-info">Send</button>
-                  </div>
-                </div>
-              </form>
+        {% csrf_token %}
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="modalLabel">Purchase QR Codes</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            {{ form.as_p }}
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-info">Submit</button>
+          </div>
+        </div>
+      </form>
     </div>
   </div>
 </div>
-
 
 <!-- Toast de confirmación -->
 <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1080">
