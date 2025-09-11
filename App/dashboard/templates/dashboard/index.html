@@ -426,4 +426,35 @@
 
 
     </div>
+        <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        const modalPlanSelect = bootstrap.Modal.getOrCreateInstance(document.getElementById('modalPlanSelect'));
+        const modalGratuito = new bootstrap.Modal(document.getElementById('modalGratuito'));
+        const modalPago = new bootstrap.Modal(document.getElementById('modalPago'));
+
+        document.getElementById('btnPlanGratuito').addEventListener('click', function () {
+          modalPlanSelect.hide();
+          modalGratuito.show();
+        });
+
+        document.getElementById('btnPlanPago').addEventListener('click', function () {
+          modalPlanSelect.hide();
+          modalPago.show();
+        });
+
+        // Puedes manejar los formularios aquí si deseas
+        document.getElementById('formGratuito').addEventListener('submit', function (e) {
+          e.preventDefault();
+          alert('Gracias por registrarte en el plan gratuito.');
+          modalGratuito.hide();
+        });
+
+        document.getElementById('formPago').addEventListener('submit', function (e) {
+          e.preventDefault();
+          alert('Pago procesado. ¡Bienvenido al plan sin anuncios!');
+          modalPago.hide();
+        });
+      });
+    </script>
+
 {% endblock %}
