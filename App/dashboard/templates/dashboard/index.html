@@ -428,8 +428,8 @@
     </div>
 
 
- <script>
-  document.addEventListener('DOMContentLoaded', function () {
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
     const modalPlanSelectEl = document.getElementById('modalPlanSelect');
     const modalGratuitoEl = document.getElementById('modalGratuito');
     const modalPagoEl = document.getElementById('modalPago');
@@ -438,62 +438,58 @@
     const modalGratuito = new bootstrap.Modal(modalGratuitoEl);
     const modalPago = new bootstrap.Modal(modalPagoEl);
 
-    // Limpia el backdrop y clases que pueden bloquear la pantalla
+    // Limpia backdrop y estado del body si Bootstrap falla en hacerlo
     function limpiarBackdrop() {
       document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
       document.body.classList.remove('modal-open');
-      document.body.style = '';
+      document.body.style.overflow = '';
+      document.body.style.paddingRight = '';
     }
 
-    // Funciones nombradas para evitar múltiples registros
-    function mostrarModalGratuito() {
-      limpiarBackdrop();
-      modalGratuito.show();
-      modalPlanSelectEl.removeEventListener('hidden.bs.modal', mostrarModalGratuito);
-    }
-
-    function mostrarModalPago() {
-      limpiarBackdrop();
-      modalPago.show();
-      modalPlanSelectEl.removeEventListener('hidden.bs.modal', mostrarModalPago);
-    }
-
-    function limpiarDespuesDeGratuito() {
-      limpiarBackdrop();
-      modalGratuitoEl.removeEventListener('hidden.bs.modal', limpiarDespuesDeGratuito);
-    }
-
-    function limpiarDespuesDePago() {
-      limpiarBackdrop();
-      modalPagoEl.removeEventListener('hidden.bs.modal', limpiarDespuesDePago);
-    }
-
-    // Botón: Plan gratuito
-    document.getElementById('btnPlanGratuito').addEventListener('click', function () {
-      modalPlanSelectEl.addEventListener('hidden.bs.modal', mostrarModalGratuito);
+    // Mostrar modal gratuito sin acumular eventos
+    document.getElementById('btnPlanGratuito').addEventListener('click', () => {
+      modalPlanSelectEl.addEventListener('hidden.bs.modal', function handle() {
+        modalGratuito.show();
+        modalPlanSelectEl.removeEventListener('hidden.bs.modal', handle);
+      });
       modalPlanSelect.hide();
     });
 
-    // Botón: Plan de pago
-    document.getElementById('btnPlanPago').addEventListener('click', function () {
-      modalPlanSelectEl.addEventListener('hidden.bs.modal', mostrarModalPago);
+    // Mostrar modal pago sin acumular eventos
+    document.getElementById('btnPlanPago').addEventListener('click', () => {
+      modalPlanSelectEl.addEventListener('hidden.bs.modal', function handle() {
+        modalPago.show();
+        modalPlanSelectEl.removeEventListener('hidden.bs.modal', handle);
+      });
       modalPlanSelect.hide();
     });
 
     // Formulario gratuito
     document.getElementById('formGratuito').addEventListener('submit', function (e) {
       e.preventDefault();
-      alert('Gracias por elegir el plan gratuito.');
-      modalGratuitoEl.addEventListener('hidden.bs.modal', limpiarDespuesDeGratuito);
       modalGratuito.hide();
+      modalGratuitoEl.addEventListener('hidden.bs.modal', function handle() {
+        limpiarBackdrop();
+        alert('Gracias por elegir el plan gratuito.');
+        modalGratuitoEl.removeEventListener('hidden.bs.modal', handle);
+      });
     });
 
     // Formulario pago
     document.getElementById('formPago').addEventListener('submit', function (e) {
       e.preventDefault();
-      alert('Pago procesado con éxito. ¡Bienvenido al plan sin anuncios!');
-      modalPagoEl.addEventListener('hidden.bs.modal', limpiarDespuesDePago);
       modalPago.hide();
+      modalPagoEl.addEventListener('hidden.bs.modal', function handle() {
+        limpiarBackdrop();
+        alert('Pago procesado con éxito. ¡Bienvenido al plan sin anuncios!');
+        modalPagoEl.removeEventListener('hidden.bs.modal', handle);
+      });
+    });
+
+    // Extra safety: limpieza manual al cerrar cualquier modal
+    ['modalPlanSelect', 'modalGratuito', 'modalPago'].forEach(id => {
+      const el = document.getElementById(id);
+      el.addEventListener('hidden.bs.modal', limpiarBackdrop);
     });
   });
 </script>
