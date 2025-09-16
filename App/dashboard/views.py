@@ -887,7 +887,7 @@ def listdb(request):
         if not free_with_ads:
             send_event_qr_codes.delay(event.id)
 
-        origen = "gratis con Ads" si free_with_ads else "con tus tickets"
+        origen = "gratis con Ads" if free_with_ads else "con tus tickets"
         messages.success(request, f"Evento '{event.name}' creado {origen}.")
         return redirect('dashboard:inicio')
 
