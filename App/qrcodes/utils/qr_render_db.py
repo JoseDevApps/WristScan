@@ -290,10 +290,11 @@ from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 from PIL import Image, ImageDraw, ImageFont, ImageOps
 import qrcode
+from PIL import Image, ImageOps
 
 from qrcodes.models import QRCode
 from dashboard.ads_selector import get_banner_for_country
-
+from pathlib import Path
 CANVAS_W, CANVAS_H = 720, 1330
 TOP_H = 120
 FOOTER_H = 60
@@ -341,11 +342,42 @@ def _open_from_storage_or_field(field_or_path: Union[str, object]) -> Optional[I
         pass
     return None
 
-def load_image_or_color(field_or_path, fallback_rgba=(235, 235, 235, 255), size=(100, 100)):
-    im = _open_from_storage_or_field(field_or_path)
-    if im is None:
-        return Image.new("RGBA", size, fallback_rgba)
-    return fit_exact(im, size)
+# def load_image_or_color(field_or_path, fallback_rgba=(235, 235, 235, 255), size=(100, 100)):
+#     im = _open_from_storage_or_field(field_or_path)
+#     if im is None:
+#         return Image.new("RGBA", size, fallback_rgba)
+#     return fit_exact(im, size)
+
+def load_image_or_color(field_or_path,
+                        fallback_rgba=(235, 235, 235, 255),
+                        size=(100, 100)) -> Image.Image:
+    """
+    Carga una imagen desde:
+      - FieldFile (tiene .open())
+      - nombre (str) en default_storage
+      - ruta absoluta local (último recurso)
+    """
+    try:
+        if hasattr(field_or_path, "open"):
+            field_or_path.open()
+            with Image.open(field_or_path) as im:
+                return ImageOps.fit(im.convert("RGBA"), size, method=Image.LANCZOS)
+
+        if isinstance(field_or_path, str) and field_or_path.strip():
+            name = field_or_path.strip()
+            if default_storage.exists(name):
+                with default_storage.open(name, "rb") as fh:
+                    with Image.open(fh) as im:
+                        return ImageOps.fit(im.convert("RGBA"), size, method=Image.LANCZOS)
+
+            p = Path(name)
+            if p.exists():
+                with Image.open(p) as im:
+                    return ImageOps.fit(im.convert("RGBA"), size, method=Image.LANCZOS)
+    except Exception:
+        pass
+
+    return Image.new("RGBA", size, fallback_rgba)
 
 def make_qr(data: str, size: int = QR_SIZE) -> Image.Image:
     qr_raw = qrcode.make(data)

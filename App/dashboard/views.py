@@ -871,7 +871,7 @@ def listdb(request):
             messages.success(request, f"Se aplicó publicidad/footers a {event.qr_codes.count()} QR(s) por país.")
 
         # 7) re-renderizar (pequeño lote) ya con máscara/publicidad
-        qrs = event.qr_codes.only("id", "data")
+        qrs = event.qr_codes.only("id", "data", "mask_banner", "top_banner", "enable_top_banner")
         MAX_INLINE = 200
         done = 0
         for qr in qrs[:MAX_INLINE]:
