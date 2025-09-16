@@ -330,7 +330,8 @@ def inicio(request):
                 plan = 'free',
                 ads_enabled = True
             )
-            return reverse('dashboard:inicio')
+            url= reverse('dashboard:inicio')
+            return redirect(url)
     print(user_events)
     context = {'user':user_name, "NC":str(len(qr_codes_list)), "NE":str(len(user_events)), "purchased":total_qr_purchased_by_user+available_codes_count, 'tp':total_qr_used_by_user,
                'available':available_codes_count,'used':total_qr_purchased_by_user, 'recycle':total_qr_recycled_by_user,
