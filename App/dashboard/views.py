@@ -660,7 +660,7 @@ def listdb(request):
                     break
 
         # 5) máscara subida (opcional)
-        mask_file = form.cleaned_data.get("mask_image")
+        mask_file = request.POST["mask_image"]
         if mask_file:
             dest_path = save_event_mask(event.id, mask_file)
             updated = event.qr_codes.update(mask_banner=dest_path)
