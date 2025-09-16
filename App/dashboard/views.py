@@ -242,8 +242,8 @@ def export_qr_codes_to_excel(request, event_id):
     # Estructurar los datos
     data = [
         {
-            "QR ID": qr.id,
-            "QRCode": qr.data,
+            "id": qr.id,
+            "code": qr.data,
             "Status": qr.status_purchased,
         }
         for qr in qr_codes
@@ -310,11 +310,9 @@ def inicio(request):
         print(f"Evento: {event.name}, QR Comprados: {event.purchased_qr_count}")
         print(event.total_qr_count)
     form = MyPostForm(request.POST)
-    # if form.is_valid():
-    #         ticket = form.save(commit=False)
-    #         ticket.user_name = user_name if hasattr(user_name, 'email') else str(user_name)
-    #         ticket.save()
+
     if request.method == "POST":
+        print(request.POST['solicitud'])
         ticket_db = Ticket.objects.create(
             user_name = user_name,
             quantity = request.POST["quantity"],

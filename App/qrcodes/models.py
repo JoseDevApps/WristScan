@@ -32,12 +32,21 @@ class PriceTier(models.Model):
         """Returns the price in dollars as Decimal."""
         return self.price_cents / 100
 
-# 🎟️ Ticket comprado por un usuario
+# Ticket comprado por un usuario
 class Ticket(models.Model):
+
+    PLAN_CHOICES = (
+        ('free', 'Free (with Ads)'),
+        ('paid', 'Without Ads'),
+    )
+
     user_name = models.ForeignKey(User, on_delete=models.CASCADE, related_name="ticket")
     quantity = models.PositiveIntegerField(default=1)
     created_at = models.DateTimeField(auto_now_add=True)
     is_paid = models.BooleanField(default=False)
+
+    plan = models.CharField(max_length=10, choices=PLAN_CHOICES, default='paid')
+    ads_enabled = models.BooleanField(default=False)  # true si free
 
     def __str__(self):
         return f"{self.user_name} ({self.quantity} tickets)"
@@ -101,6 +110,7 @@ class Event(models.Model):
     qr_codes = models.ManyToManyField("QRCode", blank=True)
     qr_code_count = models.PositiveIntegerField(default=1)
     image = models.ImageField(upload_to="qrmask/", blank=True, null=True)
+    ads_enabled = models.BooleanField(default=False)  # NUEVO
     monitors = models.ManyToManyField(
         settings.AUTH_USER_MODEL,
         through='EventRole',
