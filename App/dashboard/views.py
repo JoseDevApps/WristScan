@@ -509,131 +509,53 @@ def reciclar_qr_evento(request, id):
         "recyclable_count": recyclable_count,  # opcional, para mostrar “hay X a reciclar”
     })
 
-################################################
-#   Pagina de QR view events form db
-################################################
-# @login_required
-# def listdb(request):
-#     template = 'dashboard/tables_event.html'
-#     user_name = request.user
-#     user_id = request.user.id
-#     if request.method == "POST":
-#         form = AutoTicketAssignmentForm(request.POST, user=request.user)
-#         event_name = request.POST['event']
-#         quantity_to_assign = int(request.POST['quantity'])
-#         # 1️⃣ Verificar si hay suficientes tickets disponibles
-#         tickets = Ticket.objects.filter(user_name=user_id, is_paid=True)
-#         total_unassigned = sum(t.unassigned_quantity() for t in tickets)
-#         print("Total>",total_unassigned)
-#         print("Asignado",quantity_to_assign)
-#         if total_unassigned < quantity_to_assign:
-#             messages.error(request, f"Tienes solo {total_unassigned} tickets no asignados. No se puede crear el evento.")
-#             # user_events = Event.objects.filter(created_by=user_id)
-#             user_events = Event.objects.filter(created_by=user_id).annotate(
-#                 recycled_count=Count(
-#                     'qr_codes',
-#                     filter=Q(qr_codes__status_recycled='recycled')
-#                 )
-#              )
-#             print(user_events)
-#             context = {'events': user_events, 'user':user_name,'form':form}
-#             return render(request, template, context)
-
-#         # 2️⃣ Crear imagen temporal en blanco
-#         image_save = Image.new('RGB', (300, 300), color='white')
-#         buffer = io.BytesIO()
-#         image_save.save(buffer, format="jpeg")
-#         buffer.seek(0)
-#         temp_image_file = InMemoryUploadedFile(
-#             buffer, None, "temp_image.png", "image/png", sys.getsizeof(buffer), None
-#         )
-
-#         # 3️⃣ Crear evento
-#         event = Event.objects.create(
-#             name=event_name,
-#             created_by=user_name,
-#             qr_code_count=quantity_to_assign,
-#             image=temp_image_file
-#         )
-
-#         # 4️⃣ Asignar a tickets disponibles
-#         remaining = quantity_to_assign
-#         for ticket in tickets:
-#             unassigned = ticket.unassigned_quantity()
-#             if unassigned > 0:
-#                 assign_now = min(remaining, unassigned)
-#                 TicketAssignment.objects.create(
-#                     ticket=ticket,
-#                     event=event.name,
-#                     quantity=assign_now,
-#                     event_fk=event
-#                 )
-#                 remaining -= assign_now
-#             if remaining == 0:
-#                 break
-
-#         # 5️⃣ Enviar códigos QR
-#         send_event_qr_codes.delay(event.id)
-
-#         messages.success(request, f"Se asignaron {quantity_to_assign} códigos QR al evento '{event.name}' correctamente.")
-#         return redirect('dashboard:inicio')
-#     else:
-#         form = AutoTicketAssignmentForm(user=user_id)
-#         # user_events = Event.objects.filter(created_by=user_id)
-#         user_events = Event.objects.filter(created_by=user_id).annotate(
-#             recycled_count=Count(
-#                 'qr_codes',
-#                 filter=Q(qr_codes__status_recycled='recycled')
-#             )
-#     )
-#         context = {'events': user_events, 'user':user_name,'form':form}
-#         return render(request, template, context)
 
 # @login_required
 # def listdb(request):
 #     template = 'dashboard/tables_event.html'
-#     user_name = request.user
-#     user_id = request.user.id
+#     user = request.user
+#     user_id = user.id
 
 #     if request.method == "POST":
-#         form = AutoTicketAssignmentForm(request.POST, request.FILES, user=request.user)
-#         event_name = request.POST['event']
-#         quantity_to_assign = int(request.POST['quantity'])
-#         free_with_ads = request.POST['free_with_ads'] is True
-
-#         # 1) verificar tickets
-#         tickets = Ticket.objects.filter(user_name=user_id, is_paid=True)
-#         total_unassigned = sum(t.unassigned_quantity() for t in tickets)
-
-#         if total_unassigned < quantity_to_assign and not free_with_ads:
-#             messages.error(request,
-#                 f"Tienes solo {total_unassigned} tickets no asignados. "
-#                 f"Marca 'Crear gratis con publicidad' para continuar.")
+#         form = AutoTicketAssignmentForm(request.POST, request.FILES, user=user)
+#         if not form.is_valid():
+#             messages.error(request, "Formulario inválido. Revisa los campos.")
 #             user_events = Event.objects.filter(created_by=user_id).annotate(
 #                 recycled_count=Count('qr_codes', filter=Q(qr_codes__status_recycled='recycled'))
 #             )
-#             return render(request, template, {'events': user_events, 'user': user_name, 'form': form})
+#             return render(request, template, {'events': user_events, 'user': user, 'form': form})
 
-#         # 2) imagen temporal (respetar pipeline actual)
+#         event_name = form.cleaned_data['event'].strip()
+#         quantity   = int(form.cleaned_data['quantity'])
+#         mask_file  = form.cleaned_data.get('mask_image')
+
+#         # 1) ¿Alcanza con tickets pagados?
+#         tickets = Ticket.objects.filter(user_name=user_id, is_paid=True)
+#         total_unassigned = sum(t.unassigned_quantity() for t in tickets)
+#         free_with_ads = total_unassigned < quantity  # decisión automática
+
+#         # 2) imagen temporal (pipeline actual)
 #         image_save = Image.new('RGB', (300, 300), color='white')
 #         buffer = io.BytesIO()
-#         image_save.save(buffer, format="jpeg")
+#         image_save.save(buffer, format="JPEG")
 #         buffer.seek(0)
 #         temp_image_file = InMemoryUploadedFile(
-#             buffer, None, "temp_image.png", "image/png", sys.getsizeof(buffer), None
+#             buffer, None, "temp_image.jpg", "image/jpeg", sys.getsizeof(buffer), None
 #         )
 
-#         # 3) crear evento
+#         # 3) crear evento (esto dispara la generación de QR por tu model.save())
 #         event = Event.objects.create(
 #             name=event_name,
-#             created_by=user_name,
-#             qr_code_count=quantity_to_assign,
+#             created_by=user,
+#             qr_code_count=quantity,
 #             image=temp_image_file
 #         )
+#         # Asegura que tenemos el M2M materializado:
+#         event = Event.objects.get(pk=event.pk)
 
-#         # 4) si NO es free → asignar a tickets
+#         # 4) si NO es free → asignar a tickets (paid implícito)
 #         if not free_with_ads:
-#             remaining = quantity_to_assign
+#             remaining = quantity
 #             for ticket in tickets:
 #                 unassigned = ticket.unassigned_quantity()
 #                 if unassigned > 0:
@@ -648,65 +570,56 @@ def reciclar_qr_evento(request, id):
 #                 if remaining == 0:
 #                     break
 
-#         # 5) máscara subida (opcional)
-#         mask_file = request.POST["mask_image"]
+#         # 5) máscara (opcional)
+#         rel_mask_name = None
+#         print('mascara ubi> ',mask_file)
 #         if mask_file:
-#             dest_path = save_event_mask(event.id, mask_file)
-#             updated = event.qr_codes.update(mask_banner=dest_path)
-#             messages.success(request, f"Máscara aplicada a {updated} QR(s) del evento '{event.name}'.")
+#             try:
+#                 rel_mask_name = save_event_mask(event.id, mask_file)  # p.ej. 'ads/masks/12/mask.png'
+#                 # Asignar a todos los QR del evento
+#                 event.qr_codes.update(mask_banner=rel_mask_name)
+#                 messages.success(request, f"Máscara aplicada a {event.qr_codes.count()} QR(s) del evento '{event.name}'.")
+#             except Exception as e:
+#                 messages.warning(request, f"No se pudo aplicar la máscara: {e}")
 
-#         # 6) FREE con Ads → aplicar top banner/footer por país (auto)
+#         # 6) publicidad/footers automáticos si es free
 #         if free_with_ads:
-#             country_code = (form.cleaned_data.get("country_code") or "").strip() or getattr(request, "country_code", None)
-#             country_name = (form.cleaned_data.get("country_name") or "").strip() or getattr(request, "country_name", None)
+#             detected_cc = getattr(request, "country_code", None)
+#             detected_cn = getattr(request, "country_name", None)
+
 #             ad = None
 #             try:
-#                 ad = get_banner_for_country(country_code, country_name)
+#                 ad = get_banner_for_country(detected_cc, detected_cn)
 #             except Exception:
 #                 ad = None
 
-#             preset = get_footer_preset(country_code, country_name)
+#             preset = get_footer_preset(detected_cc, detected_cn)
 #             updates = {
 #                 "enable_top_banner": True,
 #                 "footer_text": preset["text"],
 #                 "footer_bg": preset["bg"],
 #                 "footer_fg": preset["fg"],
 #             }
-#             if ad and ad.image:
-#                 updates["top_banner"] = ad.image.name
-#             updated = event.qr_codes.update(**updates)
-#             messages.success(request, f"Se aplicó publicidad por país y footer a {updated} QR(s).")
+#             if ad and getattr(ad, "image", None):
+#                 updates["top_banner"] = ad.image.name  # ruta relativa en MEDIA_ROOT
 
-#         # 7) re-render inmediato (opcional)
-#         if form.cleaned_data.get("re_render_now"):
-#             country_code = (form.cleaned_data.get("country_code") or "").strip() or getattr(request, "country_code", None)
-#             country_name = (form.cleaned_data.get("country_name") or "").strip() or getattr(request, "country_name", None)
-#             valid_from   = (form.cleaned_data.get("valid_from") or "").strip() or None
-#             valid_until  = (form.cleaned_data.get("valid_until") or "").strip() or None
-#             grace_minutes = form.cleaned_data.get("grace_minutes") or 0
-#             font_path    = (form.cleaned_data.get("font_path") or "").strip() or None
+#             event.qr_codes.update(**updates)
+#             messages.success(request, f"Se aplicó publicidad/footers a {event.qr_codes.count()} QR(s) por país.")
 
-#             qrs = event.qr_codes.only("id", "data")
-#             MAX_INLINE = 200
-#             count = 0
-#             for qr in qrs[:MAX_INLINE]:
-#                 compose_qr_from_db(
-#                     qr,
-#                     country_code=country_code,
-#                     country_name=country_name,
-#                     valid_from_str=valid_from,
-#                     valid_until_str=valid_until,
-#                     grace_minutes=grace_minutes,
-#                     font_path=font_path,
-#                 )
-#                 count += 1
-#             remaining = max(qrs.count() - MAX_INLINE, 0)
-#             if remaining > 0:
-#                 messages.info(request, f"Se regeneraron {count} imágenes. Quedan {remaining}. Usa la acción de Admin o Celery para lotes grandes.")
-#             else:
-#                 messages.success(request, f"Re-render completado para {count} QR(s).")
+#         # 7) re-renderizar (pequeño lote) ya con máscara/publicidad
+#         qrs = event.qr_codes.only("id", "data", "mask_banner", "top_banner", "enable_top_banner")
+#         MAX_INLINE = 200
+#         done = 0
+#         for qr in qrs[:MAX_INLINE]:
+#             compose_qr_from_db(qr)  # esta función debe usar qr.mask_banner si existe
+#             done += 1
+#         remaining = max(qrs.count() - MAX_INLINE, 0)
+#         if remaining > 0:
+#             messages.info(request, f"Se regeneraron {done} imágenes. Quedan {remaining}.")
+#         else:
+#             messages.success(request, f"Render completado para {done} QR(s).")
 
-#         # 8) notificación por email (solo si NO es free, mantén tu lógica)
+#         # 8) email solo si NO es free
 #         if not free_with_ads:
 #             send_event_qr_codes.delay(event.id)
 
@@ -714,67 +627,13 @@ def reciclar_qr_evento(request, id):
 #         messages.success(request, f"Evento '{event.name}' creado {origen}.")
 #         return redirect('dashboard:inicio')
 
-#     # GET sin cambios
-#     else:
-#         # form = AutoTicketAssignmentForm(user=user_id)
-#         # user_events = Event.objects.filter(created_by=user_id).annotate(
-#         #     recycled_count=Count('qr_codes', filter=Q(qr_codes__status_recycled='recycled'))
-#         # )
-#         # context = {'events': user_events, 'user': user_name, 'form': form}
-#         # return render(request, template, context)
-#         # === AUTOCOMPLETE desde AdPlacement ===
-#         detected_cc = getattr(request, "country_code", None)
-#         detected_cn = getattr(request, "country_name", None)
-#         ad = None
-#         try:
-#             ad = get_banner_for_country(detected_cc, detected_cn)
-#         except Exception:
-#             ad = None
+#     # GET
+#     form = AutoTicketAssignmentForm(user=user)
+#     user_events = Event.objects.filter(created_by=user_id).annotate(
+#         recycled_count=Count('qr_codes', filter=Q(qr_codes__status_recycled='recycled'))
+#     )
+#     return render(request, template, {'events': user_events, 'user': user, 'form': form})
 
-#         # Si tu modelo AdPlacement incluye estos campos opcionales, los usamos:
-#         # - country (texto)
-#         # - starts_at, ends_at (DateTimeField)
-#         # - grace_minutes (IntegerField, opcional)
-#         # - font_path (CharField, opcional)
-#         initial = {}
-#         if ad:
-#             # country_code / country_name
-#             # Si tu modelo AdPlacement guarda solo "country" textual, úsalo para name y deja code al detectado
-#             initial["country_code"] = (detected_cc or "").strip()
-#             initial["country_name"] = (getattr(ad, "country", None) or detected_cn or "").strip()
-
-#             # Fechas: normalizamos a 'YYYY-MM-DDTHH:MM:SS' en UTC-4 o localtime (elige tu criterio)
-#             def to_iso_local(dt):
-#                 if not dt:
-#                     return ""
-#                 # Si manejas todo en UTC internamente, puedes usar dt.astimezone(...) a UTC-4
-#                 # Aquí usamos localtime por simplicidad; ajusta si prefieres zona fija
-#                 return localtime(dt).strftime("%Y-%m-%dT%H:%M:%S")
-
-#             initial["valid_from"] = to_iso_local(getattr(ad, "starts_at", None))
-#             initial["valid_until"] = to_iso_local(getattr(ad, "ends_at", None))
-#             initial["grace_minutes"] = getattr(ad, "grace_minutes", 0) or 0
-#             initial["font_path"] = getattr(ad, "font_path", "") or ""
-
-#         # Si no hay AdPlacement, sugerimos el país detectado y dejamos lo demás vacío
-#         if not initial:
-#             initial = {
-#                 "country_code": (detected_cc or "").strip(),
-#                 "country_name": (detected_cn or "").strip(),
-#                 "valid_from": "",
-#                 "valid_until": "",
-#                 "grace_minutes": 0,
-#                 "font_path": "",
-#             }
-
-#         # IMPORTANTE: pásale initial y user al form
-#         form = AutoTicketAssignmentForm(user=user_id, initial=initial)
-
-#         user_events = Event.objects.filter(created_by=user_id).annotate(
-#             recycled_count=Count('qr_codes', filter=Q(qr_codes__status_recycled='recycled'))
-#         )
-#         context = {'events': user_events, 'user': user_name, 'form': form}
-#         return render(request, template, context)
 @login_required
 def listdb(request):
     template = 'dashboard/tables_event.html'
@@ -794,12 +653,37 @@ def listdb(request):
         quantity   = int(form.cleaned_data['quantity'])
         mask_file  = form.cleaned_data.get('mask_image')
 
-        # 1) ¿Alcanza con tickets pagados?
-        tickets = Ticket.objects.filter(user_name=user_id, is_paid=True)
-        total_unassigned = sum(t.unassigned_quantity() for t in tickets)
-        free_with_ads = total_unassigned < quantity  # decisión automática
+        # --- 1) Cupos disponibles ---
+        paid_tickets = Ticket.objects.filter(user_name=user_id, is_paid=True)
+        paid_unassigned = sum(t.unassigned_quantity() for t in paid_tickets)
 
-        # 2) imagen temporal (pipeline actual)
+        free_tickets = Ticket.objects.filter(
+            user_name=user_id, plan='free', ads_enabled=True, is_paid=False
+        )
+        free_unassigned = sum(t.unassigned_quantity() for t in free_tickets)
+
+        total_available = paid_unassigned + free_unassigned
+        if quantity > total_available:
+            messages.warning(
+                request,
+                (
+                    f"No tienes cupo suficiente para crear {quantity} QR(s). "
+                    f"Disponibles → Pagados: {paid_unassigned}, Free con Ads: {free_unassigned}. "
+                    f"Máximo creable ahora: {total_available}."
+                )
+            )
+            user_events = Event.objects.filter(created_by=user_id).annotate(
+                recycled_count=Count('qr_codes', filter=Q(qr_codes__status_recycled='recycled'))
+            )
+            return render(request, template, {'events': user_events, 'user': user, 'form': form})
+
+        # ¿Usaremos cuota free?
+        use_paid = min(quantity, paid_unassigned)
+        remaining = quantity - use_paid
+        use_free = min(remaining, free_unassigned)
+        free_with_ads = use_free > 0
+
+        # --- 2) Imagen temporal (pipeline actual) ---
         image_save = Image.new('RGB', (300, 300), color='white')
         buffer = io.BytesIO()
         image_save.save(buffer, format="JPEG")
@@ -808,50 +692,65 @@ def listdb(request):
             buffer, None, "temp_image.jpg", "image/jpeg", sys.getsizeof(buffer), None
         )
 
-        # 3) crear evento (esto dispara la generación de QR por tu model.save())
+        # --- 3) Crear evento (dispara generación de QRs) ---
         event = Event.objects.create(
             name=event_name,
             created_by=user,
             qr_code_count=quantity,
-            image=temp_image_file
+            image=temp_image_file,
+            ads_enabled=free_with_ads,  # opcional: útil como bandera en el modelo Event
         )
-        # Asegura que tenemos el M2M materializado:
-        event = Event.objects.get(pk=event.pk)
+        event = Event.objects.get(pk=event.pk)  # materializar M2M
 
-        # 4) si NO es free → asignar a tickets (paid implícito)
-        if not free_with_ads:
-            remaining = quantity
-            for ticket in tickets:
+        # --- 4) Asignar desde tickets pagados ---
+        remaining_paid = use_paid
+        if remaining_paid > 0:
+            for ticket in paid_tickets:
                 unassigned = ticket.unassigned_quantity()
-                if unassigned > 0:
-                    assign_now = min(remaining, unassigned)
-                    TicketAssignment.objects.create(
-                        ticket=ticket,
-                        event=event.name,
-                        quantity=assign_now,
-                        event_fk=event
-                    )
-                    remaining -= assign_now
-                if remaining == 0:
+                if unassigned <= 0:
+                    continue
+                assign_now = min(remaining_paid, unassigned)
+                TicketAssignment.objects.create(
+                    ticket=ticket,
+                    event=event.name,
+                    quantity=assign_now,
+                    event_fk=event
+                )
+                remaining_paid -= assign_now
+                if remaining_paid == 0:
                     break
 
-        # 5) máscara (opcional)
-        rel_mask_name = None
-        print('mascara ubi> ',mask_file)
+        # --- 5) Asignar desde tickets FREE (consumir cupo free real) ---
+        remaining_free = use_free
+        if remaining_free > 0:
+            for ticket in free_tickets:
+                unassigned = ticket.unassigned_quantity()
+                if unassigned <= 0:
+                    continue
+                assign_now = min(remaining_free, unassigned)
+                TicketAssignment.objects.create(
+                    ticket=ticket,
+                    event=event.name,
+                    quantity=assign_now,
+                    event_fk=event
+                )
+                remaining_free -= assign_now
+                if remaining_free == 0:
+                    break
+
+        # --- 6) Máscara (opcional) ---
         if mask_file:
             try:
-                rel_mask_name = save_event_mask(event.id, mask_file)  # p.ej. 'ads/masks/12/mask.png'
-                # Asignar a todos los QR del evento
+                rel_mask_name = save_event_mask(event.id, mask_file)  # p.ej. 'ads/masks/<id>/mask.png'
                 event.qr_codes.update(mask_banner=rel_mask_name)
                 messages.success(request, f"Máscara aplicada a {event.qr_codes.count()} QR(s) del evento '{event.name}'.")
             except Exception as e:
                 messages.warning(request, f"No se pudo aplicar la máscara: {e}")
 
-        # 6) publicidad/footers automáticos si es free
+        # --- 7) Ads/top banner automáticos si se usó cupo FREE ---
         if free_with_ads:
             detected_cc = getattr(request, "country_code", None)
             detected_cn = getattr(request, "country_name", None)
-
             ad = None
             try:
                 ad = get_banner_for_country(detected_cc, detected_cn)
@@ -866,17 +765,16 @@ def listdb(request):
                 "footer_fg": preset["fg"],
             }
             if ad and getattr(ad, "image", None):
-                updates["top_banner"] = ad.image.name  # ruta relativa en MEDIA_ROOT
-
+                updates["top_banner"] = ad.image.name  # ruta relativa a MEDIA
             event.qr_codes.update(**updates)
-            messages.success(request, f"Se aplicó publicidad/footers a {event.qr_codes.count()} QR(s) por país.")
+            messages.success(request, f"Se aplicó publicidad/footers por país a {event.qr_codes.count()} QR(s).")
 
-        # 7) re-renderizar (pequeño lote) ya con máscara/publicidad
+        # --- 8) Re-render (lote pequeño) ---
         qrs = event.qr_codes.only("id", "data", "mask_banner", "top_banner", "enable_top_banner")
         MAX_INLINE = 200
         done = 0
         for qr in qrs[:MAX_INLINE]:
-            compose_qr_from_db(qr)  # esta función debe usar qr.mask_banner si existe
+            compose_qr_from_db(qr)
             done += 1
         remaining = max(qrs.count() - MAX_INLINE, 0)
         if remaining > 0:
@@ -884,7 +782,7 @@ def listdb(request):
         else:
             messages.success(request, f"Render completado para {done} QR(s).")
 
-        # 8) email solo si NO es free
+        # --- 9) Email solo si TODO fue pagado (sin free) ---
         if not free_with_ads:
             send_event_qr_codes.delay(event.id)
 
