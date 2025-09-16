@@ -114,7 +114,7 @@ def compose_qr_from_db(
 
     ad = get_banner_for_country(country_code, country_name)
     top = load_image_or_color(ad.image if ad and ad.image else None,
-                              fallback_rgba=(20, 20, 20, 255), size=(CANVAS_W, TOP_H))
+                              fallback_rgba=(255, 255, 255, 255), size=(CANVAS_W, TOP_H))
     canvas.paste(top, (0, 0), top)
 
     central = load_image_or_color(getattr(qr, "mask_banner", None),
