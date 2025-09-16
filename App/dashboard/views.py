@@ -312,14 +312,25 @@ def inicio(request):
     form = MyPostForm(request.POST)
 
     if request.method == "POST":
-        print(request.POST['solicitud'])
-        ticket_db = Ticket.objects.create(
-            user_name = user_name,
-            quantity = request.POST["quantity"],
-            is_paid = False
-        )
-        url = reverse('dashboard:create_checkout_session', kwargs={'pk': ticket_db.id })
-        return redirect(url)
+        if request.POST['solicitud'] =='paid':
+            print(request.POST['solicitud'])
+            ticket_db = Ticket.objects.create(
+                user_name = user_name,
+                quantity = request.POST["quantity"],
+                is_paid = False
+            )
+            url = reverse('dashboard:create_checkout_session', kwargs={'pk': ticket_db.id })
+            return redirect(url)
+        if request.POST['solicitud'] == 'free':
+            print(request.POST['solicitud'])
+            ticket_db = Ticket.objects.create(
+                user_name = user_name,
+                quantity = request.POST["quantity"],
+                is_paid = False,
+                plan = 'free',
+                ads_enabled = True
+            )
+            return reverse('dashboard:inicio')
     print(user_events)
     context = {'user':user_name, "NC":str(len(qr_codes_list)), "NE":str(len(user_events)), "purchased":total_qr_purchased_by_user+available_codes_count, 'tp':total_qr_used_by_user,
                'available':available_codes_count,'used':total_qr_purchased_by_user, 'recycle':total_qr_recycled_by_user,
