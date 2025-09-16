@@ -309,6 +309,20 @@ def inicio(request):
     for event in events_with_purchased_qr_count:
         print(f"Evento: {event.name}, QR Comprados: {event.purchased_qr_count}")
         print(event.total_qr_count)
+    
+    # --- NUEVO: créditos FREE (con Ads) ---
+    total_free_credits = Ticket.objects.filter(
+        user_name=user_id, plan='free', ads_enabled=True
+    ).aggregate(total=Sum('quantity'))['total'] or 0
+
+    # QR ya materializados como FREE (bandera enable_top_banner=True)
+    free_used = QRCode.objects.filter(
+        event__created_by=user_id,
+        enable_top_banner=True
+    ).count()
+
+    free_remaining = max(total_free_credits - free_used, 0)
+
     form = MyPostForm(request.POST)
 
     if request.method == "POST":
@@ -345,7 +359,12 @@ def inicio(request):
     print(user_events)
     context = {'user':user_name, "NC":str(len(qr_codes_list)), "NE":str(len(user_events)), "purchased":total_qr_purchased_by_user+available_codes_count, 'tp':total_qr_used_by_user,
                'available':available_codes_count,'used':total_qr_purchased_by_user, 'recycle':total_qr_recycled_by_user,
-               'form': form}
+               'form': form,
+               # --- NUEVOS valores para mostrar en el dashboard ---
+            'free_total': total_free_credits,
+            'free_used': free_used,
+            'free_remaining': free_remaining,
+        }
     return render(request, template, context)
 ################################################
 #   Pagina de QR Generador
