@@ -319,9 +319,10 @@ def inicio(request):
                 quantity = request.POST["quantity"],
                 is_paid = False
             )
+            quantity = request.POST["quantity"]
             messages.success(
                 request,
-                f"✅ Ticket created for {request.POST['quantity']} QR(s)."
+                f"✅ Ticket created for {quantity} QRs."
             )
             url = reverse('dashboard:create_checkout_session', kwargs={'pk': ticket_db.id })
             return redirect(url)
@@ -334,9 +335,10 @@ def inicio(request):
                 plan = 'free',
                 ads_enabled = True
             )
+            quantity = request.POST["quantity"]
             messages.success(
             request,
-            f"🎉  Ticket created for Plan FREE con Ads: {request.POST["quantity"]} QR(s) enabled."
+            f"🎉  Ticket created for Plan FREE con Ads: {quantity} QR(s) enabled."
             )
             url= reverse('dashboard:inicio')
             return redirect(url)
