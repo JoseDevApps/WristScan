@@ -338,7 +338,7 @@ def inicio(request):
             quantity = request.POST["quantity"]
             messages.success(
             request,
-            f"🎉  Ticket created for Plan FREE con Ads: {quantity} QR(s) enabled."
+            f"🎉  Ticket created FREE with Ads: {quantity} QR(s) enabled."
             )
             url= reverse('dashboard:inicio')
             return redirect(url)
@@ -597,12 +597,12 @@ def listdb(request):
 
     if request.method == "POST":
         form = AutoTicketAssignmentForm(request.POST, request.FILES, user=request.user)
-        if not form.is_valid():
-            messages.error(request, "Formulario inválido.")
-            user_events = Event.objects.filter(created_by=user_id).annotate(
-                recycled_count=Count('qr_codes', filter=Q(qr_codes__status_recycled='recycled'))
-            )
-            return render(request, template, {'events': user_events, 'user': user_name, 'form': form})
+        # if not form.is_valid():
+        #     messages.error(request, "Formulario inválido.")
+        #     user_events = Event.objects.filter(created_by=user_id).annotate(
+        #         recycled_count=Count('qr_codes', filter=Q(qr_codes__status_recycled='recycled'))
+        #     )
+        #     return render(request, template, {'events': user_events, 'user': user_name, 'form': form})
 
         event_name = form.cleaned_data['event']
         quantity_to_assign = int(form.cleaned_data['quantity'])

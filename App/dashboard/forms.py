@@ -144,14 +144,7 @@ class AutoTicketAssignmentForm(forms.ModelForm):
         self.user = kwargs.pop('user', None)  # Pasaremos el user desde la vista
         super().__init__(*args, **kwargs)
 
-    # def clean_quantity(self):
-    #     quantity = self.cleaned_data['quantity']
-    #     if self.user:
-    #         tickets = Ticket.objects.filter(user_name=self.user, is_paid=True)
-    #         total_unassigned = sum(t.unassigned_quantity() for t in tickets)
-    #         if quantity > total_unassigned:
-    #             raise forms.ValidationError(f"Tienes solo {total_unassigned} tickets disponibles.")
-    #     return quantity
+ 
     def _get_user_id(self):
         if hasattr(self.user, 'id'):
             return self.user.id
