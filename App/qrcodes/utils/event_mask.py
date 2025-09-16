@@ -34,6 +34,9 @@ import io
 
 MASK_W, MASK_H = 720, 1150
 
+def event_mask_path(event_id: int) -> str:
+    return f"ads/masks/event_{event_id}.png"
+
 def save_event_mask(event_id: int, uploaded_file) -> str:
     """
     Normaliza y guarda la máscara del evento.
