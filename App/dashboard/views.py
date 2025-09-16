@@ -608,9 +608,9 @@ def listdb(request):
         # quantity_to_assign = int(form.cleaned_data['quantity'])
         # free_with_ads = form.cleaned_data.get('free_with_ads') is True
 
-        event_name = form['event']
+        event_name = request.POST['event']
         quantity_to_assign = int(request.POST['quantity'])
-        free_with_ads = form['free_with_ads'] is True
+        free_with_ads = request.POST['free_with_ads'] is True
 
         # 1) verificar tickets
         tickets = Ticket.objects.filter(user_name=user_id, is_paid=True)
