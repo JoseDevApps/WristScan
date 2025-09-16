@@ -51,30 +51,29 @@ from pathlib import Path
 from PIL import Image, ImageOps
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
+from django.conf import settings
 
-CANVAS_W, CENTRAL_H = 720, 1150
-MASK_NAME_FMT = "ads/masks/{event_id}/mask.png"
-
-def save_event_mask(event_id: int, file_obj) -> str:
+def event_mask_path(event_id: int) -> str:
     """
-    Normaliza la máscara a 720x1150 RGBA y la guarda en default_storage.
-    Devuelve el 'name' relativo para asignarlo a ImageField (string).
+    Devuelve la ruta relativa dentro de MEDIA_ROOT donde se guarda la máscara central de un evento.
+    Ejemplo: ads/masks/12/mask.png
     """
-    # 1) Normaliza tamaño
-    with Image.open(file_obj) as im:
-        im = ImageOps.fit(im.convert("RGBA"), (CANVAS_W, CENTRAL_H), method=Image.LANCZOS)
+    return f"ads/masks/{event_id}/mask.png"
 
-        buf = BytesIO()
-        im.save(buf, format="PNG")
-        buf.seek(0)
 
-    # 2) Guarda en storage
-    name = MASK_NAME_FMT.format(event_id=event_id)  # p.ej. ads/masks/12/mask.png
-    try:
-        if default_storage.exists(name):
-            default_storage.delete(name)
-    except Exception:
-        pass
+def save_event_mask(event_id: int, file) -> str:
+    """
+    Guarda la máscara central subida en MEDIA_ROOT usando event_mask_path
+    y devuelve la ruta relativa (ej. ads/masks/12/mask.png).
+    """
+    from django.core.files.storage import default_storage
 
-    default_storage.save(name, ContentFile(buf.read()))
-    return name
+    rel_path = event_mask_path(event_id)
+    full_path = Path(settings.MEDIA_ROOT) / rel_path
+    full_path.parent.mkdir(parents=True, exist_ok=True)
+
+    with default_storage.open(rel_path, "wb+") as dest:
+        for chunk in file.chunks():
+            dest.write(chunk)
+
+    return rel_path
