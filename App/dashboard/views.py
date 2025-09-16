@@ -837,7 +837,7 @@ def listdb(request):
 
         # 5) máscara (opcional)
         rel_mask_name = None
-        print(mask_file)
+        print('mascara ubi> ',mask_file)
         if mask_file:
             try:
                 rel_mask_name = save_event_mask(event.id, mask_file)  # p.ej. 'ads/masks/12/mask.png'

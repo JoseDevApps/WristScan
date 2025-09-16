@@ -193,7 +193,7 @@
             <!-- Modal -->
             <div class="modal fade" id="postFormModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
               <div class="modal-dialog">
-                <form method="POST" action="{% url 'dashboard:tables' %}">
+                <form method="POST" enctype="multipart/form-data" action="{% url 'dashboard:tables' %}">
                   {% csrf_token %}
                   <div class="modal-content">
                     <div class="modal-header">
