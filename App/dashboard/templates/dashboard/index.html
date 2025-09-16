@@ -336,7 +336,7 @@
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
 
-      <form method="POST" action="{% url 'dashboard:inicio' %}">
+      <form method="POST" enctype="multipart/form-data" action="{% url 'dashboard:inicio' %}">
         {% csrf_token %}
         <div class="modal-content">
           <div class="modal-header">
@@ -362,7 +362,7 @@
      tabindex="-1" aria-labelledby="modalPagoLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
-      <form method="POST" action="{% url 'dashboard:inicio' %}">
+      <form method="POST" enctype="multipart/form-data" action="{% url 'dashboard:inicio' %}">
         {% csrf_token %}
         <div class="modal-content">
           <div class="modal-header">
