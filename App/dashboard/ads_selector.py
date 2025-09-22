@@ -3,7 +3,7 @@ from typing import Optional
 from django.db import models
 from django.utils import timezone
 from django.core.cache import cache
-from .models import AdPlacement, AdDefault  # importa también AdDefault
+from .models import AdPlacement, AdDefaults  # importa también AdDefault
 
 CACHE_TTL_SECONDS = 120
 _KEY = "adplacement:country:{k}"
@@ -24,7 +24,7 @@ def _query_live(country: str):
 def _query_default(country: str):
     """Busca un AdDefault (publicidad por defecto) por país exacto o global."""
     return (
-        AdDefault.objects.filter(country__iexact=country)
+        AdDefaults.objects.filter(country__iexact=country)
         .order_by("priority", "-created_at")
         .first()
     )
