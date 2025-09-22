@@ -899,13 +899,13 @@ def listdb(request):
     # GET → refrescar datos
     form = AutoTicketAssignmentForm(user=user)
     user_events = (
-        Event.objects.filter(created_by=user_id)
-        .annotate(
-            recycled_count=Count('qr_codes', filter=Q(qr_codes__status_recycled='recycled')),
-            ads_count=Count('qr_codes', filter=Q(qr_codes__enable_top_banner=True)),
-            paid_count=Count('qr_codes', filter=Q(qr_codes__enable_top_banner=False)),
-        )
-        .order_by("-created_at")
+    Event.objects.filter(created_by=user_id)
+    .annotate(
+        recycled_count=Count('qr_codes', filter=Q(qr_codes__status_recycled='recycled')),
+        ads_count=Count('qr_codes', filter=Q(qr_codes__enable_top_banner=True)),
+        paid_count=Count('qr_codes', filter=Q(qr_codes__enable_top_banner=False)),
+    )
+        .order_by("-date")   # ← usar `date` en lugar de `created_at`
     )
     return render(request, template, {'events': user_events, 'user': user, 'form': form})
 
