@@ -13,6 +13,9 @@ from PIL import ImageDraw, ImageFont
 import io
 import sys
 from django.core.files.uploadedfile import InMemoryUploadedFile
+from django.utils import timezone
+from dashboard.models import  AdPlacement, AdDefaults
+
 
 # 💰 Precio dinámico por cantidad
 class PriceTier(models.Model):

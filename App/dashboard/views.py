@@ -16,7 +16,7 @@ from django.urls import reverse
 from django.views.generic import TemplateView
 from .models import Product, AdDefaults
 from qrcodes.models import Event, EventRole, QRCode, Ticket, Payment, TicketAssignment, EventInvite
-from qrcodes.tasks import send_event_qr_codes
+from qrcodes.tasks import send_event_qr_codes, cleanup_free_qrs_task
 import tempfile
 from django.core.mail import send_mail
 from django.core.mail import EmailMessage
@@ -550,7 +550,7 @@ def listdb(request):
     template = 'dashboard/tables_event.html'
     user = request.user
     user_id = user.id
-
+    cleanup_free_qrs_task.delay()
     if request.method == "POST":
         form = AutoTicketAssignmentForm(request.POST, request.FILES, user=user)
         if not form.is_valid():
