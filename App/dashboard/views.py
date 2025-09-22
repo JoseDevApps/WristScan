@@ -14,7 +14,7 @@ import os
 from django.contrib import messages
 from django.urls import reverse
 from django.views.generic import TemplateView
-from .models import Product
+from .models import Product, AdDefaults
 from qrcodes.models import Event, EventRole, QRCode, Ticket, Payment, TicketAssignment, EventInvite
 from qrcodes.tasks import send_event_qr_codes
 import tempfile
@@ -531,15 +531,19 @@ def reciclar_qr_evento(request, id):
 
 def get_default_banner():
     """
-    Retorna un banner por defecto en caso de que no exista banner por país.
-    Debe tener un atributo 'image.name' con la ruta relativa en MEDIA.
+    Retorna el banner por defecto definido en AdDefaults, si existe.
+    Devuelve None si no hay ninguno.
     """
-    class DefaultAd:
-        def __init__(self):
-            self.image = type("ImageObject", (), {})()
-            self.image.name = "ads/default_banner.png"  # ruta relativa a MEDIA_ROOT
+    default = AdDefaults.objects.first()  # asumimos singleton
+    if default and default.image:
+        class Banner:
+            def __init__(self, image_name):
+                self.image = type("ImageObject", (), {})()
+                self.image.name = image_name
 
-    return DefaultAd()
+        return Banner(default.image.name)
+    return None
+
 
 @login_required
 def listdb(request):
@@ -671,12 +675,11 @@ def listdb(request):
             detected_cn = getattr(request, "country_name", None)
 
             # Intentar obtener banner del país, si no existe usar default
+            ad = None
             try:
                 ad = get_banner_for_country(detected_cc, detected_cn)
-                if not ad or not getattr(ad, "image", None):
-                    ad = get_default_banner()  # función que retorna un banner genérico
             except Exception:
-                ad = get_default_banner()
+                ad = get_default_banner()  # fallback al banner por defecto
 
             # Footer preset: también podemos usar valores por defecto si falla
             try:
