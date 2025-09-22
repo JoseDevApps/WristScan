@@ -35,6 +35,7 @@ class AdPlacement(models.Model):
     )
     image = models.ImageField(
         upload_to="ads/",
+        blank=True,      # <--- permite crear sin subir imagen
         help_text="Imagen del banner superior (recomendado 720x120)."
     )
     url = models.URLField(
@@ -103,7 +104,7 @@ class AdPlacement(models.Model):
             except Exception:
                 # No rompemos el guardado si no podemos validar; deja rastro en logs si lo deseas.
                 pass
-            
+
 class AdDefaults(models.Model):
     """
     Singleton: valores por defecto que el admin puede controlar.
