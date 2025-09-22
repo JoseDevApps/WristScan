@@ -103,3 +103,56 @@ class AdPlacement(models.Model):
             except Exception:
                 # No rompemos el guardado si no podemos validar; deja rastro en logs si lo deseas.
                 pass
+            
+class AdDefaults(models.Model):
+    """
+    Singleton: valores por defecto que el admin puede controlar.
+    - image: banner por defecto (si no hay placement por país)
+    - starts_at/ends_at: ventana por defecto
+    - grace_minutes: por defecto
+    - font_path: ruta relativa o nombre de fuente recomendado
+    """
+    image = models.ImageField(upload_to="ads/defaults/", blank=True, null=True,
+                              help_text="Banner por defecto (720x120). Se usará si no hay AdPlacement por país).")
+    starts_at = models.DateTimeField(blank=True, null=True, help_text="Inicio de vigencia por defecto (opcional).")
+    ends_at = models.DateTimeField(blank=True, null=True, help_text="Fin de vigencia por defecto (opcional).")
+    grace_minutes = models.PositiveIntegerField(default=0, help_text="Minutos de gracia por defecto.")
+    font_path = models.CharField(max_length=255, blank=True, default="", help_text="Ruta a fuente TTF (opcional).")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Ad Defaults (singleton)"
+        verbose_name_plural = "Ad Defaults (singleton)"
+
+    def __str__(self):
+        return "Ad Defaults (singleton)"
+
+    # --- singleton helper ---
+    @classmethod
+    def get_solo(cls):
+        obj = cls.objects.first()
+        if obj is None:
+            # crear con valores vacíos (seguro para migration-first time)
+            obj = cls.objects.create()
+        return obj
+
+    def clean(self):
+        # validación temporal coherente
+        if self.starts_at and self.ends_at and self.starts_at > self.ends_at:
+            raise ValidationError("starts_at no puede ser posterior a ends_at.")
+        # validación opcional de dimensiones (similar a AdPlacement)
+        if self.image and hasattr(self.image, "file"):
+            try:
+                self.image.file.seek(0)
+                with Image.open(self.image.file) as im:
+                    w, h = im.size
+                    if w == 0 or h == 0:
+                        raise ValidationError("Imagen inválida.")
+                    ratio = w / h
+                    if ratio < 4.5 or ratio > 8.0:
+                        raise ValidationError("La relación de aspecto no es la recomendada (~6:1).")
+            except ValidationError:
+                raise
+            except Exception:
+                pass
