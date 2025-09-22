@@ -34,7 +34,7 @@ class AdPlacementAdmin(admin.ModelAdmin):
 
 @admin.register(AdDefaults)
 class AdDefaultsAdmin(admin.ModelAdmin):
-    change_form_template = "admin/addefaults_change_form.html"  # opcional si quieres UI custom
+    # change_form_template = "admin/addefaults_change_form.html"  # opcional si quieres UI custom
     list_display = ("__str__", "starts_at", "ends_at", "grace_minutes", "updated_at")
     readonly_fields = ("preview_banner",)
     fieldsets = (
