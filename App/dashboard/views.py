@@ -746,7 +746,13 @@ def apply_ads_to_qrs(event, use_free, country_code=None, country_name=None):
     if ad and getattr(ad, "image", None):
         updates["top_banner"] = ad.image.name
 
-    QRCode.objects.filter(id__in=free_ids).update(**updates)
+    QRCode.objects.filter(id__in=free_ids).update(
+        enable_top_banner=True,
+    top_banner=ad.image.name if ad else None,
+    footer_text=preset["text"],
+    footer_bg=preset["bg"],
+    footer_fg=preset["fg"],
+    )
 
     return use_free, qrs_all.count() - use_free
 
@@ -904,8 +910,7 @@ def listdb(request):
         recycled_count=Count('qr_codes', filter=Q(qr_codes__status_recycled='recycled')),
         ads_count=Count('qr_codes', filter=Q(qr_codes__enable_top_banner=True)),
         paid_count=Count('qr_codes', filter=Q(qr_codes__enable_top_banner=False)),
-    )
-        .order_by("-date")   # ← usar `date` en lugar de `created_at`
+    ).order_by("-date")   # ← usar `date` en lugar de `created_at`
     )
     return render(request, template, {'events': user_events, 'user': user, 'form': form})
 
