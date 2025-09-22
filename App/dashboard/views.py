@@ -529,6 +529,18 @@ def reciclar_qr_evento(request, id):
     })
 
 
+def get_default_banner():
+    """
+    Retorna un banner por defecto en caso de que no exista banner por país.
+    Debe tener un atributo 'image.name' con la ruta relativa en MEDIA.
+    """
+    class DefaultAd:
+        def __init__(self):
+            self.image = type("ImageObject", (), {})()
+            self.image.name = "ads/default_banner.png"  # ruta relativa a MEDIA_ROOT
+
+    return DefaultAd()
+
 @login_required
 def listdb(request):
     template = 'dashboard/tables_event.html'
