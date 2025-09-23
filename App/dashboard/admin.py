@@ -69,7 +69,7 @@
 
 from django.contrib import admin
 from django.db.models import Count, Q
-from .models import AdPlacement, AdDefaults, 
+from .models import AdPlacement, AdDefaults 
 from qrcodes.models import QRCode
 
 @admin.register(AdPlacement)
