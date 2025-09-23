@@ -2,7 +2,9 @@
 from django.contrib import admin
 from django.utils.html import format_html
 from .models import Product, AdPlacement,AdDefaults
-from qrcodes.models import QRCode
+from qrcodes.models import QRCode, Event
+from django.db.models import Q, Count
+
 import os
 admin.site.register(Product)
 
@@ -51,51 +53,23 @@ admin.site.register(Product)
 @admin.register(AdPlacement)
 class AdPlacementAdmin(admin.ModelAdmin):
     list_display = (
-        "title",
-        "country",
-        "priority",
-        "active",
-        "starts_at",
-        "ends_at",
-        "preview",
-        "assigned_qrs_count",
-        "default_assigned_qrs_count",
+        "title", "country", "priority", "active", "starts_at", "ends_at",
+        "preview", "assigned_qrs_count", "default_assigned_qrs_count",
     )
-    list_filter = ("country", "active", "starts_at", "ends_at")
-    search_fields = ("title", "country", "url")
-    ordering = ("priority", "country", "-starts_at")
     readonly_fields = ("preview",)
 
-    fieldsets = (
-        (None, {
-            "fields": ("title", "country", "priority", "active")
-        }),
-        ("Creativo", {
-            "fields": ("image", "preview", "url"),
-            "description": "Sube una imagen ~720x120 para un buen encaje visual."
-        }),
-        ("Vigencia (opcional)", {
-            "classes": ("collapse",),
-            "fields": ("starts_at", "ends_at"),
-        }),
-    )
-
     @admin.display(description="Vista previa")
-    def preview(self, obj: AdPlacement):
+    def preview(self, obj):
         if obj.image:
-            return format_html(
-                '<img src="{}" style="max-width:360px; height:auto; border:1px solid #e5e7eb;" />',
-                obj.image.url
-            )
+            return format_html('<img src="{}" style="max-width:360px; height:auto; border:1px solid #e5e7eb;" />', obj.image.url)
         return "—"
 
     @admin.display(description="QRs Gratis con Ads asignados")
     def assigned_qrs_count(self, obj: AdPlacement):
         """
-        Cuenta los QR que:
-         - tienen enable_top_banner=True
-         - pertenecen a eventos con ads_enabled=True
-         - y cuyo top_banner coincide con la imagen del AdPlacement (ruta o basename)
+        Cuenta QR que:
+         - están asociados a EVENTS marcados ads_enabled=True
+         - y entre esos QR tienen enable_top_banner=True y top_banner coincide con este AdPlacement.image
         """
         if not obj or not getattr(obj, "image", None):
             return 0
@@ -103,38 +77,43 @@ class AdPlacementAdmin(admin.ModelAdmin):
         img_name = getattr(obj.image, "name", None)
         if not img_name:
             return 0
-
         basename = os.path.basename(img_name)
 
-        return QRCode.objects.filter(
-            enable_top_banner=True,
-            event_fk__ads_enabled=True
+        # Buscamos Events activos (ads_enabled=True) que tengan QR cuya top_banner coincida
+        # y contamos los QR (distinct) que cumplen.
+        qs = Event.objects.filter(
+            ads_enabled=True,
+            qr_codes__enable_top_banner=True
         ).filter(
-            Q(top_banner=img_name) | Q(top_banner__endswith=basename)
-        ).count()
+            Q(qr_codes__top_banner=img_name) | Q(qr_codes__top_banner__endswith=basename)
+        ).annotate(cnt=Count("qr_codes", distinct=True))
+
+        # Sumamos los contadores (normalmente será 1 registro con la agregación)
+        total = sum(item.cnt for item in qs)
+        return total
 
     @admin.display(description="QRs asignados con banner por defecto")
     def default_assigned_qrs_count(self, obj: AdPlacement):
         """
-        Cuenta QR que usan el banner por defecto (AdDefaults.image).
-        Útil para saber cuántos QR caen al fallback.
+        Cuenta QR que usan el banner por defecto definido en AdDefaults.
         """
         defaults = AdDefaults.objects.first()
         if not defaults or not getattr(defaults, "image", None):
             return 0
-
         default_name = getattr(defaults.image, "name", None)
         if not default_name:
             return 0
-
         default_basename = os.path.basename(default_name)
 
-        return QRCode.objects.filter(
-            enable_top_banner=True,
-            event_fk__ads_enabled=True
+        qs = Event.objects.filter(
+            ads_enabled=True,
+            qr_codes__enable_top_banner=True
         ).filter(
-            Q(top_banner=default_name) | Q(top_banner__endswith=default_basename)
-        ).count()
+            Q(qr_codes__top_banner=default_name) | Q(qr_codes__top_banner__endswith=default_basename)
+        ).annotate(cnt=Count("qr_codes", distinct=True))
+
+        total = sum(item.cnt for item in qs)
+        return total
 
 
 @admin.register(AdDefaults)
