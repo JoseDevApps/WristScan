@@ -3,6 +3,7 @@ from django.contrib import admin
 from django.utils.html import format_html
 from .models import Product, AdPlacement,AdDefaults
 from qrcodes.models import QRCode
+import os
 admin.site.register(Product)
 
 # @admin.register(AdPlacement)
