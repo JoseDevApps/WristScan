@@ -8,47 +8,6 @@ from django.db.models import Q, Count
 import os
 admin.site.register(Product)
 
-# @admin.register(AdPlacement)
-# class AdPlacementAdmin(admin.ModelAdmin):
-#     list_display = ("title", "country", "priority", "active", "starts_at", "ends_at", "preview")
-#     list_filter = ("country", "active", "starts_at", "ends_at")
-#     search_fields = ("title", "country", "url")
-#     ordering = ("priority", "country", "-starts_at")
-#     readonly_fields = ("preview",)
-#     fieldsets = (
-#         (None, {
-#             "fields": ("title", "country", "priority", "active")
-#         }),
-#         ("Creativo", {
-#             "fields": ("image", "preview", "url"),
-#             "description": "Sube una imagen ~720x120 para un buen encaje visual."
-#         }),
-#         ("Vigencia (opcional)", {
-#             "classes": ("collapse",),
-#             "fields": ("starts_at", "ends_at"),
-#         }),
-#     )
-
-#     @admin.display(description="QRs Gratis con Ads asignados")
-#     def assigned_qrs_count(self, obj: AdPlacement):
-#         """
-#         Cuenta los QR asignados a eventos con ads_enabled=True
-#         y que usan banners activos del mismo país que el AdPlacement.
-#         """
-#         if not obj.image:
-#             return 0
-
-#         # Contar QR que tienen banner activo
-#         return QRCode.objects.filter(
-#             enable_top_banner=True,
-#             event_fk__ads_enabled=True
-#         ).exclude(top_banner__isnull=True).count()
-
-#     @admin.display(description="Vista previa")
-#     def preview(self, obj: AdPlacement):
-#         if obj.image:
-#             return format_html('<img src="{}" style="max-width:360px; height:auto; border:1px solid #e5e7eb;" />', obj.image.url)
-#         return "—"
     
 @admin.register(AdPlacement)
 class AdPlacementAdmin(admin.ModelAdmin):

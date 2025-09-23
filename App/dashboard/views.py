@@ -740,7 +740,8 @@ def listdb(request):
     # GET
     form = AutoTicketAssignmentForm(user=user)
     user_events = Event.objects.filter(created_by=user_id).annotate(
-        recycled_count=Count('qr_codes', filter=Q(qr_codes__status_recycled='recycled'))
+        recycled_count=Count('qr_codes', filter=Q(qr_codes__status_recycled='recycled'),
+        shared_count=Count('qr_codes', filter=Q(qr_codes__status_purchased='purchased')),)
     )
     return render(request, template, {'events': user_events, 'user': user, 'form': form})
 
