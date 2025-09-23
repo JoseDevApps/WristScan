@@ -7,11 +7,15 @@ admin.site.register(Product)
 
 @admin.register(AdPlacement)
 class AdPlacementAdmin(admin.ModelAdmin):
-    list_display = ("title", "country", "priority", "active", "starts_at", "ends_at", "preview")
+    list_display = (
+        "title", "country", "priority", "active", 
+        "starts_at", "ends_at", "assigned_free_qrs", "preview"
+    )
     list_filter = ("country", "active", "starts_at", "ends_at")
     search_fields = ("title", "country", "url")
     ordering = ("priority", "country", "-starts_at")
-    readonly_fields = ("preview",)
+    readonly_fields = ("preview", "assigned_free_qrs")
+    
     fieldsets = (
         (None, {
             "fields": ("title", "country", "priority", "active")
@@ -40,7 +44,10 @@ class AdPlacementAdmin(admin.ModelAdmin):
     @admin.display(description="Vista previa")
     def preview(self, obj: AdPlacement):
         if obj.image:
-            return format_html('<img src="{}" style="max-width:360px; height:auto; border:1px solid #e5e7eb;" />', obj.image.url)
+            return format_html(
+                '<img src="{}" style="max-width:360px; height:auto; border:1px solid #e5e7eb;" />',
+                obj.image.url
+            )
         return "—"
     
 
