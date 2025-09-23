@@ -2,7 +2,7 @@
 from django.contrib import admin
 from django.utils.html import format_html
 from .models import Product, AdPlacement,AdDefaults
-
+from qrcodes.models import QRCode
 admin.site.register(Product)
 
 @admin.register(AdPlacement)
@@ -26,11 +26,24 @@ class AdPlacementAdmin(admin.ModelAdmin):
         }),
     )
 
+    @admin.display(description="QRs Gratis asignados")
+    def assigned_free_qrs(self, obj: AdPlacement):
+        # Contar QR asignados a eventos con free tickets que usan este banner
+        count = QRCode.objects.filter(
+            enable_top_banner=True,
+            top_banner__isnull=False,
+            event_fk__ads_enabled=True,
+            event_fk__qr_codes__top_banner=obj.image.name if obj.image else None
+        ).distinct().count()
+        return count
+
     @admin.display(description="Vista previa")
     def preview(self, obj: AdPlacement):
         if obj.image:
             return format_html('<img src="{}" style="max-width:360px; height:auto; border:1px solid #e5e7eb;" />', obj.image.url)
         return "—"
+    
+
 
 @admin.register(AdDefaults)
 class AdDefaultsAdmin(admin.ModelAdmin):
