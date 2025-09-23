@@ -29,17 +29,17 @@ class AdPlacementAdmin(admin.ModelAdmin):
     @admin.display(description="QRs Gratis con Ads asignados")
     def assigned_qrs_count(self, obj: AdPlacement):
         """
-        Cuenta los QR que están usando este banner (obj.image) y que
-        pertenecen a eventos que activaron Ads (ads_enabled=True)
+        Cuenta los QR asignados a eventos con ads_enabled=True
+        y que usan banners activos del mismo país que el AdPlacement.
         """
         if not obj.image:
             return 0
 
+        # Contar QR que tienen banner activo
         return QRCode.objects.filter(
             enable_top_banner=True,
-            top_banner=obj.image.name,
             event_fk__ads_enabled=True
-        ).count()
+        ).exclude(top_banner__isnull=True).count()
 
     @admin.display(description="Vista previa")
     def preview(self, obj: AdPlacement):
