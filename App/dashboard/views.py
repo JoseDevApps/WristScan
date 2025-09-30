@@ -124,8 +124,74 @@ def download_available_qr_pdf(request, event_id):
 ################################################
 #   Compartir QR
 ################################################
+# def share_qr_codes(request, event_id):
+#     # 🔒 only owner can share
+#     event = get_object_or_404(Event, id=event_id, created_by=request.user)
+
+#     if request.method == 'POST':
+#         form = ShareQRCodeForm(request.POST)
+#         if form.is_valid():
+#             recipient_email = form.cleaned_data['recipient_email']
+#             number_of_codes = form.cleaned_data['number_of_codes']
+
+#             # grab only “available” codes
+#             available = event.qr_codes.filter(status_purchased='available')[:number_of_codes]
+#             if available.count() < number_of_codes:
+#                 form.add_error('number_of_codes',
+#                     f'Only {available.count()} QR codes are available.'
+#                 )
+#             else:
+#                 # build the ZIP in memory
+#                 zip_buffer = BytesIO()
+#                 with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zf:
+#                     codes_shared = []
+#                     for qr in available:
+#                         qr.status_purchased = 'purchased'
+#                         qr.user_email = recipient_email
+#                         qr.save()
+
+#                         # write the image file into the zip
+#                         path = os.path.join(settings.MEDIA_ROOT,
+#                                             'qrcodes',
+#                                             f"qr_{qr.id}_.png")
+#                         if os.path.exists(path):
+#                             zf.write(path, os.path.basename(path))
+#                         codes_shared.append(qr.data)
+
+#                 zip_buffer.seek(0)
+
+#                 # send email
+#                 subject = f"QR Codes for Event: {event.name}"
+#                 message = (
+#                     f"You have been granted access to the event: {event.name}\n\n"
+#                     f"Attached are your {number_of_codes} QR codes."
+#                 )
+#                 email = EmailMessage(
+#                     subject, message,
+#                     settings.DEFAULT_FROM_EMAIL,
+#                     [recipient_email]
+#                 )
+#                 email.attach(f"{event.name}_QR_Codes.zip",
+#                              zip_buffer.getvalue(),
+#                              "application/zip")
+#                 email.send()
+
+#                 return render(request, 'dashboard/share_confirmation.html', {
+#                     'event':          event,
+#                     'recipient_email': recipient_email,
+#                     'codes_shared':    codes_shared,
+#                     'remaining_codes': event.qr_codes.filter(
+#                                            status_purchased='available'
+#                                        ).count()
+#                 })
+#     else:
+#         form = ShareQRCodeForm()
+
+#     return render(request, 'dashboard/shareqr.html', {
+#         'event': event,
+#         'form':  form
+#     })
 def share_qr_codes(request, event_id):
-    # 🔒 only owner can share
     event = get_object_or_404(Event, id=event_id, created_by=request.user)
 
     if request.method == 'POST':
@@ -134,33 +200,54 @@ def share_qr_codes(request, event_id):
             recipient_email = form.cleaned_data['recipient_email']
             number_of_codes = form.cleaned_data['number_of_codes']
 
-            # grab only “available” codes
-            available = event.qr_codes.filter(status_purchased='available')[:number_of_codes]
-            if available.count() < number_of_codes:
+            # obtenemos solo los disponibles
+            available = list(event.qr_codes.filter(status_purchased='available')[:number_of_codes])
+            if len(available) < number_of_codes:
                 form.add_error('number_of_codes',
-                    f'Only {available.count()} QR codes are available.'
+                    f'Solo hay {len(available)} códigos QR disponibles.'
                 )
             else:
-                # build the ZIP in memory
                 zip_buffer = BytesIO()
+                # abrimos zip en memoria
                 with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zf:
                     codes_shared = []
                     for qr in available:
+                        # marcar como compartido/purchased y guardar email receptor
                         qr.status_purchased = 'purchased'
                         qr.user_email = recipient_email
                         qr.save()
 
-                        # write the image file into the zip
-                        path = os.path.join(settings.MEDIA_ROOT,
-                                            'qrcodes',
-                                            f"qr_{qr.id}_.png")
-                        if os.path.exists(path):
-                            zf.write(path, os.path.basename(path))
+                        # intenta usar qr.image.path (local) o abrir y escribir bytes (storage agnóstico)
+                        try:
+                            if qr.image and hasattr(qr.image, 'path'):
+                                # path local
+                                file_path = qr.image.path
+                                if os.path.exists(file_path):
+                                    zf.write(file_path, arcname=os.path.basename(qr.image.name))
+                                else:
+                                    # fallback a abrir desde storage
+                                    qr.image.open('rb')
+                                    data = qr.image.read()
+                                    zf.writestr(os.path.basename(qr.image.name), data)
+                                    qr.image.close()
+                            elif qr.image:
+                                # storage remoto (no .path)
+                                qr.image.open('rb')
+                                data = qr.image.read()
+                                zf.writestr(os.path.basename(qr.image.name), data)
+                                qr.image.close()
+                            else:
+                                # no hay imagen, se puede generar una entrada texto si quieres
+                                zf.writestr(f"qr_{qr.id}_missing.txt", f"No image for QR id {qr.id}")
+                        except Exception as e:
+                            # no romper el bucle: registra y continúa
+                            zf.writestr(f"qr_{qr.id}_error.txt", f"Error reading image: {e}")
+
                         codes_shared.append(qr.data)
 
                 zip_buffer.seek(0)
 
-                # send email
+                # preparar y enviar el email con el zip adjunto
                 subject = f"QR Codes for Event: {event.name}"
                 message = (
                     f"You have been granted access to the event: {event.name}\n\n"
@@ -171,18 +258,17 @@ def share_qr_codes(request, event_id):
                     settings.DEFAULT_FROM_EMAIL,
                     [recipient_email]
                 )
+                # adjuntamos bytes del zip
                 email.attach(f"{event.name}_QR_Codes.zip",
                              zip_buffer.getvalue(),
                              "application/zip")
-                email.send()
+                email.send(fail_silently=False)
 
                 return render(request, 'dashboard/share_confirmation.html', {
-                    'event':          event,
+                    'event': event,
                     'recipient_email': recipient_email,
-                    'codes_shared':    codes_shared,
-                    'remaining_codes': event.qr_codes.filter(
-                                           status_purchased='available'
-                                       ).count()
+                    'codes_shared': codes_shared,
+                    'remaining_codes': event.qr_codes.filter(status_purchased='available').count()
                 })
     else:
         form = ShareQRCodeForm()
