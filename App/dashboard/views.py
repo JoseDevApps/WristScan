@@ -743,7 +743,7 @@ def listdb(request):
         recycled_count=Count('qr_codes', filter=Q(qr_codes__status_recycled='recycled')),
         shared_count=Count('qr_codes', filter=Q(qr_codes__status_purchased='purchased')),
         
-        )
+        ).order_by("-date")   
     return render(request, template, {'events': user_events, 'user': user, 'form': form})
 
 
