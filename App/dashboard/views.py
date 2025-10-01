@@ -684,7 +684,7 @@ def update_event_mask(request, event_id):
         except Exception as e:
             messages.error(request, f"No se pudo guardar la máscara: {e}")
 
-        return redirect('dashboard:listdb')
+        return redirect('dashboard:tables')
 
     # GET -> mostrar form simplificado
     return render(request, "dashboard/update_mask_form.html", {"event": event})
