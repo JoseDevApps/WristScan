@@ -652,13 +652,13 @@ def update_event_mask(request, event_id):
         mask_file = request.FILES.get("mask_image")
         if not mask_file:
             messages.error(request, "No se recibió ningún archivo.")
-            return redirect('dashboard:listdb')
+            return redirect('dashboard:tables')
 
         # (Opcional) Validaciones básicas: tipo y tamaño
         content_type = mask_file.content_type
         if content_type not in ("image/png", "image/jpeg", "image/jpg", "image/webp"):
             messages.error(request, "Formato no soportado. Usa PNG/JPEG/WebP.")
-            return redirect('dashboard:listdb')
+            return redirect('dashboard:tables')
 
         try:
             rel_mask_name = save_event_mask(event.id, mask_file)
