@@ -29,4 +29,6 @@ urlpatterns = [
     path('mbcheck/', views.qr_app2, name="mbcheck"),
     path('logout/', views.force_logout_view, name='logout'),
     path('modal/', views.ShowModalView.as_view(), name="modal-form"),
+    path('event/<int:event_id>/update-mask/', views.update_event_mask, name='update_event_mask'),
+
 ]
