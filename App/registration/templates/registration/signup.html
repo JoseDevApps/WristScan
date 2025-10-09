@@ -12,32 +12,86 @@
   <div class="wrapper">
     <style>.errorlist{color:red;} label{display: none;}</style>
     <h2>Registration</h2>
-    <form action="" method="post"> {% csrf_token %}
+    <!-- <form action="" method="post"> {% csrf_token %}
       {{form.as_p}}
-      <!-- <div class="input-box">
-        <input type="text" placeholder="Enter your name" required>
-      </div>
-      <div class="input-box">
-        <input type="text" placeholder="Enter your email" required>
-      </div>
-      <div class="input-box">
-        <input type="password" placeholder="Create password" required>
-      </div>
-      <div class="input-box">
-        <input type="password" placeholder="Confirm password" required>
-      </div>
-      <div class="policy">
-        <input type="checkbox">
-        <h3>I accept all terms & condition</h3>
-      </div>
-      <div class="input-box button">
-        <input type="Submit" value="Register Now">
-      </div>
-      <div class="text">
-        <h3>Already have an account? <a href="#">Login now</a></h3>
-      </div> -->
       <input type="Submit" value="Register Now">
-    </form>
+    </form> -->
+    <form action="" method="post" style="max-width: 500px; margin: auto; padding: 20px; background-color: #f5f6fa; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); font-family: Arial, sans-serif;">
+  {% csrf_token %}
+
+  <h2 style="text-align:center; margin-bottom: 20px; color: #0f141a;">Registro de Usuario</h2>
+
+  <!-- Usuario -->
+  <div class="form-group" style="margin-bottom: 15px; display: flex; flex-direction: column;">
+    <label for="id_username" style="margin-bottom: 5px; font-weight: bold;">Nombre de usuario:</label>
+    <input type="text" name="username" id="id_username" placeholder="Nombre de usuario" required
+           style="padding: 10px; border-radius: 8px; border: 1px solid #ccc; font-size: 16px;">
+    <small id="id_username_helptext" style="color: #666; font-size: 13px; margin-top: 3px;">
+      Requerido. 150 carácteres como máximo. Únicamente letras, dígitos y @/./+/-/_
+    </small>
+  </div>
+
+  <!-- Email -->
+  <div class="form-group" style="margin-bottom: 15px; display: flex; flex-direction: column;">
+    <label for="id_email" style="margin-bottom: 5px; font-weight: bold;">Email:</label>
+    <input type="email" name="email" id="id_email" placeholder="Dirección email" required
+           style="padding: 10px; border-radius: 8px; border: 1px solid #ccc; font-size: 16px;">
+    <small id="id_email_helptext" style="color: #666; font-size: 13px; margin-top: 3px;">
+      Requerido. 254 carácteres como máximo y debe ser válido.
+    </small>
+  </div>
+
+  <!-- Contraseña -->
+  <div class="form-group" style="margin-bottom: 15px; display: flex; flex-direction: column;">
+    <label for="id_password1" style="margin-bottom: 5px; font-weight: bold;">Contraseña:</label>
+    <input type="password" name="password1" id="id_password1" placeholder="Contraseña" required
+           style="padding: 10px; border-radius: 8px; border: 1px solid #ccc; font-size: 16px;">
+    <small id="id_password1_helptext" style="color: #666; font-size: 13px; margin-top: 3px;">
+      Su contraseña no puede asemejarse a su información personal, debe tener al menos 8 caracteres, no ser común ni completamente numérica.
+    </small>
+  </div>
+
+  <!-- Confirmar contraseña -->
+  <div class="form-group" style="margin-bottom: 20px; display: flex; flex-direction: column;">
+    <label for="id_password2" style="margin-bottom: 5px; font-weight: bold;">Contraseña (confirmación):</label>
+    <input type="password" name="password2" id="id_password2" placeholder="Repite la contraseña" required
+           style="padding: 10px; border-radius: 8px; border: 1px solid #ccc; font-size: 16px;">
+    <small id="id_password2_helptext" style="color: #666; font-size: 13px; margin-top: 3px;">
+      Para verificar, introduzca la misma contraseña anterior.
+    </small>
+  </div>
+
+  <!-- Botón -->
+  <div style="text-align: center;">
+    <input type="submit" value="Register Now"
+           style="padding: 12px 25px; font-size: 16px; border-radius: 8px; border: none; background-color: #0f141a; color: white; cursor: pointer; transition: background 0.3s;">
+  </div>
+
+  <!-- Link a login -->
+  <div style="text-align: center; margin-top: 15px; font-size: 14px;">
+    ¿Ya tienes cuenta? <a href="{% url 'login' %}" style="color: #0c63e8; text-decoration: none;">Inicia sesión</a>
+  </div>
+
+  <!-- Responsive -->
+  <style>
+    @media (max-width: 576px) {
+      form {
+        padding: 15px;
+      }
+      input[type="text"], input[type="email"], input[type="password"] {
+        font-size: 14px;
+      }
+      input[type="submit"] {
+        width: 100%;
+      }
+    }
+    input[type="submit"]:hover {
+      background-color: #1b1f25;
+    }
+  </style>
+</form>
+
+
   </div>
 </body>
 </html>
