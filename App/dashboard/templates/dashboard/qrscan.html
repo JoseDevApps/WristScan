@@ -42,7 +42,7 @@
        <li class="nav-item">
           <a href="{% url 'dashboard:inicio' %}">
             <i class="fas fa-bars"></i>
-            <p>Home</p>
+            <p style="font-weight: normal !important;">Home</p>
           </a>
         </li>
 
@@ -50,7 +50,7 @@
         <li class="nav-item">
           <a href="{% url 'dashboard:tables' %}">
               <i class="fas fa-table"></i>
-              <span class="sub-item">Event list</span>
+              <span class="sub-item" style="font-weight: normal !important;">Event list</span>
             </a>
         </li>
 <!-- Monitor option-->
@@ -58,7 +58,7 @@
     <li class="nav-item active">
           <a href="{% url 'dashboard:qrscan' %}">
             <i class="fas fa-qrcode"></i>
-            <p class="sub-item">QR Control</p>
+            <p class="sub-item" style="font-weight: normal !important;">QR Control</p>
           </a>
         </li>
         
@@ -68,14 +68,14 @@
         <li class="nav-item">
           <a data-bs-toggle="collapse" href="#submenu">
             <i class="fas fa-bars"></i>
-            <p class="sub-item">Settings</p>
+            <p class="sub-item" style="font-weight: normal !important;">Settings</p>
             <span class="caret"></span>
           </a>
           <div class="collapse" id="submenu">
             <ul class="nav nav-collapse">
               <li>
                 <a  href="{% url 'dashboard:logout' %}">
-                  <span class="sub-item">LogOut</span>
+                  <span class="sub-item" style="font-weight: normal !important;">LogOut</span>
                 </a>
                 
               </li>
