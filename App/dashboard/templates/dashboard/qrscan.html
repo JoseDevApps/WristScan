@@ -47,36 +47,6 @@
         </li>
 
 
-        <li class="nav-item active">
-          <a href="{% url 'dashboard:qrscan' %}">
-            <i class="fas fa-qrcode"></i>
-            <p>QR Control</p>
-          </a>
-        </li>
-        
-        <!-- <li class="nav-item">
-          <a data-bs-toggle="collapse" href="#forms">
-            <i class="fas fa-pen-square"></i>
-            <p>Create Event</p>
-            <span class="caret"></span>
-          </a>
-          <div class="collapse" id="forms">
-            <ul class="nav nav-collapse">
-              <li>
-                <a href="{% url 'dashboard:create' %}">
-                  <span class="sub-item">Create</span>
-                </a>
-              </li>
-              <li>
-                <a href="{% url 'dashboard:assign' %}">
-                  <span class="sub-item">Monitor QR</span>
-                </a>
-              </li>
-            </ul>
-          </div>
-        </li> -->
-
-<!-- Monitor option-->
         <li class="nav-item">
           <a href="{% url 'dashboard:tables' %}">
               <i class="fas fa-table"></i>
@@ -85,12 +55,20 @@
         </li>
 <!-- Monitor option-->
 
+    <li class="nav-item active">
+          <a href="{% url 'dashboard:qrscan' %}">
+            <i class="fas fa-qrcode"></i>
+            <p class="sub-item">QR Control</p>
+          </a>
+        </li>
+        
+
 
 <!-- log Out -->
         <li class="nav-item">
           <a data-bs-toggle="collapse" href="#submenu">
             <i class="fas fa-bars"></i>
-            <p>Log Out</p>
+            <p class="sub-item">Settings</p>
             <span class="caret"></span>
           </a>
           <div class="collapse" id="submenu">
