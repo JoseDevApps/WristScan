@@ -110,23 +110,24 @@ class InviteForm(forms.Form):
 
 class AutoTicketAssignmentForm(forms.ModelForm):
     """
-    Formulario minimal: solo nombre, cantidad y máscara opcional.
-    El resto de decisiones (free/paid, ads, país, fechas) las toma la vista.
+    Minimal form: only event name, quantity, and optional mask.
+    Other decisions (free/paid, ads, country, dates) are handled by the view.
     """
     quantity = forms.IntegerField(
         min_value=1,
         required=True,
+        label='',  # Hide label
         widget=forms.NumberInput(attrs={
             'class': 'form-control',
             'min': 1,
-            'placeholder': 'Cantidad de QRs'
+            'placeholder': 'Number of QRs'
         })
     )
 
     mask_image = forms.ImageField(
         required=False,
-        label="Máscara central (720x1150 opcional)",
-        help_text="PNG/JPG; se normaliza a 720x1150."
+        label="Central mask (720x1150 optional)",
+        help_text="PNG/JPG; normalized to 720x1150."
     )
 
     class Meta:
@@ -135,11 +136,11 @@ class AutoTicketAssignmentForm(forms.ModelForm):
         widgets = {
             'event': forms.TextInput(attrs={
                 'class': 'form-control',
-                'placeholder': 'Nombre del evento'
+                'placeholder': 'Event name'
             }),
         }
         labels = {
-            'event': '',  # ocultamos label para event
+            'event': '',  # Hide label for event
         }
 
     def __init__(self, *args, **kwargs):
@@ -149,7 +150,6 @@ class AutoTicketAssignmentForm(forms.ModelForm):
     def clean_event(self):
         name = self.cleaned_data['event']
         return name.strip()
-
 # class AutoTicketAssignmentForm(forms.ModelForm):
 #     # Hacemos event requerido explícitamente
 #     event = forms.CharField(
