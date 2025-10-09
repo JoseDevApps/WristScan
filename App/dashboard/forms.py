@@ -115,7 +115,7 @@ class AutoTicketAssignmentForm(forms.ModelForm):
     """
     quantity = forms.IntegerField(
         min_value=1,
-        label="Cantidad de QRs"
+        
     )
 
     mask_image = forms.ImageField(
@@ -130,9 +130,6 @@ class AutoTicketAssignmentForm(forms.ModelForm):
         widgets = {
             'event': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nombre del evento'}),
             'quantity': forms.NumberInput(attrs={'class': 'form-control', 'min': 1, 'placeholder': 'Cantidad de QRs'}),
-        }
-        labels = {
-            'event': 'E',
         }
 
     def __init__(self, *args, **kwargs):
