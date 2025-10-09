@@ -108,6 +108,9 @@ class EventSelectorForm(forms.Form):
 class InviteForm(forms.Form):
     email = forms.EmailField(label="Guest email")
 
+from django import forms
+from .models import TicketAssignment
+
 class AutoTicketAssignmentForm(forms.ModelForm):
     """
     Formulario minimal: solo nombre, cantidad y máscara opcional.
@@ -124,6 +127,12 @@ class AutoTicketAssignmentForm(forms.ModelForm):
         })
     )
 
+
+    mask_image = forms.ImageField(
+        required=False,
+        label="Máscara central (720x1150 opcional)",
+        help_text="PNG/JPG; se normaliza a 720x1150."
+    )
     class Meta:
         model = TicketAssignment
         fields = ['event', 'quantity']
@@ -145,6 +154,8 @@ class AutoTicketAssignmentForm(forms.ModelForm):
     def clean_event(self):
         name = self.cleaned_data['event']
         return name.strip()
+
+
 # class AutoTicketAssignmentForm(forms.ModelForm):
 #     # Hacemos event requerido explícitamente
 #     event = forms.CharField(
