@@ -34,8 +34,10 @@
 <!-- ********************** -->
 
   <div class="sidebar-wrapper scrollbar scrollbar-inner">
+
     <div class="sidebar-content">
       <ul class="nav nav-secondary">
+
 
         <li class="nav-item active">
           <a data-bs-toggle="collapse" href="{% url 'dashboard:inicio' %}">
@@ -68,7 +70,7 @@
         <li class="nav-item">
           <a data-bs-toggle="collapse" href="#submenu">
             <i class="fas fa-bars"></i>
-            <p class="sub-item">Log Out</p>
+            <p class="sub-item">Settings</p>
             <span class="caret"></span>
           </a>
           <div class="collapse" id="submenu">
@@ -154,7 +156,7 @@
       class="d-flex align-items-left align-items-md-center flex-column flex-md-row pt-2 pb-4"
     >
       <div>
-        <h3 class="fw-bold mb-3">Welcome {{user}}!</h3>
+        <h3 class="fw-bold mb-3">Available codes</h3>
       </div>
   
     </div>
@@ -171,7 +173,7 @@
           </div>
           <div class="col col-stats ms-3 ms-sm-0">
             <div class="numbers">
-              <p class="card-category">Available</p>
+              <p class="card-category">Purchased ( no Ads or restrictions)</p>
               <h4 class="card-title">{{available}}</h4>
             </div>
           </div>
@@ -191,28 +193,8 @@
           </div>
           <div class="col col-stats ms-3 ms-sm-0">
             <div class="numbers">
-              <p class="card-category">Free available</p>
+              <p class="card-category">Free (with Ads and expiration)</p>
               <h4 class="card-title">{{free_remaining}}</h4>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="col-12 col-md-6 col-xl-3">
-    <div class="card card-stats card-round">
-      <div class="card-body">
-        <div class="row align-items-center">
-          <div class="col-icon">
-            <div class="icon-big text-center icon-info bubble-shadow-small">
-              <i class="fas fa-shopping-cart"></i>
-            </div>
-          </div>
-          <div class="col col-stats ms-3 ms-sm-0">
-            <div class="numbers">
-              <p class="card-category">Purchased</p>
-              <h4 class="card-title">{{purchased}}</h4>
             </div>
           </div>
         </div>
@@ -226,33 +208,13 @@
         <div class="row align-items-center">
           <div class="col-icon">
             <div class="icon-big text-center icon-info bubble-shadow-small">
-              <i class="far fa-file-alt"></i>
+              <i class="fas fa-shopping-cart"></i>
             </div>
           </div>
           <div class="col col-stats ms-3 ms-sm-0">
             <div class="numbers">
-              <p class="card-category">Scanned</p>
-              <h4 class="card-title">{{tp}}</h4>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="col-12 col-md-6 col-xl-3">
-    <div class="card card-stats card-round">
-      <div class="card-body">
-        <div class="row align-items-center">
-          <div class="col-icon">
-            <div class="icon-big text-center icon-info bubble-shadow-small">
-              <i class="far fa-file-alt"></i>
-            </div>
-          </div>
-          <div class="col col-stats ms-3 ms-sm-0">
-            <div class="numbers">
-              <p class="card-category">Shared</p>
-              <h4 class="card-title">{{used}}</h4>
+              <p class="card-category">Purchased</p>
+              <h4 class="card-title">{{purchased}}</h4>
             </div>
           </div>
         </div>
