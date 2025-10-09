@@ -108,9 +108,6 @@ class EventSelectorForm(forms.Form):
 class InviteForm(forms.Form):
     email = forms.EmailField(label="Guest email")
 
-from django import forms
-from .models import TicketAssignment
-
 class AutoTicketAssignmentForm(forms.ModelForm):
     """
     Formulario minimal: solo nombre, cantidad y máscara opcional.
@@ -118,39 +115,35 @@ class AutoTicketAssignmentForm(forms.ModelForm):
     """
     quantity = forms.IntegerField(
         min_value=1,
-        required=True,
-        # No label: se usa solo placeholder
-        widget=forms.NumberInput(attrs={
-            'class': 'form-control',
-            'min': 1,
-            'placeholder': 'Cantidad de QRs'
-        })
+        label="Cantidad de QRs"
     )
 
+    mask_image = forms.ImageField(
+        required=False,
+        label="Máscara central (720x1150 opcional)",
+        help_text="PNG/JPG; se normaliza a 720x1150."
+    )
 
-    
     class Meta:
         model = TicketAssignment
         fields = ['event', 'quantity']
         widgets = {
-            'event': forms.TextInput(attrs={
-                'class': 'form-control',
-                'placeholder': 'Nombre del evento'
-            }),
+            'event': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nombre del evento'}),
+            'quantity': forms.NumberInput(attrs={'class': 'form-control', 'min': 1, 'placeholder': 'Cantidad de QRs'}),
         }
-        # Eliminamos labels para que no aparezcan
         labels = {
-            'event': '',
+            'event': 'E',
         }
 
     def __init__(self, *args, **kwargs):
+        # lo mantenemos por consistencia con tu vista
         self.user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
 
     def clean_event(self):
         name = self.cleaned_data['event']
         return name.strip()
-
+    
 
 # class AutoTicketAssignmentForm(forms.ModelForm):
 #     # Hacemos event requerido explícitamente
