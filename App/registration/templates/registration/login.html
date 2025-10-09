@@ -4,10 +4,30 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Login Form </title>
+  <title>Login Form</title>
   <link rel="stylesheet" href="{% static 'registration/css/style.css' %}" />
-  <!-- Font Awesome CDN link for icons -->
+  <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
+
+  <!-- Solo cambio de colores -->
+  <style>
+    body {
+      background-color: #d3dbe5 !important;
+    }
+    .wrapper .row.button input[type="submit"] {
+      background-color: #0f141a !important;
+      color: #fff !important;
+    }
+    .wrapper .row.button input[type="submit"]:hover {
+      background-color: #1b1f25 !important;
+    }
+    .pass a, .signup-link a {
+      color: #0c63e8 !important;
+    }
+    .pass a:hover, .signup-link a:hover {
+      text-decoration: underline;
+    }
+  </style>
 </head>
 <body>
   <div class="wrapper">
@@ -15,7 +35,8 @@
     <p style="color: green;">Usuario registrado correctamente</p>
     {% endif %}
     <div class="title"><span>Login</span></div>
-    <form action="" method="post"> {% csrf_token %}
+    <form action="" method="post">
+      {% csrf_token %}
       <div class="row">
         <i class="fas fa-user"></i>
         <input type="text" placeholder="Username" name="username" id="id_username" required />
