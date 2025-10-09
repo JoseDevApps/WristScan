@@ -4,32 +4,49 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Login Form </title>
-  <link rel="stylesheet" href="{% static 'registration/css/style.css' %}" />
-  <!-- Font Awesome CDN link for icons -->
+  <title>Login Form</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
 </head>
-<body>
-  <div class="wrapper">
+<body style="background-color: #d3dbe5; font-family: Arial, sans-serif;">
+
+  <div class="wrapper" style="max-width: 400px; margin: 80px auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
     {% if 'register' in request.GET %}
     <p style="color: green;">Usuario registrado correctamente</p>
     {% endif %}
-    <div class="title"><span>Login</span></div>
+
+    <div class="title" style="text-align: center; font-size: 28px; font-weight: bold; margin-bottom: 25px;">
+      <span>Login</span>
+    </div>
+
     <form action="" method="post"> {% csrf_token %}
-      <div class="row">
-        <i class="fas fa-user"></i>
-        <input type="text" placeholder="Username" name="username" id="id_username" required />
+      <div class="row" style="position: relative; margin-bottom: 20px;">
+        <i class="fas fa-user" style="position: absolute; top: 12px; left: 10px; color: #666;"></i>
+        <input type="text" placeholder="Username" name="username" id="id_username"
+               required
+               style="width: 100%; padding: 10px 10px 10px 35px; border: 1px solid #ccc; border-radius: 6px;" />
       </div>
-      <div class="row">
-        <i class="fas fa-lock"></i>
-        <input type="password" placeholder="Password" name="password" id="id_password" required />
+
+      <div class="row" style="position: relative; margin-bottom: 20px;">
+        <i class="fas fa-lock" style="position: absolute; top: 12px; left: 10px; color: #666;"></i>
+        <input type="password" placeholder="Password" name="password" id="id_password"
+               required
+               style="width: 100%; padding: 10px 10px 10px 35px; border: 1px solid #ccc; border-radius: 6px;" />
       </div>
-      <div class="pass"><a href="{% url 'password_reset' %}">Forgot password?</a></div>
-      <div class="row button">
-        <input type="submit" value="Login" />
+
+      <div class="pass" style="text-align: right; margin-bottom: 20px;">
+        <a href="{% url 'password_reset' %}" style="color: #0c63e8; text-decoration: none;">Forgot password?</a>
       </div>
-      <div class="signup-link">Not a member? <a href="{% url 'signup' %}">Signup now</a></div>
+
+      <div class="row button" style="text-align: center;">
+        <input type="submit" value="Login"
+               style="width: 100%; padding: 10px; background-color: #0f141a; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 16px;" />
+      </div>
+
+      <div class="signup-link" style="text-align: center; margin-top: 15px; font-size: 14px;">
+        Not a member? <a href="{% url 'signup' %}" style="color: #0c63e8; text-decoration: none;">Signup now</a>
+      </div>
     </form>
   </div>
+
 </body>
 </html>
