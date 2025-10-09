@@ -174,15 +174,16 @@
                 <form method="POST" enctype="multipart/form-data" action="{% url 'dashboard:tables' %}">
                   {% csrf_token %}
                   <div class="modal-content">
-                    <div class="modal-header">
-                      <h5 class="modal-title" id="modalLabel">Create Event</h5>
-                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <div class="modal-header position-relative">
+                      <h5 class="modal-title w-100 text-center" id="modalLabel">Create Event</h5>
+                      <button type="button" class="btn-close position-absolute end-0 top-50 translate-middle-y" 
+                              data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
                       {{ form.as_p }}
                     </div>
-                    <div class="modal-footer">
-                      <button type="submit" class="btn btn-info">Send</button>
+                    <div class="modal-footer justify-content-center">
+                      <button type="submit" class="btn btn-info">Create</button>
                     </div>
                   </div>
                 </form>
