@@ -115,7 +115,12 @@ class AutoTicketAssignmentForm(forms.ModelForm):
     """
     quantity = forms.IntegerField(
         min_value=1,
-        label="Cantidad de QRs"
+        required=True,
+        widget=forms.NumberInput(attrs={
+            'class': 'form-control',
+            'min': 1,
+            'placeholder': 'Cantidad de QRs'
+        })
     )
 
     mask_image = forms.ImageField(
@@ -126,24 +131,24 @@ class AutoTicketAssignmentForm(forms.ModelForm):
 
     class Meta:
         model = TicketAssignment
-        fields = ['event', 'quantity']
+        fields = ['event', 'quantity', 'mask_image']
         widgets = {
-            'event': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nombre del evento'}),
-            'quantity': forms.NumberInput(attrs={'class': 'form-control', 'min': 1, 'placeholder': 'Cantidad de QRs'}),
+            'event': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Nombre del evento'
+            }),
         }
         labels = {
-            'event': 'E',
+            'event': '',  # ocultamos label para event
         }
 
     def __init__(self, *args, **kwargs):
-        # lo mantenemos por consistencia con tu vista
         self.user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
 
     def clean_event(self):
         name = self.cleaned_data['event']
         return name.strip()
-    
 
 # class AutoTicketAssignmentForm(forms.ModelForm):
 #     # Hacemos event requerido explícitamente
