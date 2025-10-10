@@ -202,9 +202,7 @@
       <thead>
           <tr>
               <th>Event</th>
-              <th>Number of QR codes</th>
-              <th>Number of QR codes shared</th>
-             
+              <th>Performance</th>
               <th>Actions</th>
           </tr>
       </thead>
@@ -212,8 +210,7 @@
         {% for qrcode in events %}
         <tr class="{% if qrcode.recycled_count > 0 %}recycled-row{% endif %}">
           <td>{{qrcode.name}}</td>
-          <td>{{qrcode.qr_code_count}}</td>
-          <td>{{qrcode.shared_count }}</td>
+          <td>{{qrcode.qr_code_count}}/{{qrcode.shared_count }}</td>
           
           <td>
             <div class="d-flex justify-content-center gap-2 flex-wrap">
