@@ -214,14 +214,14 @@
           
           <td>
             <div class="d-flex justify-content-center gap-2 flex-wrap">
-              <!-- Actions Button Group -->
+              <!-- Actions Button Group with icon -->
               <div class="btn-group">
                 <button 
                   type="button" 
                   class="btn btn-primary dropdown-toggle" 
                   data-bs-toggle="dropdown" 
                   aria-expanded="false">
-                  Actions
+                  <i class="fas fa-cog"></i>
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end">
                   <li><a class="dropdown-item" href="{% url 'dashboard:download_qr_zip' qrcode.id %}"><i class="fas fa-download me-2"></i> Download ZIP</a></li>
@@ -239,14 +239,14 @@
                 </ul>
               </div>
 
-              <!-- Share Button Group -->
+              <!-- Share Button Group with icon -->
               <div class="btn-group">
                 <button 
                   type="button" 
                   class="btn btn-info dropdown-toggle" 
                   data-bs-toggle="dropdown" 
                   aria-expanded="false">
-                  Share
+                  <i class="fas fa-share-alt"></i>
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end">
                   <li><a class="dropdown-item" href="https://api.whatsapp.com/send?text=Download QR Codes for {{ qrcode.name }}%0A{{ request.build_absolute_uri|slice:":-1" }}{% url 'dashboard:download_qr_zip' qrcode.id %}" target="_blank"><i class="fab fa-whatsapp me-2"></i> WhatsApp</a></li>
@@ -259,11 +259,11 @@
             </div>
           </td>
         </tr>
-        <!-- Modal Section remains unchanged -->
         {% endfor %}
       </tbody>
   </table>
 </div>
+
     </div>
   
 
