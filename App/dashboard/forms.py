@@ -84,7 +84,7 @@ class TicketAssignmentForm(forms.ModelForm):
 
 class EventSelectorForm(forms.Form):
     event = forms.ModelChoiceField(
-        queryset=Event.objects.none(),  # inicial vacío
+        queryset=Event.objects.none(),
         widget=forms.Select(attrs={
             'class': 'form-control mx-auto',
             'style': 'display:block; margin-left:auto; margin-right:auto; width:50%;'
@@ -93,20 +93,19 @@ class EventSelectorForm(forms.Form):
         empty_label="Choose one of your events...",
     )
 
-
     def __init__(self, *args, user=None, events=None, **kwargs):
         super().__init__(*args, **kwargs)
-        # Si llega lista de eventos (invitado), limitémosla:
         if events is not None:
             self.fields['event'].queryset = Event.objects.filter(
                 id__in=[e.id for e in events]
             ).order_by('-date')
-        # Si no, pero hay user: eventos propios (comprador)
         elif user:
-            self.fields['event'].queryset = (
-                Event.objects.filter(created_by=user)
-                             .order_by('-date')
-            )
+            self.fields['event'].queryset = Event.objects.filter(
+                created_by=user
+            ).order_by('-date')
+        # Agregar clase al label
+        self.fields['event'].label_suffix = ''
+        self.fields['event'].widget.attrs.update({'class': 'form-control mx-auto'})
 
 class InviteForm(forms.Form):
     email = forms.EmailField(label="Guest email")
