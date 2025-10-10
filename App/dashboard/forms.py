@@ -95,6 +95,15 @@ class EventSelectorForm(forms.Form):
 
     def __init__(self, *args, user=None, events=None, **kwargs):
         super().__init__(*args, **kwargs)
+
+        # Centrar el label con estilo inline
+        self.fields['event'].label_suffix = ''  # elimina los dos puntos automáticos
+        self.fields['event'].label_tag = lambda label_for=None, label_suffix=None: (
+            f'<label for="id_event" '
+            f'style="display:block; text-align:center; margin-bottom:5px;">'
+            f'{self.fields["event"].label}</label>'
+        )
+
         if events is not None:
             self.fields['event'].queryset = Event.objects.filter(
                 id__in=[e.id for e in events]
@@ -103,9 +112,7 @@ class EventSelectorForm(forms.Form):
             self.fields['event'].queryset = Event.objects.filter(
                 created_by=user
             ).order_by('-date')
-        # Agregar clase al label
-        self.fields['event'].label_suffix = ''
-        self.fields['event'].widget.attrs.update({'class': 'form-control mx-auto'})
+
 
 class InviteForm(forms.Form):
     email = forms.EmailField(label="Guest email")
