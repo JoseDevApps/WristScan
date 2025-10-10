@@ -208,19 +208,14 @@
       </thead>
       <tbody>
         {% for qrcode in events %}
-        <tr class="{% if qrcode.recycled_count > 0 %}recycled-row{% endif %}">
+        <tr class="{% if qrcode.recycled_count > 0 %}recycled-row{% endif %}" style="opacity:0; transform: translateY(10px); transition: opacity 0.3s ease, transform 0.3s ease;">
           <td>{{qrcode.name}}</td>
           <td>{{qrcode.qr_code_count}}/{{qrcode.shared_count }}</td>
-          
           <td>
             <div class="d-flex justify-content-center gap-2 flex-wrap">
               <!-- Actions Button Group with icon -->
               <div class="btn-group">
-                <button 
-                  type="button" 
-                  class="btn btn-primary dropdown-toggle" 
-                  data-bs-toggle="dropdown" 
-                  aria-expanded="false">
+                <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                   <i class="fas fa-cog"></i>
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end">
@@ -241,11 +236,7 @@
 
               <!-- Share Button Group with icon -->
               <div class="btn-group">
-                <button 
-                  type="button" 
-                  class="btn btn-info dropdown-toggle" 
-                  data-bs-toggle="dropdown" 
-                  aria-expanded="false">
+                <button type="button" class="btn btn-info dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                   <i class="fas fa-share-alt"></i>
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end">
@@ -263,6 +254,20 @@
       </tbody>
   </table>
 </div>
+
+<!-- Inline JavaScript para animar filas -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const rows = document.querySelectorAll('#eventTable tbody tr');
+  rows.forEach((row, index) => {
+    setTimeout(() => {
+      row.style.opacity = '1';
+      row.style.transform = 'translateY(0)';
+    }, index * 50); // efecto escalonado
+  });
+});
+</script>
+
 
     </div>
   
