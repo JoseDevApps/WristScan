@@ -1,6 +1,7 @@
 from django import forms
 from qrcodes.models import QRCode, Event, Ticket, TicketAssignment
 from django.core.exceptions import ValidationError
+from django.utils.safestring import mark_safe
 
 class UserEmailForm(forms.ModelForm):
     class Meta:
@@ -82,28 +83,57 @@ class TicketAssignmentForm(forms.ModelForm):
                 )
         return cleaned_data
 
+class CenteredSelect(forms.Select):
+    """
+    Widget que renderiza un <label> centrado encima del <select>.
+    Pasa el texto del label con el argumento `label_text` al crear el widget.
+    """
+    def __init__(self, attrs=None, choices=(), label_text=None):
+        super().__init__(attrs, choices)
+        self.label_text = label_text or ''
+
+    # Compatibilidad: Django 2/3/4 cambió el signature (renderer opcional)
+    def render(self, name, value, attrs=None, renderer=None):
+        # Construir los atributos finales (incluye id si existe)
+        final_attrs = self.build_attrs(self.attrs, attrs or {})
+        # Asegurar id para el 'for' del label
+        _id = final_attrs.get('id', 'id_%s' % name)
+        final_attrs['id'] = _id
+
+        # Renderizar el select (usar el render del padre)
+        select_html = super().render(name, value, final_attrs, renderer) if renderer is not None else super().render(name, value, final_attrs)
+
+        # Label centrado y en bloque
+        label_html = ''
+        if self.label_text:
+            label_html = (
+                f'<label for="{_id}" '
+                f'style="display:block; text-align:center; margin-bottom:6px; font-weight:600;">'
+                f'{forms.utils.strip_tags(self.label_text)}</label>'
+            )
+
+        return mark_safe(label_html + select_html)
+
+
 class EventSelectorForm(forms.Form):
     event = forms.ModelChoiceField(
         queryset=Event.objects.none(),
-        widget=forms.Select(attrs={
-            'class': 'form-control mx-auto',
-            'style': 'display:block; margin-left:auto; margin-right:auto; width:50%;'
-        }),
-        label="Select Event",
+        # Aquí usamos nuestro widget personalizado, pasándole el texto del label
+        widget=CenteredSelect(
+            attrs={
+                'class': 'form-control',
+                # centrar select y tamaño: ajusta width según prefieras
+                'style': 'display:block; margin-left:auto; margin-right:auto; width:70%;'
+            },
+            label_text='Select Event'
+        ),
+        # Dejamos el label del field vacío para que Django no renderice otro <label>
+        label='',
         empty_label="Choose one of your events...",
     )
 
     def __init__(self, *args, user=None, events=None, **kwargs):
         super().__init__(*args, **kwargs)
-
-        # Centrar el label con estilo inline
-        self.fields['event'].label_suffix = ''  # elimina los dos puntos automáticos
-        self.fields['event'].label_tag = lambda label_for=None, label_suffix=None: (
-            f'<label for="id_event" '
-            f'style="display:block; text-align:center; margin-bottom:5px;">'
-            f'{self.fields["event"].label}</label>'
-        )
-
         if events is not None:
             self.fields['event'].queryset = Event.objects.filter(
                 id__in=[e.id for e in events]
@@ -112,7 +142,6 @@ class EventSelectorForm(forms.Form):
             self.fields['event'].queryset = Event.objects.filter(
                 created_by=user
             ).order_by('-date')
-
 
 class InviteForm(forms.Form):
     email = forms.EmailField(label="Guest email")
