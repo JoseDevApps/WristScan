@@ -87,7 +87,6 @@ class EventSelectorForm(forms.Form):
         queryset=Event.objects.none(),  # inicial vacío
         widget=forms.Select(attrs={
             'class': 'form-control mx-auto',  # 'mx-auto' centra horizontalmente
-            'style': 'display:block; width:50%;'  # opcional: ancho al 50%
         }),
         label="Select Event",
         empty_label="Choose one of your events...",
