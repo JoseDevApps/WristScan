@@ -2,395 +2,288 @@
 {% block title %}Manillas Bolivia{% endblock %}
 {% load static %}
 {% block content %}
-<div class="wrapper" style="background-color: #d3dbe5;">
+<div class="wrapper">
+
+  <!-- Language selector -->
+  <div class="lang-selector">
+    <label for="lang" class="lang-label">🌐</label>
+    <select id="lang">
+      <option value="en">English</option>
+      <option value="es">Español</option>
+      <option value="pt">Português</option>
+    </select>
+  </div>
+
   <!-- Sidebar -->
   <div class="sidebar" data-background-color="white">
-    <!-- *************** -->
-    <!-- CABECERA INICIO -->
-    <!-- *************** -->
-  <div class="sidebar-logo" >
-    <!-- Logo Header -->
-    <div class="logo-header" data-background-color="white">
-      <a href="{% url 'dashboard:inicio' %}" class="logo">
-        <h1>QR PASS</h1>
-      </a>
-      <div class="nav-toggle">
-        <button class="btn btn-toggle toggle-sidebar">
-          <i class="gg-menu-right"></i>
-        </button>
-        <button class="btn btn-toggle sidenav-toggler">
-          <i class="gg-menu-left"></i>
-        </button>
-      </div>
-      <button class="topbar-toggler more">
-        <i class="gg-more-vertical-alt"></i>
-      </button>
-    </div>
-    <!-- End Logo Header -->
-  </div>
-  
-<!-- ********************** -->
-<!-- INICIO DE Menu Lateral -->
-<!-- ********************** -->
-
-  <div class="sidebar-wrapper scrollbar scrollbar-inner">
-
-    <div class="sidebar-content">
-      <ul class="nav nav-secondary">
-
-
-        <li class="nav-item active">
-          <a data-bs-toggle="collapse" href="{% url 'dashboard:inicio' %}">
-            <i class="fas fa-bars"></i>
-            <p class="sub-item" style="font-weight: normal !important;">Home</p>
-          </a>
-          
-        </li>
-
-
-<!-- Monitor option-->
-        <li class="nav-item">
-          <a href="{% url 'dashboard:tables' %}">
-              <i class="fas fa-table"></i>
-              <span class="sub-item">Event list</span>
-            </a>
-        </li>
-<!-- Monitor option-->
-
-    <li class="nav-item">
-          <a href="{% url 'dashboard:qrscan' %}">
-            <i class="fas fa-qrcode"></i>
-            <p class="sub-item" style="font-weight: normal !important;">QR Control</p>
-          </a>
-        </li>
-        
-
-
-<!-- log Out -->
-        <li class="nav-item">
-          <a data-bs-toggle="collapse" href="#submenu">
-            <i class="fas fa-bars"></i>
-            <p class="sub-item" style="font-weight: normal !important;">Settings</p>
-            <span class="caret"></span>
-          </a>
-          <div class="collapse" id="submenu">
-            <ul class="nav nav-collapse">
-              <li>
-                <a  href="{% url 'dashboard:logout' %}">
-                  <span class="sub-item" style="font-weight: normal !important;">LogOut</span>
-                </a>
-                
-              </li>
-              
-            </ul>
-          </div>
-        </li>
-        <!-- END -->
-           
-      </ul>
-    </div>
-  </div>
-</div>
-
-<!-- ********************** -->
-<!-- FIN DE Menu Lateral -->
-<!-- ********************** -->
-
-<div class="main-panel">
-  <div class="main-header">
-
-    <div class="main-header-logo">
-      <!-- Logo Header -->
-      <div class="logo-header" data-background-color="dark">
+    <div class="sidebar-logo">
+      <div class="logo-header" data-background-color="white">
         <a href="{% url 'dashboard:inicio' %}" class="logo">
-          <img
-            src= "{% static 'img/kaiadmin/logo_light.svg' %}"
-            alt="navbar brand"
-            class="navbar-brand"
-            height="20"
-          />
+          <h1>QR PASS</h1>
         </a>
         <div class="nav-toggle">
-          <button class="btn btn-toggle toggle-sidebar">
-            <i class="gg-menu-right"></i>
-          </button>
-          <button class="btn btn-toggle sidenav-toggler">
-            <i class="gg-menu-left"></i>
-          </button>
+          <button class="btn btn-toggle toggle-sidebar"><i class="gg-menu-right"></i></button>
+          <button class="btn btn-toggle sidenav-toggler"><i class="gg-menu-left"></i></button>
         </div>
-        <button class="topbar-toggler more">
-          <i class="gg-more-vertical-alt"></i>
-        </button>
+        <button class="topbar-toggler more"><i class="gg-more-vertical-alt"></i></button>
       </div>
-      <!-- End Logo Header -->
     </div>
 
-  <!-- Navbar Header -->
-  <nav
-    class="navbar navbar-header navbar-header-transparent navbar-expand-lg border-bottom"
-  >
-    <div class="container-fluid">
-      <nav
-        class="navbar navbar-header-left navbar-expand-lg navbar-form nav-search p-0 d-none d-lg-flex"
-      >
-      <div>
-        <h4 class="text-primary fw-bold mb-12">
-          Manillas Bolivia
-        </h4>
-      </div>
-      </nav>
-
-     
-    </div>
-  </nav>
-  <!-- End Navbar -->
-  </div>
-
-  <!-- ******************** -->
-<!-- Cuerpo del Dashboard -->
-<!-- ******************** -->
-
-<div class="container">
-  <div class="page-inner">
-    <div class="d-flex justify-content-center align-items-center flex-column flex-md-row pt-2 pb-4">
-  <div>
-    <h3 class="fw-bold mb-3 text-center">Available codes</h3>
-  </div>
-</div>
-    
-    <div class="row">
-  <div class="col-12 col-md-6 col-xl-3">
-    <div class="card card-stats card-round">
-      <div class="card-body">
-        <div class="row align-items-center">
-          <div class="col-icon">
-            <div class="icon-big text-center icon-info bubble-shadow-small">
+    <div class="sidebar-wrapper scrollbar scrollbar-inner">
+      <div class="sidebar-content">
+        <ul class="nav nav-secondary">
+          <li class="nav-item active">
+            <a href="{% url 'dashboard:inicio' %}">
+              <i class="fas fa-bars"></i>
+              <p class="sub-item" data-i18n="nav_home">Home</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{% url 'dashboard:tables' %}">
+              <i class="fas fa-table"></i>
+              <span class="sub-item" data-i18n="nav_event_list">Event list</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{% url 'dashboard:qrscan' %}">
               <i class="fas fa-qrcode"></i>
+              <p class="sub-item" data-i18n="nav_qr_control">QR Control</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a data-bs-toggle="collapse" href="#submenu">
+              <i class="fas fa-bars"></i>
+              <p class="sub-item" data-i18n="nav_settings">Settings</p>
+              <span class="caret"></span>
+            </a>
+            <div class="collapse" id="submenu">
+              <ul class="nav nav-collapse">
+                <li>
+                  <a href="{% url 'dashboard:logout' %}">
+                    <span class="sub-item" data-i18n="nav_logout">LogOut</span>
+                  </a>
+                </li>
+              </ul>
             </div>
-          </div>
-          <div class="col col-stats ms-3 ms-sm-0">
-            <div class="numbers">
-              <p class="card-category">Purchased ( no Ads or restrictions)</p>
-              <h4 class="card-title">{{available}}</h4>
-            </div>
-          </div>
-        </div>
+          </li>
+        </ul>
       </div>
     </div>
   </div>
 
-  <div class="col-12 col-md-6 col-xl-3">
-    <div class="card card-stats card-round">
-      <div class="card-body">
-        <div class="row align-items-center">
-          <div class="col-icon">
-            <div class="icon-big text-center icon-info bubble-shadow-small">
-              <i class="far fa-file-alt"></i>
-            </div>
-          </div>
-          <div class="col col-stats ms-3 ms-sm-0">
-            <div class="numbers">
-              <p class="card-category">Free (with Ads and expiration)</p>
-              <h4 class="card-title">{{free_remaining}}</h4>
-            </div>
-          </div>
+  <!-- Main Panel -->
+  <div class="main-panel">
+    <div class="main-header">
+      <div class="main-header-logo">
+        <div class="logo-header" data-background-color="dark">
+          <a href="{% url 'dashboard:inicio' %}" class="logo">
+            <img src="{% static 'img/kaiadmin/logo_light.svg' %}" alt="navbar brand" class="navbar-brand" height="20" />
+          </a>
         </div>
       </div>
     </div>
-  </div>
 
-
-  <div class="col-12 col-md-6 col-xl-3">
-    <div class="card card-stats card-round">
-      <div class="card-body">
-        <div class="row align-items-center">
-          <div class="col-icon">
-            <div class="icon-big text-center icon-info bubble-shadow-small">
-              <i class="fas fa-list-ul"></i>
-            </div>
-          </div>
-          <div class="col col-stats ms-3 ms-sm-0">
-            <div class="numbers">
-              <p class="card-category">Events</p>
-              <h4 class="card-title">{{NE}}</h4>
-            </div>
+    <!-- Dashboard Content -->
+    <div class="container">
+      <div class="page-inner">
+        <div class="d-flex justify-content-center align-items-center flex-column flex-md-row pt-2 pb-4">
+          <div>
+            <h3 class="fw-bold mb-3 text-center" data-i18n="cards_available_codes">Available codes</h3>
           </div>
         </div>
-      </div>
-    </div>
-  </div>
-</div>
 
-  
-
-
-    <div class="row">
-      <div class="col-md-12">
-        <div class="card p-4">
-
-
-           <div class="container text-center">
-            <button class="btn btn-primary btn-lg d-flex align-items-center justify-content-center gap-2 mx-auto"
-                    data-bs-toggle="modal" href="#modalPlanSelect" style="min-width: 200px;">
-              <i class="fas fa-qrcode"></i>
-              <span>GET CODES</span>
-            </button>
-          </div>
-
-<!-- Modal 1: Plan selection -->
-<div class="modal fade" id="modalPlanSelect" aria-hidden="true" aria-labelledby="modalPlanSelectLabel" tabindex="-1">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header position-relative">
-  <h5 class="modal-title w-100 text-center" id="modalPlanSelectLabel">Select your plan</h5>
-  <button type="button" class="btn-close position-absolute end-0 top-50 translate-middle-y" 
-          data-bs-dismiss="modal" aria-label="Close"></button>
-</div>
-      <div class="modal-body">
-        <p id="planHelp">Choose one of the following options:</p>
-        <div class="d-grid gap-2">
-          <button class="btn btn-outline-primary" id="btnPlanGratuito" aria-describedby="planHelp">
-            Free plan with ads
-          </button>
-          <p class="card-text small text-muted mb-0">
-              Basic features, supported by ads.
-            </p>
-          <button class="btn btn-outline-success" id="btnPlanPago" aria-describedby="planHelp">
-            Paid plan without ads
-          </button>
-          <p class="card-text small text-muted mb-0">
-              Full experience, no interruptions.
-            </p>
-        </div>
-      </div>
-      <div class="modal-footer justify-content-between">
-        <small class="text-muted ms-1">You can go back if you make a mistake.</small>
-        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Modal 2: Free plan form -->
-<div class="modal fade" id="modalGratuito" data-bs-backdrop="static" data-bs-keyboard="false"
-     aria-hidden="true" aria-labelledby="modalGratuitoLabel" tabindex="-1">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-
-      <form method="POST" enctype="multipart/form-data" action="{% url 'dashboard:inicio' %}">
-        {% csrf_token %}
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="modalLabel">Purchase QR Codes</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            {{ form.as_p }}
-            <input type="hidden" id="solicitud" name="solicitud" value="free">
-          </div>
-          <div class="modal-footer">
-            <button type="submit" class="btn btn-info">Submit</button>
-          </div>
-        </div>
-      </form>
-
-    </div>
-  </div>
-</div>
-
-<!-- Modal 3: Paid plan form (Django POST) -->
-<div class="modal fade" id="modalPago" data-bs-backdrop="static" data-bs-keyboard="false"
-     tabindex="-1" aria-labelledby="modalPagoLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <form method="POST" enctype="multipart/form-data" action="{% url 'dashboard:inicio' %}">
-        {% csrf_token %}
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="modalLabel">Purchase QR Codes</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            {{ form.as_p }}
-            <input type="hidden" id="solicitud" name="solicitud" value="paid">
-          </div>
-          <div class="modal-footer">
-            <button type="submit" class="btn btn-info">Submit</button>
-          </div>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
-
-<!-- Toast de confirmación -->
-<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1080">
-  <div id="toastOk" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="polite" aria-atomic="true">
-    <div class="d-flex">
-      <div class="toast-body">
-        ¡Listo! Tu elección se registró correctamente.
-      </div>
-      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Cerrar"></button>
-    </div>
-  </div>
-</div>
-
-        <!--  -->
-
-           {% if messages %}
-            <div class="messages">
-              {% for message in messages %}
-                <div 
-                  class="alert 
-                    {% if message.tags == 'error' %}alert-danger
-                    {% elif message.tags == 'warning' %}alert-warning
-                    {% elif message.tags == 'success' %}alert-success
-                    {% elif message.tags == 'info' %}alert-info
-                    {% else %}alert-secondary{% endif %}">
-                  {{ message }}
-                </div>
-              {% endfor %}
-            </div>
-          {% endif %}
-          <!-- Modal -->
-          <div class="modal fade" id="postFormModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-              <form method="POST" action="{% url 'dashboard:inicio' %}">
-                {% csrf_token %}
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <h5 class="modal-title" id="modalLabel">Buy QR Codes</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="row">
+          <!-- Purchased -->
+          <div class="col-12 col-md-6 col-xl-3">
+            <div class="card card-stats card-round">
+              <div class="card-body">
+                <div class="row align-items-center">
+                  <div class="col-icon">
+                    <div class="icon-big text-center icon-info bubble-shadow-small">
+                      <i class="fas fa-qrcode"></i>
+                    </div>
                   </div>
-                  <div class="modal-body">
-                    {{ form.as_p }}
-                  </div>
-                  <div class="modal-footer">
-                    <button type="submit" class="btn btn-info">Send</button>
+                  <div class="col col-stats ms-3 ms-sm-0">
+                    <div class="numbers">
+                      <p class="card-category" data-i18n="cards_purchased">Purchased (no Ads or restrictions)</p>
+                      <h4 class="card-title">{{available}}</h4>
+                    </div>
                   </div>
                 </div>
-              </form>
+              </div>
             </div>
           </div>
 
+          <!-- Free -->
+          <div class="col-12 col-md-6 col-xl-3">
+            <div class="card card-stats card-round">
+              <div class="card-body">
+                <div class="row align-items-center">
+                  <div class="col-icon">
+                    <div class="icon-big text-center icon-info bubble-shadow-small">
+                      <i class="far fa-file-alt"></i>
+                    </div>
+                  </div>
+                  <div class="col col-stats ms-3 ms-sm-0">
+                    <div class="numbers">
+                      <p class="card-category" data-i18n="cards_free">Free (with Ads and expiration)</p>
+                      <h4 class="card-title">{{free_remaining}}</h4>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Events -->
+          <div class="col-12 col-md-6 col-xl-3">
+            <div class="card card-stats card-round">
+              <div class="card-body">
+                <div class="row align-items-center">
+                  <div class="col-icon">
+                    <div class="icon-big text-center icon-info bubble-shadow-small">
+                      <i class="fas fa-list-ul"></i>
+                    </div>
+                  </div>
+                  <div class="col col-stats ms-3 ms-sm-0">
+                    <div class="numbers">
+                      <p class="card-category" data-i18n="cards_events">Events</p>
+                      <h4 class="card-title">{{NE}}</h4>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-      </div> 
+
+        <!-- Get Codes Button -->
+        <div class="container text-center">
+          <button class="btn btn-primary btn-lg d-flex align-items-center justify-content-center gap-2 mx-auto"
+                  data-bs-toggle="modal" href="#modalPlanSelect" style="min-width: 200px;" data-i18n="btn_get_codes">
+            <i class="fas fa-qrcode"></i>
+            <span>GET CODES</span>
+          </button>
+        </div>
+
+        <!-- Modal Select Plan -->
+        <div class="modal fade" id="modalPlanSelect" aria-hidden="true" aria-labelledby="modalPlanSelectLabel" tabindex="-1">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+              <div class="modal-header position-relative">
+                <h5 class="modal-title w-100 text-center" id="modalPlanSelectLabel" data-i18n="modal_select_plan">Select your plan</h5>
+                <button type="button" class="btn-close position-absolute end-0 top-50 translate-middle-y" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <p id="planHelp" data-i18n="modal_choose_plan">Choose one of the following options:</p>
+                <div class="d-grid gap-2">
+                  <button class="btn btn-outline-primary" id="btnPlanGratuito" aria-describedby="planHelp" data-i18n="modal_free_plan">Free plan with ads</button>
+                  <p class="card-text small text-muted mb-0" data-i18n="modal_free_desc">Basic features, supported by ads.</p>
+                  <button class="btn btn-outline-success" id="btnPlanPago" aria-describedby="planHelp" data-i18n="modal_paid_plan">Paid plan without ads</button>
+                  <p class="card-text small text-muted mb-0" data-i18n="modal_paid_desc">Full experience, no interruptions.</p>
+                </div>
+              </div>
+              <div class="modal-footer justify-content-between">
+                <small class="text-muted ms-1" data-i18n="modal_back_option">You can go back if you make a mistake.</small>
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" data-i18n="btn_close">Close</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
     </div>
-
-
   </div>
-
-
 </div>
-<!-- ************** -->
-<!-- CABECERA FINAL -->
-<!-- ************** -->
 
+<script>
+  const translations = {
+    en: {
+      title: "QR PASS Dashboard",
+      nav_home: "Home",
+      nav_event_list: "Event list",
+      nav_qr_control: "QR Control",
+      nav_settings: "Settings",
+      nav_logout: "LogOut",
+      cards_available_codes: "Available codes",
+      cards_purchased: "Purchased (no Ads or restrictions)",
+      cards_free: "Free (with Ads and expiration)",
+      cards_events: "Events",
+      btn_get_codes: "GET CODES",
+      modal_select_plan: "Select your plan",
+      modal_choose_plan: "Choose one of the following options:",
+      modal_free_plan: "Free plan with ads",
+      modal_free_desc: "Basic features, supported by ads.",
+      modal_paid_plan: "Paid plan without ads",
+      modal_paid_desc: "Full experience, no interruptions.",
+      btn_close: "Close",
+      modal_back_option: "You can go back if you make a mistake."
+    },
+    es: {
+      title: "Dashboard QR PASS",
+      nav_home: "Inicio",
+      nav_event_list: "Lista de eventos",
+      nav_qr_control: "Control QR",
+      nav_settings: "Configuración",
+      nav_logout: "Cerrar sesión",
+      cards_available_codes: "Códigos disponibles",
+      cards_purchased: "Comprados (sin anuncios ni restricciones)",
+      cards_free: "Gratis (con anuncios y expiración)",
+      cards_events: "Eventos",
+      btn_get_codes: "OBTENER CÓDIGOS",
+      modal_select_plan: "Selecciona tu plan",
+      modal_choose_plan: "Elige una de las siguientes opciones:",
+      modal_free_plan: "Plan gratuito con anuncios",
+      modal_free_desc: "Funciones básicas, soportado por anuncios.",
+      modal_paid_plan: "Plan de pago sin anuncios",
+      modal_paid_desc: "Experiencia completa, sin interrupciones.",
+      btn_close: "Cerrar",
+      modal_back_option: "Puedes volver si te equivocaste."
+    },
+    pt: {
+      title: "Painel QR PASS",
+      nav_home: "Início",
+      nav_event_list: "Lista de eventos",
+      nav_qr_control: "Controle QR",
+      nav_settings: "Configurações",
+      nav_logout: "Sair",
+      cards_available_codes: "Códigos disponíveis",
+      cards_purchased: "Comprados (sem anúncios ou restrições)",
+      cards_free: "Grátis (com anúncios e expiração)",
+      cards_events: "Eventos",
+      btn_get_codes: "OBTER CÓDIGOS",
+      modal_select_plan: "Selecione seu plano",
+      modal_choose_plan: "Escolha uma das opções a seguir:",
+      modal_free_plan: "Plano gratuito com anúncios",
+      modal_free_desc: "Recursos básicos, suportado por anúncios.",
+      modal_paid_plan: "Plano pago sem anúncios",
+      modal_paid_desc: "Experiência completa, sem interrupções.",
+      btn_close: "Fechar",
+      modal_back_option: "Você pode voltar se cometer um erro."
+    }
+  };
 
+  function applyLang(lang) {
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.getAttribute('data-i18n');
+      const txt = (translations[lang] && translations[lang][key]) || translations.en[key] || key;
+      if (el.tagName === 'INPUT') {
+        if(el.type === "submit"){ el.value = txt; } else { el.placeholder = txt; }
+      } else { el.textContent = txt; }
+    });
+    document.documentElement.lang = lang;
+    localStorage.setItem('lang', lang);
+  }
 
+  const langSelect = document.getElementById('lang');
+  langSelect.addEventListener('change', e => applyLang(e.target.value));
 
-    </div>
+  // Init language
+  const saved = localStorage.getItem('lang') || navigator.language.slice(0,2) || 'en';
+  langSelect.value = saved;
+  applyLang(saved);
+</script>
+
 
 <script>
 (() => {
