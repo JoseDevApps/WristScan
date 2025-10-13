@@ -2,8 +2,7 @@
 {% block title %}Manillas Bolivia{% endblock %}
 {% load static %}
 {% block content %}
-<div class="wrapper">
-
+<div class="wrapper" style="background-color: #d3dbe5;">
   <!-- Language selector -->
   <div class="lang-selector">
     <label for="lang" class="lang-label">🌐</label>
@@ -162,14 +161,152 @@
           </button>
         </div>
 
-        <!-- Modals y forms de Django aquí (igual que tu código original) -->
-        {% include 'dashboard/modals.html' %}
+        <!-- Modal 1: Plan selection -->
+        <div class="modal fade" id="modalPlanSelect" aria-hidden="true" aria-labelledby="modalPlanSelectLabel" tabindex="-1">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+              <div class="modal-header position-relative">
+                <h5 class="modal-title w-100 text-center" id="modalPlanSelectLabel" data-i18n="modal_select_plan">Select your plan</h5>
+                <button type="button" class="btn-close position-absolute end-0 top-50 translate-middle-y" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <p id="planHelp" data-i18n="modal_choose_option">Choose one of the following options:</p>
+                <div class="d-grid gap-2">
+                  <button class="btn btn-outline-primary" id="btnPlanGratuito" aria-describedby="planHelp" data-bs-toggle="modal" data-bs-target="#modalGratuito">
+                    <span data-i18n="modal_free_plan">Free plan with ads</span>
+                  </button>
+                  <p class="card-text small text-muted mb-0" data-i18n="modal_free_plan_desc">Basic features, supported by ads.</p>
+                  <button class="btn btn-outline-success" id="btnPlanPago" aria-describedby="planHelp" data-bs-toggle="modal" data-bs-target="#modalPago">
+                    <span data-i18n="modal_paid_plan">Paid plan without ads</span>
+                  </button>
+                  <p class="card-text small text-muted mb-0" data-i18n="modal_paid_plan_desc">Full experience, no interruptions.</p>
+                </div>
+              </div>
+              <div class="modal-footer justify-content-between">
+                <small class="text-muted ms-1" data-i18n="modal_footer_note">You can go back if you make a mistake.</small>
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" data-i18n="modal_close">Close</button>
+              </div>
+            </div>
+          </div>
+        </div>
 
-      </div>
+        <!-- Modal 2: Free plan form -->
+        <div class="modal fade" id="modalGratuito" data-bs-backdrop="static" data-bs-keyboard="false" aria-hidden="true" aria-labelledby="modalGratuitoLabel" tabindex="-1">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+              <form method="POST" enctype="multipart/form-data" action="{% url 'dashboard:inicio' %}">
+                {% csrf_token %}
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" data-i18n="modal_purchase_qr">Purchase QR Codes</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    {{ form.as_p }}
+                    <input type="hidden" id="solicitud" name="solicitud" value="free">
+                  </div>
+                  <div class="modal-footer">
+                    <button type="submit" class="btn btn-info" data-i18n="modal_submit">Submit</button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+<!-- Modal 3: Paid plan form (Django POST) -->
+<div class="modal fade" id="modalPago" data-bs-backdrop="static" data-bs-keyboard="false"
+     tabindex="-1" aria-labelledby="modalPagoLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <form method="POST" enctype="multipart/form-data" action="{% url 'dashboard:inicio' %}">
+        {% csrf_token %}
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="modalLabel">Purchase QR Codes</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            {{ form.as_p }}
+            <input type="hidden" id="solicitud" name="solicitud" value="paid">
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-info">Submit</button>
+          </div>
+        </div>
+      </form>
     </div>
   </div>
+</div>
+
+<!-- Toast de confirmación -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1080">
+  <div id="toastOk" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="polite" aria-atomic="true">
+    <div class="d-flex">
+      <div class="toast-body">
+        ¡Listo! Tu elección se registró correctamente.
+      </div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Cerrar"></button>
+    </div>
+  </div>
+</div>
+
+        <!--  -->
+
+           {% if messages %}
+            <div class="messages">
+              {% for message in messages %}
+                <div 
+                  class="alert 
+                    {% if message.tags == 'error' %}alert-danger
+                    {% elif message.tags == 'warning' %}alert-warning
+                    {% elif message.tags == 'success' %}alert-success
+                    {% elif message.tags == 'info' %}alert-info
+                    {% else %}alert-secondary{% endif %}">
+                  {{ message }}
+                </div>
+              {% endfor %}
+            </div>
+          {% endif %}
+          <!-- Modal -->
+          <div class="modal fade" id="postFormModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              <form method="POST" action="{% url 'dashboard:inicio' %}">
+                {% csrf_token %}
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="modalLabel">Buy QR Codes</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    {{ form.as_p }}
+                  </div>
+                  <div class="modal-footer">
+                    <button type="submit" class="btn btn-info">Send</button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          </div>
+        </div>
+      </div> 
+    </div>
+
+
+  </div>
+
 
 </div>
+<!-- ************** -->
+<!-- CABECERA FINAL -->
+<!-- ************** -->
+
+
+
+
+    </div>
+
 
 
 <script>
