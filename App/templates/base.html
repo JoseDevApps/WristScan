@@ -150,8 +150,22 @@
     max-width: 80%; /* Controla el ancho del contenido dentro del modal */
     margin: auto; /* Centra el contenido dentro del modal */
 }
-
+body { background-color: #d3dbe5 !important; }
       
+.card-category, .sub-item, h3, h4, h5, button { font-weight: normal; }
+    .lang-selector {
+      display: inline-flex; align-items: center; margin: 10px 0;
+      background-color: #0f141a; border-radius: 8px; overflow: hidden;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+    .lang-selector .lang-label { color:#fff; padding:10px 12px; font-size:16px; cursor:pointer; }
+    .lang-selector select {
+      border: none; padding:10px 12px; background-color:#0f141a; color:#fff;
+      font-size:16px; appearance:none; cursor:pointer;
+      background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 140 140' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolygon points='70,100 30,40 110,40' fill='white'/%3E%3C/svg%3E");
+      background-repeat:no-repeat; background-position:right 10px center; background-size:12px;
+    }
+    .lang-selector select:focus { outline:none; }
     </style>
     {% block css %}{% endblock %}
 
