@@ -45,6 +45,15 @@ CSRF_TRUSTED_ORIGINS = [
 ASGI_APPLICATION = 'manillas.asgi.application'
 # Application definition
 
+USE_I18N = True
+LANGUAGES = [
+    ('en', 'English'),
+    ('es', 'Español'),
+    ('pt', 'Português'),
+]
+LOCALE_PATHS = [ os.path.join(BASE_DIR, 'locale') ]
+
+
 INSTALLED_APPS = [
     'registration',
     "django.contrib.admin",

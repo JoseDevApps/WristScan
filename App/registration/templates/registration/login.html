@@ -1,4 +1,4 @@
-{% load static %}
+<!-- {% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,16 +6,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Login Form</title>
   <link rel="stylesheet" href="{% static 'registration/css/style.css' %}" />
-  <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
 
-  <!-- Solo cambio de colores -->
   <style>
     body {
       background-color: #d3dbe5 !important;
     }
 
-    /* Fondo del contenedor principal */
     .wrapper {
       background-color: #f5f6fa !important;
       border-radius: 10px;
@@ -23,7 +20,6 @@
       padding: 40px;
     }
 
-    /* Contenedor del título */
     .wrapper .title {
       background-color: #0f141a !important;
       color: #ffffff !important;
@@ -35,7 +31,6 @@
       margin-bottom: 25px;
     }
 
-    /* Botón login */
     .wrapper .row.button input[type="submit"] {
       background-color: #0f141a !important;
       color: #fff !important;
@@ -44,7 +39,6 @@
       background-color: #1b1f25 !important;
     }
 
-    /* Enlaces */
     .pass a, .signup-link a {
       color: #0c63e8 !important;
     }
@@ -52,7 +46,6 @@
       text-decoration: underline;
     }
 
-    /* Íconos */
     .wrapper .row i {
       background-color: #0f141a !important;
       color: #fff !important;
@@ -62,7 +55,6 @@
       text-align: center;
     }
 
-    /* Alinear inputs con íconos */
     .wrapper .row input {
       border-radius: 0 6px 6px 0 !important;
     }
@@ -89,6 +81,130 @@
         <input type="submit" value="Login" />
       </div>
       <div class="signup-link">Not a member? <a href="{% url 'signup' %}">Signup now</a></div>
+    </form>
+  </div>
+</body>
+</html> -->
+
+{% load i18n static %}
+<!DOCTYPE html>
+<html lang="{% get_current_language as LANGUAGE_CODE %}{{ LANGUAGE_CODE }}">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% trans "Login Form" %}</title>
+  <link rel="stylesheet" href="{% static 'registration/css/style.css' %}" />
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
+
+  <!-- Solo cambio de colores -->
+  <style>
+    body {
+      background-color: #d3dbe5 !important;
+    }
+    .wrapper {
+      background-color: #f5f6fa !important;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      padding: 40px;
+    }
+    .wrapper .title {
+      background-color: #0f141a !important;
+      color: #ffffff !important;
+      text-align: center;
+      font-size: 24px;
+      font-weight: bold;
+      padding: 12px 0;
+      border-radius: 8px;
+      margin-bottom: 25px;
+    }
+    .wrapper .row.button input[type="submit"] {
+      background-color: #0f141a !important;
+      color: #fff !important;
+    }
+    .wrapper .row.button input[type="submit"]:hover {
+      background-color: #1b1f25 !important;
+    }
+    .pass a, .signup-link a {
+      color: #0c63e8 !important;
+    }
+    .pass a:hover, .signup-link a:hover {
+      text-decoration: underline;
+    }
+    .wrapper .row i {
+      background-color: #0f141a !important;
+      color: #fff !important;
+      padding: 10px;
+      border-radius: 6px 0 0 6px;
+      width: 35px;
+      text-align: center;
+    }
+    .wrapper .row input {
+      border-radius: 0 6px 6px 0 !important;
+    }
+
+    /* pequeño ajuste para el selector de idioma */
+    .lang-switch { text-align: right; margin-bottom: 8px; }
+    .lang-switch form { display: inline-block; }
+    .lang-switch select { padding: 4px; }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="lang-switch">
+      <form action="{% url 'set_language' %}" method="post">
+        {% csrf_token %}
+        <input name="next" type="hidden" value="{{ request.path }}">
+        <select name="language">
+          <option value="en" {% if LANGUAGE_CODE == 'en' %}selected{% endif %}>English</option>
+          <option value="es" {% if LANGUAGE_CODE == 'es' %}selected{% endif %}>Español</option>
+          <option value="pt" {% if LANGUAGE_CODE == 'pt' %}selected{% endif %}>Português</option>
+        </select>
+        <button type="submit">{% trans "Change" %}</button>
+      </form>
+    </div>
+
+    {% if request.GET.register %}
+      <p style="color: green;">{% trans "User registered successfully" %}</p>
+    {% endif %}
+
+    <div class="title"><span>QR PASS</span></div>
+
+    <form action="" method="post">
+      {% csrf_token %}
+      <div class="row">
+        <i class="fas fa-user"></i>
+        <input
+          type="text"
+          placeholder="{% trans "Username" %}"
+          name="username"
+          id="id_username"
+          required
+        />
+      </div>
+
+      <div class="row">
+        <i class="fas fa-lock"></i>
+        <input
+          type="password"
+          placeholder="{% trans "Password" %}"
+          name="password"
+          id="id_password"
+          required
+        />
+      </div>
+
+      <div class="pass">
+        <a href="{% url 'password_reset' %}">{% trans "Forgot password?" %}</a>
+      </div>
+
+      <div class="row button">
+        <input type="submit" value="{% trans "Login" %}" />
+      </div>
+
+      <div class="signup-link">
+        {% blocktrans %}Not a member? <a href="{% url 'signup' %}">Signup now</a>{% endblocktrans %}
+      </div>
     </form>
   </div>
 </body>
