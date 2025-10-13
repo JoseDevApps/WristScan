@@ -30,6 +30,7 @@ urlpatterns = [
     path('create/', include('qrcodes.urls')),
     path('payments/', include('payments.urls')),  # Include the payments app URLs
     path('qr-scanner/', include('qrscan.urls')),
+    path('i18n/', include('django.conf.urls.i18n')),  # <<-- 
 ]
 
 if settings.DEBUG:  # Serve media files in development
