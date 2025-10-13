@@ -84,28 +84,26 @@
     </form>
   </div>
 </body>
-</html> -->
+</html>
+ -->
 
-{% load i18n static %}
+
+ {% load static %}
 <!DOCTYPE html>
-<html lang="{% get_current_language as LANGUAGE_CODE %}{{ LANGUAGE_CODE }}">
+<html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>{% trans "Login Form" %}</title>
+  <title data-i18n="title">Login Form</title>
   <link rel="stylesheet" href="{% static 'registration/css/style.css' %}" />
-  <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
 
-  <!-- Solo cambio de colores -->
   <style>
-    body {
-      background-color: #d3dbe5 !important;
-    }
+    body { background-color: #d3dbe5 !important; }
     .wrapper {
       background-color: #f5f6fa !important;
       border-radius: 10px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
       padding: 40px;
     }
     .wrapper .title {
@@ -125,12 +123,8 @@
     .wrapper .row.button input[type="submit"]:hover {
       background-color: #1b1f25 !important;
     }
-    .pass a, .signup-link a {
-      color: #0c63e8 !important;
-    }
-    .pass a:hover, .signup-link a:hover {
-      text-decoration: underline;
-    }
+    .pass a, .signup-link a { color: #0c63e8 !important; }
+    .pass a:hover, .signup-link a:hover { text-decoration: underline; }
     .wrapper .row i {
       background-color: #0f141a !important;
       color: #fff !important;
@@ -139,74 +133,98 @@
       width: 35px;
       text-align: center;
     }
-    .wrapper .row input {
-      border-radius: 0 6px 6px 0 !important;
-    }
-
-    /* pequeño ajuste para el selector de idioma */
-    .lang-switch { text-align: right; margin-bottom: 8px; }
-    .lang-switch form { display: inline-block; }
-    .lang-switch select { padding: 4px; }
+    .wrapper .row input { border-radius: 0 6px 6px 0 !important; }
   </style>
 </head>
 <body>
   <div class="wrapper">
-    <div class="lang-switch">
-      <form action="{% url 'set_language' %}" method="post">
-        {% csrf_token %}
-        <input name="next" type="hidden" value="{{ request.path }}">
-        <select name="language">
-          <option value="en" {% if LANGUAGE_CODE == 'en' %}selected{% endif %}>English</option>
-          <option value="es" {% if LANGUAGE_CODE == 'es' %}selected{% endif %}>Español</option>
-          <option value="pt" {% if LANGUAGE_CODE == 'pt' %}selected{% endif %}>Português</option>
-        </select>
-        <button type="submit">{% trans "Change" %}</button>
-      </form>
-    </div>
+    <div class="title" data-i18n="title">QR PASS</div>
 
-    {% if request.GET.register %}
-      <p style="color: green;">{% trans "User registered successfully" %}</p>
+    {% if 'register' in request.GET %}
+      <p style="color: green;" data-i18n="msg_registered">Usuario registrado correctamente</p>
     {% endif %}
 
-    <div class="title"><span>QR PASS</span></div>
-
-    <form action="" method="post">
+    <form action="" method="post" id="loginForm">
       {% csrf_token %}
       <div class="row">
         <i class="fas fa-user"></i>
-        <input
-          type="text"
-          placeholder="{% trans "Username" %}"
-          name="username"
-          id="id_username"
-          required
-        />
+        <input type="text" placeholder="" name="username" id="id_username" required data-i18n="label_username" />
       </div>
-
       <div class="row">
         <i class="fas fa-lock"></i>
-        <input
-          type="password"
-          placeholder="{% trans "Password" %}"
-          name="password"
-          id="id_password"
-          required
-        />
+        <input type="password" placeholder="" name="password" id="id_password" required data-i18n="label_password" />
       </div>
-
-      <div class="pass">
-        <a href="{% url 'password_reset' %}">{% trans "Forgot password?" %}</a>
-      </div>
-
+      <div class="pass"><a href="{% url 'password_reset' %}" data-i18n="forgot_password">Forgot password?</a></div>
       <div class="row button">
-        <input type="submit" value="{% trans "Login" %}" />
+        <input type="submit" value="" data-i18n="btn_login" />
       </div>
-
-      <div class="signup-link">
-        <span>{% trans "Not a member?" %}</span>
-        <a href="{% url 'signup' %}">{% trans "Signup now" %}</a>
-      </div>
+      <div class="signup-link" data-i18n="signup_text">Not a member? <a href="{% url 'signup' %}">Signup now</a></div>
     </form>
+
+    <div style="margin-top: 20px;">
+      <select id="lang">
+        <option value="en">English</option>
+        <option value="es">Español</option>
+        <option value="pt">Português</option>
+      </select>
+    </div>
   </div>
+
+  <script>
+    const translations = {
+      en: {
+        title: "QR PASS",
+        label_username: "Username",
+        label_password: "Password",
+        btn_login: "Login",
+        forgot_password: "Forgot password?",
+        signup_text: "Not a member? Signup now",
+        msg_registered: "User registered successfully"
+      },
+      es: {
+        title: "QR PASS",
+        label_username: "Usuario",
+        label_password: "Contraseña",
+        btn_login: "Iniciar sesión",
+        forgot_password: "¿Olvidaste tu contraseña?",
+        signup_text: "¿No eres miembro? Regístrate ahora",
+        msg_registered: "Usuario registrado correctamente"
+      },
+      pt: {
+        title: "QR PASS",
+        label_username: "Nome de usuário",
+        label_password: "Senha",
+        btn_login: "Entrar",
+        forgot_password: "Esqueceu a senha?",
+        signup_text: "Não é membro? Cadastre-se agora",
+        msg_registered: "Usuário registrado com sucesso"
+      }
+    };
+
+    function applyLang(lang) {
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        const txt = (translations[lang] && translations[lang][key]) || translations.en[key] || key;
+        if (el.tagName === 'INPUT') {
+          if(el.type === "submit"){
+            el.value = txt;
+          } else {
+            el.placeholder = txt;
+          }
+        } else {
+          el.textContent = txt;
+        }
+      });
+      document.documentElement.lang = lang;
+      localStorage.setItem('lang', lang);
+    }
+
+    document.getElementById('lang').addEventListener('change', e => applyLang(e.target.value));
+
+    // Init language
+    const saved = localStorage.getItem('lang') || navigator.language.slice(0,2) || 'en';
+    document.getElementById('lang').value = saved;
+    applyLang(saved);
+  </script>
 </body>
 </html>
