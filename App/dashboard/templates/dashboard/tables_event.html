@@ -197,74 +197,78 @@
       <!-- <button id="toggleRecycledBtn" class="btn btn-secondary mb-3">
         Show recycled events
       </button> -->
-<div class="table-responsive">
-    <table id="eventTable" class="table table-hover table-bordered align-middle text-center" style="border-radius: 8px; overflow: hidden;">
-        <thead class="table-dark" style="background-color: #0f141a; color: white;">
-            <tr>
-                <th scope="col">Event</th>
-                <th scope="col">Performance</th>
-                <th scope="col">Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for qrcode in events %}
-            <tr class="{% if qrcode.recycled_count > 0 %}recycled-row{% endif %}" style="transition: background-color 0.2s;">
-                <td>{{ qrcode.name }}</td>
-                <td>{{ qrcode.qr_code_count }}/{{ qrcode.shared_count }}</td>
-                <td>
-                    <div class="d-flex justify-content-center gap-2 flex-wrap">
+<div class="table-container">
 
-                        <!-- Actions Button Group -->
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fas fa-cog"></i>
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-end">
-                                <li><a class="dropdown-item" href="{% url 'dashboard:download_qr_zip' qrcode.id %}"><i class="fas fa-download me-2"></i> Download ZIP</a></li>
-                                <li><a class="dropdown-item" href="{% url 'dashboard:export_qr_codes' qrcode.id %}"><i class="fas fa-file-excel me-2"></i> Download Excel</a></li>
-                                <li><a class="dropdown-item" href="{% url 'dashboard:update_event' qrcode.id %}"><i class="fas fa-plus me-2"></i> Add QR Codes</a></li>
-                                <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#maskModal-{{ qrcode.id }}"><i class="fas fa-image me-2"></i> Upload Mask</a></li>
-                                {% if qrcode.recycled_count == 0 %}
-                                <li><a class="dropdown-item" href="{% url 'dashboard:reciclar_qr_evento' qrcode.id %}"><i class="fas fa-recycle me-2"></i> Recycle event</a></li>
-                                {% else %}
-                                <li><span class="dropdown-item disabled"><i class="fas fa-recycle me-2"></i> Already recycled</span></li>
-                                {% endif %}
-                                <li><a class="dropdown-item" href="{% url 'dashboard:invite_user' qrcode.id %}"><i class="fas fa-user-plus me-2"></i> Invite user</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item text-danger" href="#"><i class="fas fa-trash me-2"></i> Delete</a></li>
-                            </ul>
+    <!-- Tabla responsive -->
+    <div class="table-responsive">
+        <table id="eventTable" class="table table-hover table-bordered align-middle text-center" style="border-radius: 8px; overflow: hidden;">
+            <thead class="table-dark" style="background-color: #0f141a; color: white;">
+                <tr>
+                    <th scope="col">Event</th>
+                    <th scope="col">Performance</th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for qrcode in events %}
+                <tr class="{% if qrcode.recycled_count > 0 %}recycled-row{% endif %}" style="transition: background-color 0.2s;">
+                    <td>{{ qrcode.name }}</td>
+                    <td>{{ qrcode.qr_code_count }}/{{ qrcode.shared_count }}</td>
+                    <td>
+                        <div class="d-flex justify-content-center gap-2 flex-wrap">
+
+                            <!-- Actions Button Group -->
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-cog"></i>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li><a class="dropdown-item" href="{% url 'dashboard:download_qr_zip' qrcode.id %}"><i class="fas fa-download me-2"></i> Download ZIP</a></li>
+                                    <li><a class="dropdown-item" href="{% url 'dashboard:export_qr_codes' qrcode.id %}"><i class="fas fa-file-excel me-2"></i> Download Excel</a></li>
+                                    <li><a class="dropdown-item" href="{% url 'dashboard:update_event' qrcode.id %}"><i class="fas fa-plus me-2"></i> Add QR Codes</a></li>
+                                    <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#maskModal-{{ qrcode.id }}"><i class="fas fa-image me-2"></i> Upload Mask</a></li>
+                                    {% if qrcode.recycled_count == 0 %}
+                                    <li><a class="dropdown-item" href="{% url 'dashboard:reciclar_qr_evento' qrcode.id %}"><i class="fas fa-recycle me-2"></i> Recycle event</a></li>
+                                    {% else %}
+                                    <li><span class="dropdown-item disabled"><i class="fas fa-recycle me-2"></i> Already recycled</span></li>
+                                    {% endif %}
+                                    <li><a class="dropdown-item" href="{% url 'dashboard:invite_user' qrcode.id %}"><i class="fas fa-user-plus me-2"></i> Invite user</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item text-danger" href="#"><i class="fas fa-trash me-2"></i> Delete</a></li>
+                                </ul>
+                            </div>
+
+                            <!-- Share Button Group -->
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-info dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-share-alt"></i>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li><a class="dropdown-item" href="https://api.whatsapp.com/send?text=Download QR Codes for {{ qrcode.name }}%0A{{ request.build_absolute_uri|slice:":-1" }}{% url 'dashboard:download_qr_zip' qrcode.id %}" target="_blank"><i class="fab fa-whatsapp me-2"></i> WhatsApp</a></li>
+                                    <li><a class="dropdown-item" href="https://t.me/share/url?url={{ request.build_absolute_uri|slice:":-1" }}{% url 'dashboard:download_qr_zip' qrcode.id %}&text=Download QR Codes for {{ qrcode.name }}" target="_blank"><i class="fab fa-telegram-plane me-2"></i> Telegram</a></li>
+                                    <li><a class="dropdown-item" href="mailto:?subject=QR Codes for {{ qrcode.name }}&body=Download here: {{ request.build_absolute_uri|slice:":-1" }}{% url 'dashboard:download_qr_zip' qrcode.id %}"><i class="fas fa-envelope me-2"></i> Email</a></li>
+                                    <li><a class="dropdown-item" href="{% url 'dashboard:export_qr_codes_pdf' qrcode.id %}"><i class="fas fa-file-pdf me-2"></i> PDF</a></li>
+                                    <li><a class="dropdown-item" href="{% url 'dashboard:share_qr_codes' qrcode.id %}"><i class="fas fa-file-pdf me-2"></i> Sell QR Codes</a></li>
+                                </ul>
+                            </div>
+
                         </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 
-                        <!-- Share Button Group -->
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-info dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fas fa-share-alt"></i>
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-end">
-                                <li><a class="dropdown-item" href="https://api.whatsapp.com/send?text=Download QR Codes for {{ qrcode.name }}%0A{{ request.build_absolute_uri|slice:":-1" }}{% url 'dashboard:download_qr_zip' qrcode.id %}" target="_blank"><i class="fab fa-whatsapp me-2"></i> WhatsApp</a></li>
-                                <li><a class="dropdown-item" href="https://t.me/share/url?url={{ request.build_absolute_uri|slice:":-1" }}{% url 'dashboard:download_qr_zip' qrcode.id %}&text=Download QR Codes for {{ qrcode.name }}" target="_blank"><i class="fab fa-telegram-plane me-2"></i> Telegram</a></li>
-                                <li><a class="dropdown-item" href="mailto:?subject=QR Codes for {{ qrcode.name }}&body=Download here: {{ request.build_absolute_uri|slice:":-1" }}{% url 'dashboard:download_qr_zip' qrcode.id %}"><i class="fas fa-envelope me-2"></i> Email</a></li>
-                                <li><a class="dropdown-item" href="{% url 'dashboard:export_qr_codes_pdf' qrcode.id %}"><i class="fas fa-file-pdf me-2"></i> PDF</a></li>
-                                <li><a class="dropdown-item" href="{% url 'dashboard:share_qr_codes' qrcode.id %}"><i class="fas fa-file-pdf me-2"></i> Sell QR Codes</a></li>
-                            </ul>
-                        </div>
-
-                    </div>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-
-    <!-- Show Recycled Button Centrado -->
+    <!-- Show Recycled Button Centrado y visible en todos los dispositivos -->
     <div class="d-flex justify-content-center mt-3">
         <button id="toggleRecycledBtn" class="btn btn-primary w-100 w-md-auto">
             Show recycled events
         </button>
     </div>
+
 </div>
 
-<!-- Estilos integrados -->
 <style>
     /* Hover azul suave */
     #eventTable tbody tr:hover {
@@ -300,7 +304,7 @@
     /* Responsivo: botón show recycled */
     @media (max-width: 768px) {
         #toggleRecycledBtn {
-            width: 100%;
+            width: 90%; /* margen para que se vea en móviles */
         }
     }
 </style>
