@@ -197,9 +197,9 @@
       <!-- <button id="toggleRecycledBtn" class="btn btn-secondary mb-3">
         Show recycled events
       </button> -->
- <div class="table-responsive">
+<div class="table-responsive">
     <table id="eventTable" class="table table-hover table-bordered align-middle text-center" style="border-radius: 8px; overflow: hidden;">
-        <thead class="table-primary" style="background-color: #0d6efd; color: white;">
+        <thead class="table-dark" style="background-color: #0f141a; color: white;">
             <tr>
                 <th scope="col">Event</th>
                 <th scope="col">Performance</th>
@@ -257,8 +257,8 @@
     </table>
 
     <!-- Show Recycled Button Centrado -->
-    <div class="text-center mt-3">
-        <button id="toggleRecycledBtn" class="btn btn-primary">
+    <div class="d-flex justify-content-center mt-3">
+        <button id="toggleRecycledBtn" class="btn btn-primary w-100 w-md-auto">
             Show recycled events
         </button>
     </div>
@@ -280,6 +280,7 @@
     .btn-primary, .btn-primary:hover {
         background-color: #0d6efd;
         border-color: #0d6efd;
+        color: white;
     }
 
     .btn-info, .btn-info:hover {
@@ -295,11 +296,12 @@
     #eventTable th:last-child {
         border-top-right-radius: 8px;
     }
-    #eventTable td:first-child {
-        border-left: 1px solid #dee2e6;
-    }
-    #eventTable td:last-child {
-        border-right: 1px solid #dee2e6;
+
+    /* Responsivo: botón show recycled */
+    @media (max-width: 768px) {
+        #toggleRecycledBtn {
+            width: 100%;
+        }
     }
 </style>
 
