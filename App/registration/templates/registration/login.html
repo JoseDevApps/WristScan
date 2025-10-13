@@ -203,7 +203,8 @@
       </div>
 
       <div class="signup-link">
-        {% blocktrans %}Not a member? <a href="{% url 'signup' %}">Signup now</a>{% endblocktrans %}
+        <span>{% trans "Not a member?" %}</span>
+        <a href="{% url 'signup' %}">{% trans "Signup now" %}</a>
       </div>
     </form>
   </div>
