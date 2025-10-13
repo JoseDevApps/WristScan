@@ -197,9 +197,9 @@
       <!-- <button id="toggleRecycledBtn" class="btn btn-secondary mb-3">
         Show recycled events
       </button> -->
-    <div class="table-responsive">
-    <table id="eventTable" class="table table-hover table-bordered align-middle text-center">
-        <thead class="table-primary">
+ <div class="table-responsive">
+    <table id="eventTable" class="table table-hover table-bordered align-middle text-center" style="border-radius: 8px; overflow: hidden;">
+        <thead class="table-primary" style="background-color: #0d6efd; color: white;">
             <tr>
                 <th scope="col">Event</th>
                 <th scope="col">Performance</th>
@@ -208,7 +208,7 @@
         </thead>
         <tbody>
             {% for qrcode in events %}
-            <tr class="{% if qrcode.recycled_count > 0 %}table-secondary recycled-row{% endif %}">
+            <tr class="{% if qrcode.recycled_count > 0 %}recycled-row{% endif %}" style="transition: background-color 0.2s;">
                 <td>{{ qrcode.name }}</td>
                 <td>{{ qrcode.qr_code_count }}/{{ qrcode.shared_count }}</td>
                 <td>
@@ -264,11 +264,9 @@
     </div>
 </div>
 
-
-    </div>
-  
+<!-- Estilos integrados -->
 <style>
-    /* Hover suave y consistencia de UI */
+    /* Hover azul suave */
     #eventTable tbody tr:hover {
         background-color: #e2f0ff;
     }
@@ -278,12 +276,36 @@
         background-color: #f0f8ff !important;
     }
 
-    /* Botones consistentes con la paleta azul del sistema */
+    /* Botones azul consistentes con UI */
     .btn-primary, .btn-primary:hover {
         background-color: #0d6efd;
         border-color: #0d6efd;
     }
+
+    .btn-info, .btn-info:hover {
+        background-color: #0dcaf0;
+        border-color: #0dcaf0;
+        color: #fff;
+    }
+
+    /* Redondeo de bordes de la tabla */
+    #eventTable th:first-child {
+        border-top-left-radius: 8px;
+    }
+    #eventTable th:last-child {
+        border-top-right-radius: 8px;
+    }
+    #eventTable td:first-child {
+        border-left: 1px solid #dee2e6;
+    }
+    #eventTable td:last-child {
+        border-right: 1px solid #dee2e6;
+    }
 </style>
+
+    </div>
+  
+
 
   </div>
 
