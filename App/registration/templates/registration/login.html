@@ -200,7 +200,7 @@
       <div class="row button">
         <input type="submit" value="" data-i18n="btn_login" />
       </div>
-      <div class="signup-link" data-i18n="signup_text">Not a member? <a href="{% url 'signup' %}">Signup now</a></div>
+      <div class="signup-link" data-i18n="signup_text">Not a member? <a href="{% url 'signup' %}" data-i18n="signup_text2">Signup now</a></div>
     </form>
 
     <div class="lang-selector">
@@ -221,7 +221,8 @@
         label_password: "Password",
         btn_login: "Login",
         forgot_password: "Forgot password?",
-        signup_text: "Not a member? Signup now",
+        signup_text: "Not a member?",
+        signup_text2: "Signup now",
         msg_registered: "User registered successfully"
       },
       es: {
@@ -230,7 +231,8 @@
         label_password: "Contraseña",
         btn_login: "Iniciar sesión",
         forgot_password: "¿Olvidaste tu contraseña?",
-        signup_text: "¿No eres miembro? Regístrate ahora",
+        signup_text: "¿No eres miembro?",
+        signup_text2: "Registrate",
         msg_registered: "Usuario registrado correctamente"
       },
       pt: {
@@ -240,6 +242,7 @@
         btn_login: "Entrar",
         forgot_password: "Esqueceu a senha?",
         signup_text: "Não é membro? Cadastre-se agora",
+        signup_text2: "Cadastre-se agora",
         msg_registered: "Usuário registrado com sucesso"
       }
     };
