@@ -211,11 +211,12 @@
       {{ form.as_p }}
     <!-- </div> -->
     <!-- <div style="display: flex; justify-content: center; align-items: center; height: 50vh;"> -->
-      <div id="qr-reader" style="width: 500px;"></div>
-
-      <div class="qr-reader-wrapper">
-        <div id="qr-reader" class="qr-reader" aria-label="QR reader"></div>
+      <!-- <div id="qr-reader" style="width: 500px;"></div> -->
+       <div class="qr-container">
+        <div id="qr-reader"></div>
       </div>
+
+      
     <!-- </div> -->
     <div id="qr-reader-results"></div>
 
@@ -269,63 +270,34 @@
   </div>
 
 <style>
-  /* Contenedor que centra en horizontal y vertical */
-  .qr-reader-wrapper{
+  /* Contenedor principal centrado */
+  .qr-container {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 1rem;             /* espacio lateral en móviles */
-    min-height: 70vh;         /* altura para centrar verticalmente; ajustar según header */
-    box-sizing: border-box;
+    height: 100vh;            /* centra verticalmente en toda la pantalla */
+    width: 100%;
+    background: transparent;  /* o un color suave si quieres */
   }
 
-  /* El lector se adapta: hasta 500px de ancho o 90vw en móviles */
-  .qr-reader{
-    width: min(90vw, 500px);
-    max-width: 500px;
-    /* Si la librería necesita un área cuadrada, el script abajo ajusta la altura.
-       Si no, puedes quitar la siguiente línea y dejar que la librería defina la altura. */
-    height: auto;
-    border-radius: 8px;
+  /* Lector QR adaptable */
+  #qr-reader {
+    width: 90vw;              /* usa 90% del ancho de la pantalla */
+    max-width: 500px;         /* límite máximo en pantallas grandes */
+    aspect-ratio: 1 / 1;      /* mantiene forma cuadrada sin distorsión */
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    border-radius: 12px;
     overflow: hidden;
-    background: #fff;         /* opcional: fondo para distinguir el área */
-    box-shadow: 0 6px 18px rgba(15,20,26,0.12);
   }
 
-  /* Si quieres forzar que sea cuadrado mediante CSS (alternativa al JS): */
-  /* .qr-reader { aspect-ratio: 1 / 1; height: auto; } */
-
-  /* Ajustes finos para pantallas muy pequeñas */
-  @media (max-width: 420px) {
-    .qr-reader-wrapper { min-height: 60vh; padding: 0.5rem; }
-    .qr-reader { border-radius: 6px; }
+  /* Opcional: ajusta márgenes en móviles */
+  @media (max-height: 600px) {
+    .qr-container {
+      height: auto;
+      padding: 2rem 0;
+    }
   }
 </style>
-
-<script>
-  // Si la librería necesita que el área sea cuadrada (ej. 500x500),
-  // este script ajusta la altura al ancho actual y se actualiza al redimensionar.
-  (function keepSquare() {
-    const el = document.getElementById('qr-reader');
-    if (!el) return;
-
-    function resize() {
-      // usa el ancho calculado y aplica la misma altura (cuadrado)
-      const w = el.getBoundingClientRect().width;
-      el.style.height = Math.round(w) + 'px';
-    }
-
-    // Inicial
-    resize();
-
-    // Reajusta al cambiar tamaño/orientación
-    window.addEventListener('resize', resize);
-    window.addEventListener('orientationchange', resize);
-
-    // opcional: si tu QR library renderiza contenido async, puedes volver a forzar
-    // resize() después de inicializar el reader.
-  })();
-</script>
 <!-- Traducciones y script -->
 <script>
   const translations = {
