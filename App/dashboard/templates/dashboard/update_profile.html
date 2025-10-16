@@ -94,7 +94,7 @@
       <ul class="nav nav-secondary">
 
 
-        <li class="nav-item active">
+        <li class="nav-item">
           <a data-bs-toggle="collapse" href="{% url 'dashboard:inicio' %}">
             <i class="fas fa-bars"></i>
             <p class="sub-item" data-i18n="nav_home" style="font-weight: normal !important;">Home</p>
@@ -122,7 +122,7 @@
 
 
 <!-- log Out -->
-        <li class="nav-item">
+        <li class="nav-item active">
           <a data-bs-toggle="collapse" href="#submenu">
             <i class="fas fa-bars"></i>
             <p class="sub-item" data-i18n="nav_settings" style="font-weight: normal !important;">Settings</p>
@@ -130,6 +130,12 @@
           </a>
           <div class="collapse" id="submenu">
             <ul class="nav nav-collapse">
+              <li>
+                <a  href="{% url 'dashboard:update_profile' %}">
+                  <span class="sub-item" data-i18n="Profile" style="font-weight: normal !important;">Profile</span>
+                </a>
+                
+              </li>
               <li>
                 <a  href="{% url 'dashboard:logout' %}">
                   <span class="sub-item" data-i18n="nav_logout" style="font-weight: normal !important;">LogOut</span>
@@ -274,6 +280,7 @@ const translations = {
     nav_event_list: "Event list",
     nav_qr_control: "QR Control",
     nav_settings: "Settings",
+    profile: "Profile",
     nav_logout: "LogOut",
     dashboard_title: "Manillas Bolivia",
     card_purchased: "Purchased ( no Ads or restrictions)",
@@ -300,6 +307,7 @@ const translations = {
     nav_event_list: "Lista de eventos",
     nav_qr_control: "Control QR",
     nav_settings: "Configuración",
+    profile: "Perfil",
     nav_logout: "Cerrar sesión",
     dashboard_title: "Manillas Bolivia",
     card_purchased: "Compradas (sin anuncios o restricciones)",
@@ -326,6 +334,7 @@ const translations = {
     nav_event_list: "Lista de eventos",
     nav_qr_control: "Controle QR",
     nav_settings: "Configurações",
+    profile: "Perfil",
     nav_logout: "Sair",
     dashboard_title: "Manilhas Bolívia",
     card_purchased: "Compradas (sem anúncios ou restrições)",

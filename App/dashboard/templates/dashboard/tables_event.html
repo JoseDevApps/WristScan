@@ -73,6 +73,12 @@
           <div class="collapse" id="submenu">
             <ul class="nav nav-collapse">
               <li>
+                <a  href="{% url 'dashboard:update_profile' %}">
+                  <span class="sub-item" data-i18n="Profile" style="font-weight: normal !important;">Profile</span>
+                </a>
+                
+              </li>
+              <li>
                 <a  href="{% url 'dashboard:logout' %}">
                   <span class="sub-item" style="font-weight: normal !important;" data-i18n="nav_logout">LogOut</span>
                 </a>
@@ -328,6 +334,7 @@
       nav_event_list: "Event list",
       nav_qr_control: "QR Control",
       nav_settings: "Settings",
+      profile: "Profile",
       nav_logout: "LogOut",
       dashboard_title: "Manillas Bolivia",
       btn_add_event: "Add Event",
@@ -357,6 +364,7 @@
       nav_event_list: "Lista de eventos",
       nav_qr_control: "Control QR",
       nav_settings: "Configuración",
+      profile: "Perfil",
       nav_logout: "Cerrar sesión",
       dashboard_title: "Manillas Bolivia",
       btn_add_event: "Agregar evento",
@@ -386,6 +394,7 @@
       nav_event_list: "Lista de eventos",
       nav_qr_control: "Controle QR",
       nav_settings: "Configurações",
+      profile: "Perfil",
       nav_logout: "Sair",
       dashboard_title: "Manilhas Bolívia",
       btn_add_event: "Adicionar evento",
