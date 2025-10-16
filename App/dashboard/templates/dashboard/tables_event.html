@@ -264,7 +264,7 @@
                                     <li><a class="dropdown-item" href="https://api.whatsapp.com/send?text=Download QR Codes for {{ qrcode.name }}%0A{{ request.build_absolute_uri|slice:":-1" }}{% url 'dashboard:download_qr_zip' qrcode.id %}" target="_blank"><i class="fab fa-whatsapp me-2"></i> WhatsApp</a></li>
                                     <li><a class="dropdown-item" href="https://t.me/share/url?url={{ request.build_absolute_uri|slice:":-1" }}{% url 'dashboard:download_qr_zip' qrcode.id %}&text=Download QR Codes for {{ qrcode.name }}" target="_blank"><i class="fab fa-telegram-plane me-2"></i> Telegram</a></li>
                                     <li><a class="dropdown-item" href="mailto:?subject=QR Codes for {{ qrcode.name }}&body=Download here: {{ request.build_absolute_uri|slice:":-1" }}{% url 'dashboard:download_qr_zip' qrcode.id %}"><i class="fas fa-envelope me-2"></i> <span data-i18n="share_email">Email</span></a></li>
-                                    <li><a class="dropdown-item" href="{% url 'dashboard:export_qr_codes_pdf' qrcode.id %}"><i class="fas fa-file-pdf me-2"></i> <span data-i18n="share_pdf">PDF</span></a></li>
+                                    <!-- <li><a class="dropdown-item" href="{% url 'dashboard:export_qr_codes_pdf' qrcode.id %}"><i class="fas fa-file-pdf me-2"></i> <span data-i18n="share_pdf">PDF</span></a></li> -->
                                     <li><a class="dropdown-item" href="{% url 'dashboard:share_qr_codes' qrcode.id %}"><i class="fas fa-file-pdf me-2"></i> <span data-i18n="share_sell">Sell QR Codes</span></a></li>
                                 </ul>
                             </div>
