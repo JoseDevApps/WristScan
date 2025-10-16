@@ -1,0 +1,609 @@
+{% extends 'base.html' %}
+{% block title %}Manillas Bolivia{% endblock %}
+{% load static %}
+{% block content %}
+
+
+<style>
+/* Estilos del selector de idioma */
+.lang-selector {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+.lang-selector .lang-label {
+    color: #fff;
+    padding: 10px 12px;
+    font-size: 16px;
+    background-color: #0f141a;
+    cursor: pointer;
+}
+
+.lang-selector select {
+    border: none;
+    padding: 10px 12px;
+    background-color: #0f141a;
+    color: #fff;
+    font-size: 16px;
+    appearance: none; /* eliminar estilo nativo del select */
+    cursor: pointer;
+}
+
+.lang-selector select:focus {
+    outline: none;
+}
+
+/* Flecha personalizada para el select */
+.lang-selector select {
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 140 140' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolygon points='70,100 30,40 110,40' fill='white'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 12px;
+}
+
+/* Ajustes responsivos */
+@media (max-width: 768px) {
+    .lang-selector {
+        margin-top: 10px;
+    }
+    .container-fluid {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+</style>
+
+
+<div class="wrapper" style="background-color: #d3dbe5;">
+  <!-- Sidebar -->
+  <div class="sidebar" data-background-color="white">
+    <!-- *************** -->
+    <!-- CABECERA INICIO -->
+    <!-- *************** -->
+  <div class="sidebar-logo" >
+    <!-- Logo Header -->
+    <div class="logo-header" data-background-color="white">
+      <a href="{% url 'dashboard:inicio' %}" class="logo">
+        <h1>QR PASS</h1>
+      </a>
+      <div class="nav-toggle">
+        <button class="btn btn-toggle toggle-sidebar">
+          <i class="gg-menu-right"></i>
+        </button>
+        <button class="btn btn-toggle sidenav-toggler">
+          <i class="gg-menu-left"></i>
+        </button>
+      </div>
+      <button class="topbar-toggler more">
+        <i class="gg-more-vertical-alt"></i>
+      </button>
+    </div>
+    <!-- End Logo Header -->
+  </div>
+  
+<!-- ********************** -->
+<!-- INICIO DE Menu Lateral -->
+<!-- ********************** -->
+
+  <div class="sidebar-wrapper scrollbar scrollbar-inner">
+
+    <div class="sidebar-content">
+      <ul class="nav nav-secondary">
+
+
+        <li class="nav-item active">
+          <a data-bs-toggle="collapse" href="{% url 'dashboard:inicio' %}">
+            <i class="fas fa-bars"></i>
+            <p class="sub-item" data-i18n="nav_home" style="font-weight: normal !important;">Home</p>
+          </a>
+          
+        </li>
+
+
+<!-- Monitor option-->
+        <li class="nav-item">
+          <a href="{% url 'dashboard:tables' %}">
+              <i class="fas fa-table"></i>
+              <span data-i18n="nav_event_list" class="sub-item">Event list</span>
+            </a>
+        </li>
+<!-- Monitor option-->
+
+    <li class="nav-item">
+          <a href="{% url 'dashboard:qrscan' %}">
+            <i class="fas fa-qrcode"></i>
+            <p class="sub-item" data-i18n="nav_qr_control" style="font-weight: normal !important;">QR Control</p>
+          </a>
+        </li>
+        
+
+
+<!-- log Out -->
+        <li class="nav-item">
+          <a data-bs-toggle="collapse" href="#submenu">
+            <i class="fas fa-bars"></i>
+            <p class="sub-item" data-i18n="nav_settings" style="font-weight: normal !important;">Settings</p>
+            <span class="caret"></span>
+          </a>
+          <div class="collapse" id="submenu">
+            <ul class="nav nav-collapse">
+              <li>
+                <a  href="{% url 'dashboard:logout' %}">
+                  <span class="sub-item" data-i18n="nav_logout" style="font-weight: normal !important;">LogOut</span>
+                </a>
+                
+              </li>
+              
+            </ul>
+          </div>
+        </li>
+        <!-- END -->
+           
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ********************** -->
+<!-- FIN DE Menu Lateral -->
+<!-- ********************** -->
+
+<div class="main-panel">
+  <div class="main-header">
+
+    <div class="main-header-logo">
+      <!-- Logo Header -->
+      <div class="logo-header" data-background-color="dark">
+        <a href="{% url 'dashboard:inicio' %}" class="logo">
+          <img
+            src= "{% static 'img/kaiadmin/logo_light.svg' %}"
+            alt="navbar brand"
+            class="navbar-brand"
+            height="20"
+          />
+        </a>
+        <div class="nav-toggle">
+          <button class="btn btn-toggle toggle-sidebar">
+            <i class="gg-menu-right"></i>
+          </button>
+          <button class="btn btn-toggle sidenav-toggler">
+            <i class="gg-menu-left"></i>
+          </button>
+        </div>
+        <button class="topbar-toggler more">
+          <i class="gg-more-vertical-alt"></i>
+        </button>
+      </div>
+      <!-- End Logo Header -->
+    </div>
+
+  <!-- Navbar Header -->
+  <nav class="navbar navbar-header navbar-header-transparent navbar-expand-lg border-bottom" style="background-color: #0f141a;">
+    <div class="container-fluid d-flex justify-content-between align-items-center">
+
+      <!-- Título / Logo -->
+      <div class="navbar-header-left d-flex align-items-center">
+        <h4 class="text-white fw-bold mb-0">
+          Manillas Bolivia
+        </h4>
+      </div>
+
+      <!-- Selector de idioma -->
+      <div class="lang-selector">
+        <label for="lang" class="lang-label">🌐</label>
+        <select id="lang">
+          <option value="en">English</option>
+          <option value="es">Español</option>
+          <option value="pt">Português</option>
+        </select>
+      </div>
+
+    </div>
+  </nav>
+  <!-- End Navbar -->
+</div>
+
+  <!-- ******************** -->
+<!-- Cuerpo del Dashboard -->
+<!-- ******************** -->
+
+<div class="container">
+  
+
+    <div class="container my-4">
+      <h3>Editar perfil</h3>
+
+      {% if messages %}
+      <div>
+        {% for message in messages %}
+          <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      <form method="post" novalidate>
+        {% csrf_token %}
+        <div class="mb-3">
+          <label for="{{ form.username.id_for_label }}" class="form-label">{{ form.username.label }}</label>
+          {{ form.username }}
+          {% if form.username.errors %}
+            <div class="text-danger small">{{ form.username.errors|striptags }}</div>
+          {% endif %}
+        </div>
+
+        <div class="mb-3">
+          <label for="{{ form.email.id_for_label }}" class="form-label">{{ form.email.label }}</label>
+          {{ form.email }}
+          {% if form.email.errors %}
+            <div class="text-danger small">{{ form.email.errors|striptags }}</div>
+          {% endif %}
+        </div>
+
+        <button type="submit" class="btn btn-primary">Guardar cambios</button>
+        <a href="{% url 'dashboard:inicio' %}" class="btn btn-secondary">Cancelar</a>
+      </form>
+    </div>
+
+
+   
+    </div>
+
+
+  </div>
+
+
+</div>
+<!-- ************** -->
+<!-- CABECERA FINAL -->
+<!-- ************** -->
+
+
+
+
+    </div>
+
+
+
+<script>
+const translations = {
+  en: {
+    nav_home: "Home",
+    nav_event_list: "Event list",
+    nav_qr_control: "QR Control",
+    nav_settings: "Settings",
+    nav_logout: "LogOut",
+    dashboard_title: "Manillas Bolivia",
+    card_purchased: "Purchased ( no Ads or restrictions)",
+    card_free: "Free (with Ads and expiration)",
+    card_events: "Events",
+    btn_get_codes: "GET CODES",
+    modal_plan_select_title: "Select your plan",
+    modal_plan_select_help: "Choose one of the following options:",
+    modal_plan_free: "Free plan with ads",
+    modal_plan_free_desc: "Basic features, supported by ads.",
+    modal_plan_paid: "Paid plan without ads",
+    modal_plan_paid_desc: "Full experience, no interruptions.",
+    modal_plan_footer: "You can go back if you make a mistake.",
+    modal_plan_close: "Close",
+    modal_purchase_qr: "Purchase QR Codes",
+    modal_submit: "Submit",
+    toast_ok: "Done! Your selection was registered successfully.",
+    toast_close: "Close",
+    modal_buy_qr: "Buy QR Codes",
+    modal_send: "Send"
+  },
+  es: {
+    nav_home: "Inicio",
+    nav_event_list: "Lista de eventos",
+    nav_qr_control: "Control QR",
+    nav_settings: "Configuración",
+    nav_logout: "Cerrar sesión",
+    dashboard_title: "Manillas Bolivia",
+    card_purchased: "Compradas (sin anuncios o restricciones)",
+    card_free: "Gratis (con anuncios y expiración)",
+    card_events: "Eventos",
+    btn_get_codes: "OBTENER CÓDIGOS",
+    modal_plan_select_title: "Selecciona tu plan",
+    modal_plan_select_help: "Elige una de las siguientes opciones:",
+    modal_plan_free: "Plan gratuito con anuncios",
+    modal_plan_free_desc: "Funciones básicas, soportadas por anuncios.",
+    modal_plan_paid: "Plan pago sin anuncios",
+    modal_plan_paid_desc: "Experiencia completa, sin interrupciones.",
+    modal_plan_footer: "Puedes regresar si cometes un error.",
+    modal_plan_close: "Cerrar",
+    modal_purchase_qr: "Comprar códigos QR",
+    modal_submit: "Enviar",
+    toast_ok: "¡Listo! Tu elección se registró correctamente.",
+    toast_close: "Cerrar",
+    modal_buy_qr: "Comprar códigos QR",
+    modal_send: "Enviar"
+  },
+  pt: {
+    nav_home: "Início",
+    nav_event_list: "Lista de eventos",
+    nav_qr_control: "Controle QR",
+    nav_settings: "Configurações",
+    nav_logout: "Sair",
+    dashboard_title: "Manilhas Bolívia",
+    card_purchased: "Compradas (sem anúncios ou restrições)",
+    card_free: "Grátis (com anúncios e expiração)",
+    card_events: "Eventos",
+    btn_get_codes: "OBTER CÓDIGOS",
+    modal_plan_select_title: "Selecione seu plano",
+    modal_plan_select_help: "Escolha uma das opções abaixo:",
+    modal_plan_free: "Plano gratuito com anúncios",
+    modal_plan_free_desc: "Funcionalidades básicas, suportadas por anúncios.",
+    modal_plan_paid: "Plano pago sem anúncios",
+    modal_plan_paid_desc: "Experiência completa, sem interrupções.",
+    modal_plan_footer: "Você pode voltar se cometer um erro.",
+    modal_plan_close: "Fechar",
+    modal_purchase_qr: "Comprar códigos QR",
+    modal_submit: "Enviar",
+    toast_ok: "Pronto! Sua escolha foi registrada com sucesso.",
+    toast_close: "Fechar",
+    modal_buy_qr: "Comprar códigos QR",
+    modal_send: "Enviar"
+  }
+};
+
+function applyLang(lang) {
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    const txt = (translations[lang] && translations[lang][key]) || translations.en[key] || key;
+    if (el.tagName === 'INPUT') {
+      if(el.type === "submit"){
+        el.value = txt;
+      } else {
+        el.placeholder = txt;
+      }
+    } else {
+      el.textContent = txt;
+    }
+  });
+  document.documentElement.lang = lang;
+  localStorage.setItem('lang', lang);
+}
+
+document.getElementById('lang').addEventListener('change', e => applyLang(e.target.value));
+
+const saved = localStorage.getItem('lang') || navigator.language.slice(0,2) || 'en';
+document.getElementById('lang').value = saved;
+applyLang(saved);
+</script>
+
+
+<script>
+(() => {
+  const $ = (s, r=document) => r.querySelector(s);
+  const $$ = (s, r=document) => Array.from(r.querySelectorAll(s));
+  const byId = (id) => document.getElementById(id);
+
+  // ---- Utilidades de Bootstrap ----
+  const instance = (el) => bootstrap.Modal.getInstance(el);
+  const getOrCreate = (el, opts) => bootstrap.Modal.getOrCreateInstance(el, opts);
+
+  // Limpieza total de backdrops y clases en <body>
+  const hardBackdropCleanup = () => {
+    document.body.classList.remove('modal-open');
+    document.body.style.removeProperty('overflow');
+    document.body.style.removeProperty('padding-right');
+    $$('.modal-backdrop').forEach(b => b.remove());
+  };
+
+  // Resetea un form dentro del modal
+  const resetFormIn = (modalEl) => {
+    const form = modalEl.querySelector('form');
+    if (!form) return;
+    form.reset();
+    form.classList.remove('was-validated');
+    form.querySelectorAll('.spinner-border').forEach(sp => sp.classList.add('d-none'));
+    form.querySelectorAll('input,select,textarea').forEach(inp => inp.setCustomValidity?.(''));
+    const resumen = form.querySelector('#planResumen');
+    if (resumen) resumen.textContent = '';
+    // Rehabilita controles por si quedaron deshabilitados tras un intento de POST
+    form.querySelectorAll('button, input, select, textarea').forEach(el => el.disabled = false);
+  };
+
+  // Dispone todas las instancias activas (evita focus-traps colgados)
+  const disposeAllModals = () => {
+    $$('.modal').forEach(m => {
+      try { instance(m)?.dispose?.(); } catch {}
+    });
+  };
+
+  // Espera a que TODOS los modales visibles terminen de ocultarse
+  const waitAllHidden = () => new Promise(res => {
+    const open = $$('.modal.show');
+    if (open.length === 0) return res();
+    let pending = open.length;
+    const done = () => { if (--pending === 0) res(); };
+    open.forEach(m => {
+      m.addEventListener('hidden.bs.modal', done, { once: true });
+      instance(m)?.hide?.();
+    });
+  });
+
+  // Abre un modal garantizando estado limpio (usado para "reabrir desde cero")
+  const openFreshModal = async (targetId, focusId) => {
+    await waitAllHidden();
+    disposeAllModals();
+    hardBackdropCleanup();
+    const el = byId(targetId);
+    const m = getOrCreate(el, { backdrop: true, keyboard: true, focus: true });
+    m.show();
+    if (focusId) setTimeout(() => byId(focusId)?.focus(), 180);
+  };
+
+  // Transición segura entre dos modales (no se solapan)
+  const transitionModal = async (fromId, toId, focusId) => {
+    const fromEl = byId(fromId);
+    const toEl   = byId(toId);
+
+    if (fromEl?.classList.contains('show')) {
+      await new Promise(res => {
+        fromEl.addEventListener('hidden.bs.modal', res, { once: true });
+        instance(fromEl)?.hide?.();
+      });
+    }
+    hardBackdropCleanup();
+    const m = getOrCreate(toEl, { backdrop: true, keyboard: true, focus: true });
+    m.show();
+    if (focusId) setTimeout(() => byId(focusId)?.focus(), 180);
+  };
+
+  // ----- Enlaza eventos de tus botones -----
+  byId('btnPlanGratuito')?.addEventListener('click', () => {
+    transitionModal('modalPlanSelect', 'modalGratuito', 'nombreGratis');
+  });
+
+  byId('btnPlanPago')?.addEventListener('click', () => {
+    const resumen = byId('planResumen');
+    if (resumen) resumen.textContent = 'Has elegido: Plan sin anuncios';
+    // Si quieres pasar el plan al servidor:
+    byId('selected_plan')?.setAttribute('value', 'pago');
+    transitionModal('modalPlanSelect', 'modalPago', 'nombrePago'); // si tu form Django no tiene este id, quita el focusId
+  });
+
+  $$('[data-action="back-to-plan"]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const current = btn.closest('.modal');
+      resetFormIn(current);
+      transitionModal(current.id, 'modalPlanSelect');
+    });
+  });
+
+  // ----- Validación + spinner -----
+  const validateAndSpin = (form, spinnerId) => {
+    form.classList.add('was-validated');
+    if (!form.checkValidity()) return false;
+    spinnerId && byId(spinnerId)?.classList.remove('d-none');
+    return true;
+  };
+  const stopSpin = (spinnerId) => spinnerId && byId(spinnerId)?.classList.add('d-none');
+
+  // ----- Máscara y Luhn OPCIONALES (solo si existe el campo de tarjeta) -----
+  const getCardInput = () => byId('tarjeta') || byId('id_tarjeta');
+  const cardInput = getCardInput();
+
+  const isValidCard = (num) => {
+    const d = num.replace(/\s+/g, '');
+    if (!/^\d{13,19}$/.test(d)) return false;
+    let sum=0, alt=false;
+    for (let i=d.length-1;i>=0;i--) {
+      let n = d.charCodeAt(i)-48;
+      if (alt) { n*=2; if(n>9) n-=9; }
+      sum+=n; alt=!alt;
+    }
+    return sum%10===0;
+  };
+
+  if (cardInput) {
+    cardInput.addEventListener('input', (e) => {
+      let v = e.target.value.replace(/\D/g,'').slice(0,19).replace(/(\d{4})(?=\d)/g,'$1 ');
+      e.target.value = v;
+    });
+  }
+
+  // ----- Submit GRATUITO (permanece en AJAX simulado) -----
+  byId('formGratuito')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const form = e.currentTarget;
+    if (!validateAndSpin(form, 'spGratis')) return;
+    try {
+      await new Promise(r => setTimeout(r, 600)); // API real aquí
+      instance(byId('modalGratuito')).hide();
+      setTimeout(() => new bootstrap.Toast(byId('toastOk')).show(), 220);
+    } finally {
+      stopSpin('spGratis');
+    }
+  });
+
+  // ----- Submit PAGO (ahora soporta POST clásico a Django) -----
+  const formPagoEl = byId('formPago');
+  formPagoEl?.addEventListener('submit', async (e) => {
+    const form = e.currentTarget;
+
+    // ¿Es POST al servidor?
+    if (form.dataset.behavior === 'server-post') {
+      // Validación HTML5 básica
+      form.classList.add('was-validated');
+      if (!form.checkValidity()) {
+        e.preventDefault(); // bloquea si no válido
+        return;
+      }
+
+      // Si hay campo tarjeta y quieres validar Luhn del lado cliente ANTES del POST:
+      if (cardInput) {
+        const raw = cardInput.value.replace(/\s+/g,'');
+        if (!isValidCard(raw)) {
+          e.preventDefault();
+          cardInput.setCustomValidity('Tarjeta inválida');
+          form.classList.add('was-validated');
+          cardInput.reportValidity();
+          cardInput.addEventListener('input', () => cardInput.setCustomValidity(''), { once: true });
+          return;
+        }
+      }
+
+      // Spinner + bloqueo para evitar doble submit; NO preventDefault → deja que Django procese
+      byId('spPago')?.classList.remove('d-none');
+      form.querySelectorAll('button, input, select, textarea').forEach(el => el.disabled = true);
+      return; // Deja continuar el POST
+    }
+
+    // --- Si NO es server-post, sigue tu flujo AJAX previo (opcional) ---
+    e.preventDefault();
+    if (!validateAndSpin(form, 'spPago')) return;
+
+    if (cardInput) {
+      const num = cardInput.value.replace(/\s+/g,'');
+      if (!isValidCard(num)) {
+        cardInput.setCustomValidity('Tarjeta inválida');
+        form.classList.add('was-validated');
+        stopSpin('spPago');
+        cardInput.reportValidity();
+        cardInput.addEventListener('input', () => cardInput.setCustomValidity(''), { once: true });
+        return;
+      }
+    }
+
+    try {
+      await new Promise(r => setTimeout(r, 900)); // Cobro real en AJAX
+      instance(byId('modalPago')).hide();
+      setTimeout(() => new bootstrap.Toast(byId('toastOk')).show(), 220);
+    } finally {
+      stopSpin('spPago');
+    }
+  });
+
+  // ----- Garantiza reset y limpieza al cerrar CUALQUIER modal -----
+  ['modalPlanSelect','modalGratuito','modalPago'].forEach(id => {
+    const el = byId(id);
+    if (!el) return;
+    el.addEventListener('hidden.bs.modal', () => {
+      resetFormIn(el);
+      if ($$('.modal.show').length === 0) {
+        disposeAllModals();
+        hardBackdropCleanup();
+      }
+    });
+  });
+
+  // ----- Reabrir desde cero (botón "Seleccionar plan") -----
+  const trigger = document.querySelector('[data-bs-toggle="modal"][href="#modalPlanSelect"]');
+  if (trigger) {
+    trigger.removeAttribute('data-bs-toggle');
+    trigger.removeAttribute('href');
+    trigger.addEventListener('click', () => openFreshModal('modalPlanSelect'));
+  }
+
+  // Seguridad extra al recargar tras POST: borra residuos si el servidor re-renderiza la misma página
+  document.addEventListener('DOMContentLoaded', hardBackdropCleanup);
+})();
+</script>
+
+
+{% endblock %}

@@ -2,6 +2,43 @@ from django import forms
 from qrcodes.models import QRCode, Event, Ticket, TicketAssignment
 from django.core.exceptions import ValidationError
 from django.utils.safestring import mark_safe
+from django.contrib.auth.models import User
+
+class UserProfileForm(forms.ModelForm):
+    username = forms.CharField(
+        max_length=150,
+        label="Nombre de usuario",
+        widget=forms.TextInput(attrs={"class": "form-control"})
+    )
+    email = forms.EmailField(
+        label="Correo electrónico",
+        widget=forms.EmailInput(attrs={"class": "form-control"})
+    )
+
+    class Meta:
+        model = User
+        fields = ("username", "email")
+
+    def __init__(self, *args, **kwargs):
+        # recibimos user actual para validaciones exclusivas
+        self.current_user = kwargs.pop("user", None)
+        super().__init__(*args, **kwargs)
+
+    def clean_username(self):
+        username = self.cleaned_data["username"].strip()
+        if self.current_user and username == self.current_user.username:
+            return username  # sin cambio
+        if User.objects.filter(username__iexact=username).exclude(pk=getattr(self.current_user, "pk", None)).exists():
+            raise ValidationError("Este nombre de usuario ya está en uso.")
+        return username
+
+    def clean_email(self):
+        email = self.cleaned_data["email"].strip().lower()
+        if self.current_user and email == (self.current_user.email or "").lower():
+            return email
+        if User.objects.filter(email__iexact=email).exclude(pk=getattr(self.current_user, "pk", None)).exists():
+            raise ValidationError("Este correo ya está registrado con otra cuenta.")
+        return email
 
 class UserEmailForm(forms.ModelForm):
     class Meta:

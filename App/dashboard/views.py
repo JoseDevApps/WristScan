@@ -39,6 +39,25 @@ from .ads_selector import get_banner_for_country
 from django.utils.timezone import localtime
 from .ads_selector import get_banner_for_country  # tu selector
 from django.utils import timezone
+from .forms import UserProfileForm
+################################################
+
+@login_required
+def update_profile(request):
+    user = request.user
+    if request.method == "POST":
+        form = UserProfileForm(request.POST, user=user, instance=user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Tu perfil se actualizó correctamente.")
+            return redirect("dashboard:inicio")  # o a la vista que prefieras
+        else:
+            messages.error(request, "Corrige los errores del formulario.")
+    else:
+        form = UserProfileForm(user=user, instance=user)
+
+    return render(request, "dashboard/update_profile.html", {"form": form, "user": user})
+
 
 def force_logout_view(request):
     logout(request)
