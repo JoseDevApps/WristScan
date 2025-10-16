@@ -97,7 +97,7 @@
         <li class="nav-item active">
           <a data-bs-toggle="collapse" href="{% url 'dashboard:inicio' %}">
             <i class="fas fa-bars"></i>
-            <p class="sub-item" style="font-weight: normal !important;">Home</p>
+            <p class="sub-item" data-i18n="nav_home" style="font-weight: normal !important;">Home</p>
           </a>
           
         </li>
@@ -107,7 +107,7 @@
         <li class="nav-item">
           <a href="{% url 'dashboard:tables' %}">
               <i class="fas fa-table"></i>
-              <span class="sub-item">Event list</span>
+              <span data-i18n="nav_event_list" class="sub-item">Event list</span>
             </a>
         </li>
 <!-- Monitor option-->
@@ -115,7 +115,7 @@
     <li class="nav-item">
           <a href="{% url 'dashboard:qrscan' %}">
             <i class="fas fa-qrcode"></i>
-            <p class="sub-item" style="font-weight: normal !important;">QR Control</p>
+            <p class="sub-item" data-i18n="nav_qr_control" style="font-weight: normal !important;">QR Control</p>
           </a>
         </li>
         
@@ -125,14 +125,14 @@
         <li class="nav-item">
           <a data-bs-toggle="collapse" href="#submenu">
             <i class="fas fa-bars"></i>
-            <p class="sub-item" style="font-weight: normal !important;">Settings</p>
+            <p class="sub-item" data-i18n="nav_settings" style="font-weight: normal !important;">Settings</p>
             <span class="caret"></span>
           </a>
           <div class="collapse" id="submenu">
             <ul class="nav nav-collapse">
               <li>
                 <a  href="{% url 'dashboard:logout' %}">
-                  <span class="sub-item" style="font-weight: normal !important;">LogOut</span>
+                  <span class="sub-item" data-i18n="nav_logout" style="font-weight: normal !important;">LogOut</span>
                 </a>
                 
               </li>
@@ -181,30 +181,30 @@
     </div>
 
   <!-- Navbar Header -->
- <nav class="navbar navbar-header navbar-header-transparent navbar-expand-lg border-bottom" style="background-color: #0f141a;">
-  <div class="container-fluid d-flex justify-content-between align-items-center">
+  <nav class="navbar navbar-header navbar-header-transparent navbar-expand-lg border-bottom" style="background-color: #0f141a;">
+    <div class="container-fluid d-flex justify-content-between align-items-center">
 
-    <!-- Título / Logo -->
-    <div class="navbar-header-left d-flex align-items-center">
-      <h4 class="text-white fw-bold mb-0">
-        Manillas Bolivia
-      </h4>
+      <!-- Título / Logo -->
+      <div class="navbar-header-left d-flex align-items-center">
+        <h4 class="text-white fw-bold mb-0">
+          Manillas Bolivia
+        </h4>
+      </div>
+
+      <!-- Selector de idioma -->
+      <div class="lang-selector">
+        <label for="lang" class="lang-label">🌐</label>
+        <select id="lang">
+          <option value="en">English</option>
+          <option value="es">Español</option>
+          <option value="pt">Português</option>
+        </select>
+      </div>
+
     </div>
-
-    <!-- Selector de idioma -->
-    <div class="lang-selector">
-      <label for="lang" class="lang-label">🌐</label>
-      <select id="lang">
-        <option value="en">English</option>
-        <option value="es">Español</option>
-        <option value="pt">Português</option>
-      </select>
-    </div>
-
-  </div>
-</nav>
+  </nav>
   <!-- End Navbar -->
-  </div>
+</div>
 
   <!-- ******************** -->
 <!-- Cuerpo del Dashboard -->
@@ -230,7 +230,7 @@
           </div>
           <div class="col col-stats ms-3 ms-sm-0">
             <div class="numbers">
-              <p class="card-category">Purchased ( no Ads or restrictions)</p>
+              <p class="card-category" data-i18n="card_purchased">Purchased ( no Ads or restrictions)</p>
               <h4 class="card-title">{{available}}</h4>
             </div>
           </div>
@@ -250,7 +250,7 @@
           </div>
           <div class="col col-stats ms-3 ms-sm-0">
             <div class="numbers">
-              <p class="card-category">Free (with Ads and expiration)</p>
+              <p class="card-category" data-i18n="card_free">Free (with Ads and expiration)</p>
               <h4 class="card-title">{{free_remaining}}</h4>
             </div>
           </div>
@@ -271,7 +271,7 @@
           </div>
           <div class="col col-stats ms-3 ms-sm-0">
             <div class="numbers">
-              <p class="card-category">Events</p>
+              <p class="card-category" data-i18n="card_events">Events</p>
               <h4 class="card-title">{{NE}}</h4>
             </div>
           </div>
@@ -293,7 +293,7 @@
             <button class="btn btn-primary btn-lg d-flex align-items-center justify-content-center gap-2 mx-auto"
                     data-bs-toggle="modal" href="#modalPlanSelect" style="min-width: 200px;">
               <i class="fas fa-qrcode"></i>
-              <span>GET CODES</span>
+              <span data-i18n="btn_get_codes">GET CODES</span>
             </button>
           </div>
 
@@ -302,30 +302,30 @@
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header position-relative">
-  <h5 class="modal-title w-100 text-center" id="modalPlanSelectLabel">Select your plan</h5>
+  <h5 class="modal-title w-100 text-center" data-i18n="modal_plan_select_title" id="modalPlanSelectLabel">Select your plan</h5>
   <button type="button" class="btn-close position-absolute end-0 top-50 translate-middle-y" 
           data-bs-dismiss="modal" aria-label="Close"></button>
 </div>
       <div class="modal-body">
-        <p id="planHelp">Choose one of the following options:</p>
+        <p id="planHelp" data-i18n="modal_plan_select_help">Choose one of the following options:</p>
         <div class="d-grid gap-2">
-          <button class="btn btn-outline-primary" id="btnPlanGratuito" aria-describedby="planHelp">
+          <button class="btn btn-outline-primary" id="btnPlanGratuito" data-i18n="modal_plan_free" aria-describedby="planHelp">
             Free plan with ads
           </button>
-          <p class="card-text small text-muted mb-0">
+          <p class="card-text small text-muted mb-0" data-i18n="modal_plan_free_desc">
               Basic features, supported by ads.
             </p>
-          <button class="btn btn-outline-success" id="btnPlanPago" aria-describedby="planHelp">
+          <button class="btn btn-outline-success" data-i18n="modal_plan_paid" id="btnPlanPago" aria-describedby="planHelp">
             Paid plan without ads
           </button>
-          <p class="card-text small text-muted mb-0">
+          <p class="card-text small text-muted mb-0" data-i18n="modal_plan_paid_desc">
               Full experience, no interruptions.
             </p>
         </div>
       </div>
       <div class="modal-footer d-flex flex-column align-items-center">
-        <small class="text-muted mb-2">You can go back if you make a mistake.</small>
-        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+        <small class="text-muted mb-2" data-i18n="modal_plan_footer">You can go back if you make a mistake.</small>
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" data-i18n="modal_plan_close">Close</button>
       </div>
     </div>
   </div>
@@ -341,7 +341,7 @@
         {% csrf_token %}
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="modalLabel">Purchase QR Codes</h5>
+            <h5 class="modal-title" id="modalLabel" data-i18n="modal_purchase_qr">Purchase QR Codes</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
@@ -349,7 +349,7 @@
             <input type="hidden" id="solicitud" name="solicitud" value="free">
           </div>
           <div class="modal-footer">
-            <button type="submit" class="btn btn-info">Submit</button>
+            <button type="submit" class="btn btn-info" data-i18n="modal_submit">Submit</button>
           </div>
         </div>
       </form>
@@ -367,7 +367,7 @@
         {% csrf_token %}
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="modalLabel">Purchase QR Codes</h5>
+            <h5 class="modal-title" id="modalLabel" data-i18n="modal_purchase_qr">Purchase QR Codes</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
@@ -375,7 +375,7 @@
             <input type="hidden" id="solicitud" name="solicitud" value="paid">
           </div>
           <div class="modal-footer">
-            <button type="submit" class="btn btn-info">Submit</button>
+            <button type="submit" class="btn btn-info" data-i18n="modal_submit">Submit</button>
           </div>
         </div>
       </form>
@@ -387,10 +387,10 @@
 <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1080">
   <div id="toastOk" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="polite" aria-atomic="true">
     <div class="d-flex">
-      <div class="toast-body">
+      <div class="toast-body" data-i18n="toast_ok">
         ¡Listo! Tu elección se registró correctamente.
       </div>
-      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Cerrar"></button>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" data-i18n="toast_close" aria-label="Cerrar"></button>
     </div>
   </div>
 </div>
@@ -419,14 +419,14 @@
                 {% csrf_token %}
                 <div class="modal-content">
                   <div class="modal-header">
-                    <h5 class="modal-title" id="modalLabel">Buy QR Codes</h5>
+                    <h5 class="modal-title" id="modalLabel" data-i18n="modal_buy_qr">Buy QR Codes</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                   </div>
                   <div class="modal-body">
                     {{ form.as_p }}
                   </div>
                   <div class="modal-footer">
-                    <button type="submit" class="btn btn-info">Send</button>
+                    <button type="submit" class="btn btn-info" data-i18n="modal_send">Send</button>
                   </div>
                 </div>
               </form>
@@ -455,91 +455,110 @@
 
 
 <script>
-  const translations = {
-    en: {
-      title: "QR PASS Dashboard",
-      nav_home: "Home",
-      nav_event_list: "Event list",
-      nav_qr_control: "QR Control",
-      nav_settings: "Settings",
-      nav_logout: "LogOut",
-      cards_available_codes: "Available codes",
-      cards_purchased: "Purchased (no Ads or restrictions)",
-      cards_free: "Free (with Ads and expiration)",
-      cards_events: "Events",
-      btn_get_codes: "GET CODES",
-      modal_select_plan: "Select your plan",
-      modal_choose_plan: "Choose one of the following options:",
-      modal_free_plan: "Free plan with ads",
-      modal_free_desc: "Basic features, supported by ads.",
-      modal_paid_plan: "Paid plan without ads",
-      modal_paid_desc: "Full experience, no interruptions.",
-      btn_close: "Close",
-      modal_back_option: "You can go back if you make a mistake."
-    },
-    es: {
-      title: "Dashboard QR PASS",
-      nav_home: "Inicio",
-      nav_event_list: "Lista de eventos",
-      nav_qr_control: "Control QR",
-      nav_settings: "Configuración",
-      nav_logout: "Cerrar sesión",
-      cards_available_codes: "Códigos disponibles",
-      cards_purchased: "Comprados (sin anuncios ni restricciones)",
-      cards_free: "Gratis (con anuncios y expiración)",
-      cards_events: "Eventos",
-      btn_get_codes: "OBTENER CÓDIGOS",
-      modal_select_plan: "Selecciona tu plan",
-      modal_choose_plan: "Elige una de las siguientes opciones:",
-      modal_free_plan: "Plan gratuito con anuncios",
-      modal_free_desc: "Funciones básicas, soportado por anuncios.",
-      modal_paid_plan: "Plan de pago sin anuncios",
-      modal_paid_desc: "Experiencia completa, sin interrupciones.",
-      btn_close: "Cerrar",
-      modal_back_option: "Puedes volver si te equivocaste."
-    },
-    pt: {
-      title: "Painel QR PASS",
-      nav_home: "Início",
-      nav_event_list: "Lista de eventos",
-      nav_qr_control: "Controle QR",
-      nav_settings: "Configurações",
-      nav_logout: "Sair",
-      cards_available_codes: "Códigos disponíveis",
-      cards_purchased: "Comprados (sem anúncios ou restrições)",
-      cards_free: "Grátis (com anúncios e expiração)",
-      cards_events: "Eventos",
-      btn_get_codes: "OBTER CÓDIGOS",
-      modal_select_plan: "Selecione seu plano",
-      modal_choose_plan: "Escolha uma das opções a seguir:",
-      modal_free_plan: "Plano gratuito com anúncios",
-      modal_free_desc: "Recursos básicos, suportado por anúncios.",
-      modal_paid_plan: "Plano pago sem anúncios",
-      modal_paid_desc: "Experiência completa, sem interrupções.",
-      btn_close: "Fechar",
-      modal_back_option: "Você pode voltar se cometer um erro."
-    }
-  };
-
-  function applyLang(lang) {
-    document.querySelectorAll('[data-i18n]').forEach(el => {
-      const key = el.getAttribute('data-i18n');
-      const txt = (translations[lang] && translations[lang][key]) || translations.en[key] || key;
-      if (el.tagName === 'INPUT') {
-        if(el.type === "submit"){ el.value = txt; } else { el.placeholder = txt; }
-      } else { el.textContent = txt; }
-    });
-    document.documentElement.lang = lang;
-    localStorage.setItem('lang', lang);
+const translations = {
+  en: {
+    nav_home: "Home",
+    nav_event_list: "Event list",
+    nav_qr_control: "QR Control",
+    nav_settings: "Settings",
+    nav_logout: "LogOut",
+    dashboard_title: "Manillas Bolivia",
+    card_purchased: "Purchased ( no Ads or restrictions)",
+    card_free: "Free (with Ads and expiration)",
+    card_events: "Events",
+    btn_get_codes: "GET CODES",
+    modal_plan_select_title: "Select your plan",
+    modal_plan_select_help: "Choose one of the following options:",
+    modal_plan_free: "Free plan with ads",
+    modal_plan_free_desc: "Basic features, supported by ads.",
+    modal_plan_paid: "Paid plan without ads",
+    modal_plan_paid_desc: "Full experience, no interruptions.",
+    modal_plan_footer: "You can go back if you make a mistake.",
+    modal_plan_close: "Close",
+    modal_purchase_qr: "Purchase QR Codes",
+    modal_submit: "Submit",
+    toast_ok: "Done! Your selection was registered successfully.",
+    toast_close: "Close",
+    modal_buy_qr: "Buy QR Codes",
+    modal_send: "Send"
+  },
+  es: {
+    nav_home: "Inicio",
+    nav_event_list: "Lista de eventos",
+    nav_qr_control: "Control QR",
+    nav_settings: "Configuración",
+    nav_logout: "Cerrar sesión",
+    dashboard_title: "Manillas Bolivia",
+    card_purchased: "Compradas (sin anuncios o restricciones)",
+    card_free: "Gratis (con anuncios y expiración)",
+    card_events: "Eventos",
+    btn_get_codes: "OBTENER CÓDIGOS",
+    modal_plan_select_title: "Selecciona tu plan",
+    modal_plan_select_help: "Elige una de las siguientes opciones:",
+    modal_plan_free: "Plan gratuito con anuncios",
+    modal_plan_free_desc: "Funciones básicas, soportadas por anuncios.",
+    modal_plan_paid: "Plan pago sin anuncios",
+    modal_plan_paid_desc: "Experiencia completa, sin interrupciones.",
+    modal_plan_footer: "Puedes regresar si cometes un error.",
+    modal_plan_close: "Cerrar",
+    modal_purchase_qr: "Comprar códigos QR",
+    modal_submit: "Enviar",
+    toast_ok: "¡Listo! Tu elección se registró correctamente.",
+    toast_close: "Cerrar",
+    modal_buy_qr: "Comprar códigos QR",
+    modal_send: "Enviar"
+  },
+  pt: {
+    nav_home: "Início",
+    nav_event_list: "Lista de eventos",
+    nav_qr_control: "Controle QR",
+    nav_settings: "Configurações",
+    nav_logout: "Sair",
+    dashboard_title: "Manilhas Bolívia",
+    card_purchased: "Compradas (sem anúncios ou restrições)",
+    card_free: "Grátis (com anúncios e expiração)",
+    card_events: "Eventos",
+    btn_get_codes: "OBTER CÓDIGOS",
+    modal_plan_select_title: "Selecione seu plano",
+    modal_plan_select_help: "Escolha uma das opções abaixo:",
+    modal_plan_free: "Plano gratuito com anúncios",
+    modal_plan_free_desc: "Funcionalidades básicas, suportadas por anúncios.",
+    modal_plan_paid: "Plano pago sem anúncios",
+    modal_plan_paid_desc: "Experiência completa, sem interrupções.",
+    modal_plan_footer: "Você pode voltar se cometer um erro.",
+    modal_plan_close: "Fechar",
+    modal_purchase_qr: "Comprar códigos QR",
+    modal_submit: "Enviar",
+    toast_ok: "Pronto! Sua escolha foi registrada com sucesso.",
+    toast_close: "Fechar",
+    modal_buy_qr: "Comprar códigos QR",
+    modal_send: "Enviar"
   }
+};
 
-  const langSelect = document.getElementById('lang');
-  langSelect.addEventListener('change', e => applyLang(e.target.value));
+function applyLang(lang) {
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    const txt = (translations[lang] && translations[lang][key]) || translations.en[key] || key;
+    if (el.tagName === 'INPUT') {
+      if(el.type === "submit"){
+        el.value = txt;
+      } else {
+        el.placeholder = txt;
+      }
+    } else {
+      el.textContent = txt;
+    }
+  });
+  document.documentElement.lang = lang;
+  localStorage.setItem('lang', lang);
+}
 
-  // Init language
-  const saved = localStorage.getItem('lang') || navigator.language.slice(0,2) || 'en';
-  langSelect.value = saved;
-  applyLang(saved);
+document.getElementById('lang').addEventListener('change', e => applyLang(e.target.value));
+
+const saved = localStorage.getItem('lang') || navigator.language.slice(0,2) || 'en';
+document.getElementById('lang').value = saved;
+applyLang(saved);
 </script>
 
 
