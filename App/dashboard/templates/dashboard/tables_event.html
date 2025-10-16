@@ -272,6 +272,31 @@
                         </div>
                     </td>
                 </tr>
+                                    <!-- Modal para evento {{ qrcode.id }} -->
+                    <div class="modal fade" id="maskModal-{{ qrcode.id }}" tabindex="-1" aria-hidden="true">
+                      <div class="modal-dialog">
+                        <div class="modal-content">
+                          <form method="post" enctype="multipart/form-data" action="{% url 'dashboard:update_event_mask' qrcode.id %}">
+                            {% csrf_token %}
+                            <div class="modal-header">
+                              <h5 class="modal-title">Subir máscara — {{ qrcode.name }}</h5>
+                              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                              <div class="mb-3">
+                                <label for="mask_image_{{ qrcode.id }}" class="form-label">Máscara (PNG/JPG) — 720x1150 recomendado</label>
+                                <input class="form-control" type="file" id="mask_image_{{ qrcode.id }}" name="mask_image" accept="image/*" required>
+                              </div>
+                              <div class="form-text">La máscara se aplicará a todos los QR del evento y se intentará re-renderizar un lote.</div>
+                            </div>
+                            <div class="modal-footer">
+                              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                              <button type="submit" class="btn btn-primary">Subir máscara</button>
+                            </div>
+                          </form>
+                        </div>
+                      </div>
+                    </div>
                 {% endfor %}
             </tbody>
         </table>
