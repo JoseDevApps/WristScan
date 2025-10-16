@@ -212,7 +212,8 @@ def download_available_qr_pdf(request, event_id):
 #     })
 def share_qr_codes(request, event_id):
     event = get_object_or_404(Event, id=event_id, created_by=request.user)
-
+    user = request.user
+    user_id = user.id
     if request.method == 'POST':
         form = ShareQRCodeForm(request.POST)
         if form.is_valid():
@@ -292,9 +293,15 @@ def share_qr_codes(request, event_id):
     else:
         form = ShareQRCodeForm()
 
+    user_events= Event.objects.filter(id=event_id, created_by=request.user).annotate(
+    recycled_count=Count('qr_codes', filter=Q(qr_codes__status_recycled='recycled')),
+    shared_count=Count('qr_codes', filter=Q(qr_codes__status_purchased='purchased')),
+    scanned_count=Count('qr_codes', filter=Q(qr_codes__status_scan='concedido')),
+    ).first()
     return render(request, 'dashboard/shareqr.html', {
         'event': event,
-        'form':  form
+        'form':  form,
+        'user_events': user_events
     })
 ################################################
 #   Pagina de bienvenida report
