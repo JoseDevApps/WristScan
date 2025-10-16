@@ -41,7 +41,7 @@
         <li class="nav-item">
           <a href="{% url 'dashboard:inicio' %}">
             <i class="fas fa-bars"></i>
-            <p style="font-weight: normal !important;">Home</p>
+            <p style="font-weight: normal !important;" data-i18n="nav_home">Home</p>
           </a>
         </li>
 
@@ -49,7 +49,7 @@
         <li class="nav-item active">
           <a href="{% url 'dashboard:tables' %}">
               <i class="fas fa-table"></i>
-              <span class="sub-item" style="font-weight: normal !important;">Event list</span>
+              <span class="sub-item" style="font-weight: normal !important;" data-i18n="nav_event_list">Event list</span>
             </a>
         </li>
 <!-- Monitor option-->
@@ -57,7 +57,7 @@
     <li class="nav-item">
           <a href="{% url 'dashboard:qrscan' %}">
             <i class="fas fa-qrcode"></i>
-            <p class="sub-item" style="font-weight: normal !important;">QR Control</p>
+            <p class="sub-item" style="font-weight: normal !important;" data-i18n="nav_qr_control">QR Control</p>
           </a>
         </li>
         
@@ -67,14 +67,14 @@
         <li class="nav-item">
           <a data-bs-toggle="collapse" href="#submenu">
             <i class="fas fa-bars"></i>
-            <p class="sub-item" style="font-weight: normal !important;">Settings</p>
+            <p class="sub-item" style="font-weight: normal !important;" data-i18n="nav_settings">Settings</p>
             <span class="caret"></span>
           </a>
           <div class="collapse" id="submenu">
             <ul class="nav nav-collapse">
               <li>
                 <a  href="{% url 'dashboard:logout' %}">
-                  <span class="sub-item" style="font-weight: normal !important;">LogOut</span>
+                  <span class="sub-item" style="font-weight: normal !important;" data-i18n="nav_logout">LogOut</span>
                 </a>
                 
               </li>
@@ -161,7 +161,7 @@
               <button class="btn btn-primary btn-lg d-flex align-items-center justify-content-center gap-2 mx-auto"
                     data-bs-toggle="modal" data-bs-target="#postFormModal" style="min-width: 200px;">
               <i class="fas fa-qrcode"></i>
-              <span>Add Event</span>
+              <span data-i18n="btn_add_event">Add Event</span>
             </button>
             </div>
             {% if messages %}
@@ -180,7 +180,7 @@
                   {% csrf_token %}
                   <div class="modal-content">
                     <div class="modal-header position-relative">
-                      <h5 class="modal-title w-100 text-center" id="modalLabel">Create Event</h5>
+                      <h5 class="modal-title w-100 text-center" id="modalLabel" data-i18n="modal_create_event_title">Create Event</h5>
                       <button type="button" class="btn-close position-absolute end-0 top-50 translate-middle-y" 
                               data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
@@ -188,7 +188,7 @@
                       {{ form.as_p }}
                     </div>
                     <div class="modal-footer justify-content-center">
-                      <button type="submit" class="btn btn-info">Create</button>
+                      <button type="submit" class="btn btn-info" data-i18n="modal_create_event_create">Create</button>
                     </div>
                   </div>
                 </form>
@@ -209,9 +209,9 @@
         <table id="eventTable" class="table table-hover table-bordered align-middle text-center" style="border-radius: 8px; overflow: hidden;">
             <thead class="table-dark" style="background-color: #0f141a; color: white;">
                 <tr>
-                    <th scope="col">Event</th>
-                    <th scope="col">Performance</th>
-                    <th scope="col">Actions</th>
+                    <th scope="col" data-i18n="th_event">Event</th>
+                    <th scope="col" data-i18n="th_performance">Performance</th>
+                    <th scope="col" data-i18n="th_actions">Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -228,18 +228,17 @@
                                     <i class="fas fa-cog"></i>
                                 </button>
                                 <ul class="dropdown-menu dropdown-menu-end">
-                                    <li><a class="dropdown-item" href="{% url 'dashboard:download_qr_zip' qrcode.id %}"><i class="fas fa-download me-2"></i> Download ZIP</a></li>
-                                    <li><a class="dropdown-item" href="{% url 'dashboard:export_qr_codes' qrcode.id %}"><i class="fas fa-file-excel me-2"></i> Download Excel</a></li>
-                                    <li><a class="dropdown-item" href="{% url 'dashboard:update_event' qrcode.id %}"><i class="fas fa-plus me-2"></i> Add QR Codes</a></li>
-                                    <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#maskModal-{{ qrcode.id }}"><i class="fas fa-image me-2"></i> Upload Mask</a></li>
+                                    <li><a class="dropdown-item" href="{% url 'dashboard:download_qr_zip' qrcode.id %}"><i class="fas fa-download me-2"></i> <span data-i18n="act_download_zip">Download ZIP</span></a></li>
+                                    <li><a class="dropdown-item" href="{% url 'dashboard:export_qr_codes' qrcode.id %}"><i class="fas fa-file-excel me-2"></i> <span data-i18n="act_download_excel">Download Excel</span></a></li>
+                                    <li><a class="dropdown-item" href="{% url 'dashboard:update_event' qrcode.id %}"><i class="fas fa-plus me-2"></i> <span data-i18n="act_add_qr">Add QR Codes</span></a></li>
+                                    <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#maskModal-{{ qrcode.id }}"><i class="fas fa-image me-2"></i> <span data-i18n="act_upload_mask">Upload Mask</span></a></li>
                                     {% if qrcode.recycled_count == 0 %}
-                                    <li><a class="dropdown-item" href="{% url 'dashboard:reciclar_qr_evento' qrcode.id %}"><i class="fas fa-recycle me-2"></i> Recycle event</a></li>
+                                    <li><a class="dropdown-item" href="{% url 'dashboard:reciclar_qr_evento' qrcode.id %}"><i class="fas fa-recycle me-2"></i> <span data-i18n="act_recycle_event">Recycle event</span></a></li>
                                     {% else %}
-                                    <li><span class="dropdown-item disabled"><i class="fas fa-recycle me-2"></i> Already recycled</span></li>
+                                    <li><span class="dropdown-item disabled"><i class="fas fa-recycle me-2"></i> <span data-i18n="act_already_recycled">Already recycled</span></span></li>
                                     {% endif %}
-                                    <li><a class="dropdown-item" href="{% url 'dashboard:invite_user' qrcode.id %}"><i class="fas fa-user-plus me-2"></i> Invite user</a></li>
+                                    <li><a class="dropdown-item" href="{% url 'dashboard:invite_user' qrcode.id %}"><i class="fas fa-user-plus me-2"></i> <span data-i18n="act_invite_user">Invite user</span></a></li>
                                     <li><hr class="dropdown-divider"></li>
-                                    <li><a class="dropdown-item text-danger" href="#"><i class="fas fa-trash me-2"></i> Delete</a></li>
                                 </ul>
                             </div>
 
@@ -251,9 +250,9 @@
                                 <ul class="dropdown-menu dropdown-menu-end">
                                     <li><a class="dropdown-item" href="https://api.whatsapp.com/send?text=Download QR Codes for {{ qrcode.name }}%0A{{ request.build_absolute_uri|slice:":-1" }}{% url 'dashboard:download_qr_zip' qrcode.id %}" target="_blank"><i class="fab fa-whatsapp me-2"></i> WhatsApp</a></li>
                                     <li><a class="dropdown-item" href="https://t.me/share/url?url={{ request.build_absolute_uri|slice:":-1" }}{% url 'dashboard:download_qr_zip' qrcode.id %}&text=Download QR Codes for {{ qrcode.name }}" target="_blank"><i class="fab fa-telegram-plane me-2"></i> Telegram</a></li>
-                                    <li><a class="dropdown-item" href="mailto:?subject=QR Codes for {{ qrcode.name }}&body=Download here: {{ request.build_absolute_uri|slice:":-1" }}{% url 'dashboard:download_qr_zip' qrcode.id %}"><i class="fas fa-envelope me-2"></i> Email</a></li>
-                                    <li><a class="dropdown-item" href="{% url 'dashboard:export_qr_codes_pdf' qrcode.id %}"><i class="fas fa-file-pdf me-2"></i> PDF</a></li>
-                                    <li><a class="dropdown-item" href="{% url 'dashboard:share_qr_codes' qrcode.id %}"><i class="fas fa-file-pdf me-2"></i> Sell QR Codes</a></li>
+                                    <li><a class="dropdown-item" href="mailto:?subject=QR Codes for {{ qrcode.name }}&body=Download here: {{ request.build_absolute_uri|slice:":-1" }}{% url 'dashboard:download_qr_zip' qrcode.id %}"><i class="fas fa-envelope me-2"></i> <span data-i18n="share_email">Email</span></a></li>
+                                    <li><a class="dropdown-item" href="{% url 'dashboard:export_qr_codes_pdf' qrcode.id %}"><i class="fas fa-file-pdf me-2"></i> <span data-i18n="share_pdf">PDF</span></a></li>
+                                    <li><a class="dropdown-item" href="{% url 'dashboard:share_qr_codes' qrcode.id %}"><i class="fas fa-file-pdf me-2"></i> <span data-i18n="share_sell">Sell QR Codes</span></a></li>
                                 </ul>
                             </div>
 
@@ -267,7 +266,7 @@
 
     <!-- Show Recycled Button Centrado y visible en todos los dispositivos -->
     <div class="d-flex justify-content-center mt-3">
-        <button id="toggleRecycledBtn" class="btn btn-primary w-100 w-md-auto">
+        <button id="toggleRecycledBtn" class="btn btn-primary w-100 w-md-auto" data-i18n="btn_show_recycled">
             Show recycled events
         </button>
     </div>
@@ -319,6 +318,132 @@
 
 
   </div>
+
+<!-- Traducciones y script -->
+<script>
+  const translations = {
+    en: {
+      logo_title: "QR PASS",
+      nav_home: "Home",
+      nav_event_list: "Event list",
+      nav_qr_control: "QR Control",
+      nav_settings: "Settings",
+      nav_logout: "LogOut",
+      dashboard_title: "Manillas Bolivia",
+      btn_add_event: "Add Event",
+      modal_create_event_title: "Create Event",
+      modal_create_event_create: "Create",
+      th_event: "Event",
+      th_performance: "Performance",
+      th_actions: "Actions",
+      act_download_zip: "Download ZIP",
+      act_download_excel: "Download Excel",
+      act_add_qr: "Add QR Codes",
+      act_upload_mask: "Upload Mask",
+      act_recycle_event: "Recycle event",
+      act_already_recycled: "Already recycled",
+      act_invite_user: "Invite user",
+      act_delete: "Delete",
+      share_whatsapp: "WhatsApp",
+      share_telegram: "Telegram",
+      share_email: "Email",
+      share_pdf: "PDF",
+      share_sell: "Sell QR Codes",
+      btn_show_recycled: "Show recycled events"
+    },
+    es: {
+      logo_title: "QR PASS",
+      nav_home: "Inicio",
+      nav_event_list: "Lista de eventos",
+      nav_qr_control: "Control QR",
+      nav_settings: "Configuración",
+      nav_logout: "Cerrar sesión",
+      dashboard_title: "Manillas Bolivia",
+      btn_add_event: "Agregar evento",
+      modal_create_event_title: "Crear evento",
+      modal_create_event_create: "Crear",
+      th_event: "Evento",
+      th_performance: "Rendimiento",
+      th_actions: "Acciones",
+      act_download_zip: "Descargar ZIP",
+      act_download_excel: "Descargar Excel",
+      act_add_qr: "Añadir códigos QR",
+      act_upload_mask: "Subir máscara",
+      act_recycle_event: "Reciclar evento",
+      act_already_recycled: "Ya reciclado",
+      act_invite_user: "Invitar usuario",
+      act_delete: "Eliminar",
+      share_whatsapp: "WhatsApp",
+      share_telegram: "Telegram",
+      share_email: "Correo",
+      share_pdf: "PDF",
+      share_sell: "Vender códigos QR",
+      btn_show_recycled: "Mostrar eventos reciclados"
+    },
+    pt: {
+      logo_title: "QR PASS",
+      nav_home: "Início",
+      nav_event_list: "Lista de eventos",
+      nav_qr_control: "Controle QR",
+      nav_settings: "Configurações",
+      nav_logout: "Sair",
+      dashboard_title: "Manilhas Bolívia",
+      btn_add_event: "Adicionar evento",
+      modal_create_event_title: "Criar evento",
+      modal_create_event_create: "Criar",
+      th_event: "Evento",
+      th_performance: "Desempenho",
+      th_actions: "Ações",
+      act_download_zip: "Baixar ZIP",
+      act_download_excel: "Baixar Excel",
+      act_add_qr: "Adicionar códigos QR",
+      act_upload_mask: "Enviar máscara",
+      act_recycle_event: "Reciclar evento",
+      act_already_recycled: "Já reciclado",
+      act_invite_user: "Convidar usuário",
+      act_delete: "Excluir",
+      share_whatsapp: "WhatsApp",
+      share_telegram: "Telegram",
+      share_email: "E-mail",
+      share_pdf: "PDF",
+      share_sell: "Vender códigos QR",
+      btn_show_recycled: "Mostrar eventos reciclados"
+    }
+  };
+
+  function applyLang(lang) {
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.getAttribute('data-i18n');
+      const txt = (translations[lang] && translations[lang][key]) || translations.en[key] || key;
+      // Inputs of type submit or buttons with value
+      if (el.tagName === 'INPUT') {
+        if (el.type === "submit" || el.type === "button") {
+          el.value = txt;
+        } else {
+          el.placeholder = txt;
+        }
+      } else if (el.tagName === 'OPTION') {
+        el.textContent = txt;
+      } else {
+        el.textContent = txt;
+      }
+    });
+    document.documentElement.lang = lang;
+    localStorage.setItem('lang', lang);
+  }
+
+  const langSelect = document.getElementById('lang');
+  if (langSelect) {
+    langSelect.addEventListener('change', e => applyLang(e.target.value));
+    const saved = localStorage.getItem('lang') || (navigator.language && navigator.language.slice(0,2)) || 'en';
+    if (['en','es','pt'].includes(saved)) {
+      langSelect.value = saved;
+    } else {
+      langSelect.value = 'en';
+    }
+    applyLang(langSelect.value);
+  }
+</script>
 
 <!-- SCRIPTS DE USUARIO -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
