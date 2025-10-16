@@ -131,12 +131,18 @@
           <div class="collapse" id="submenu">
             <ul class="nav nav-collapse">
               <li>
+                <a  href="{% url 'dashboard:update_profile' %}">
+                  <span class="sub-item" data-i18n="update_profile2" style="font-weight: normal !important;">Profile</span>
+                </a>
+                
+              </li>
+              
+              <li>
                 <a  href="{% url 'dashboard:logout' %}">
                   <span class="sub-item" data-i18n="nav_logout" style="font-weight: normal !important;">LogOut</span>
                 </a>
                 
               </li>
-              
             </ul>
           </div>
         </li>
