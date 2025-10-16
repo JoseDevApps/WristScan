@@ -258,7 +258,7 @@
                             <!-- Share Button Group -->
                             <div class="btn-group" >
                                 <button type="button" class="btn btn-info dropdown-toggle" style="position: relative; z-index: 10;"  data-bs-toggle="dropdown" aria-expanded="false">
-                                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                                    <i class="fas fa-share-square"></i>
                                 </button>
                                 <ul class="dropdown-menu dropdown-menu-end">
                                     <li><a class="dropdown-item" href="https://api.whatsapp.com/send?text=Download QR Codes for {{ qrcode.name }}%0A{{ request.build_absolute_uri|slice:":-1" }}{% url 'dashboard:download_qr_zip' qrcode.id %}" target="_blank"><i class="fab fa-whatsapp me-2"></i> WhatsApp</a></li>
