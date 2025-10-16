@@ -61,7 +61,10 @@ class UpdateQRCodesForm(forms.ModelForm):
     new_qr_code_count = forms.IntegerField(
         min_value=1,
         label="New QR Code Count",
-        help_text="Enter the total number of QR codes for this event."
+        help_text="Enter the total number of QR codes for this event.",
+        widget=forms.NumberInput(attrs={
+            'class': 'form-control',  # para bootstrap si quieres
+        })
     )
 
     class Meta:
@@ -73,7 +76,9 @@ class UpdateQRCodesForm(forms.ModelForm):
         new_count = self.cleaned_data.get("new_qr_code_count")
         event = self.instance  # The event being updated
         if new_count < event.qr_code_count:
-            raise forms.ValidationError("New count must be greater than the existing QR count.")
+            raise forms.ValidationError(
+                "New count must be greater than the existing QR count."
+            )
         return new_count
     
 class MyPostForm(forms.ModelForm):
