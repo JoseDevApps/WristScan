@@ -212,9 +212,8 @@
     <!-- </div> -->
     <!-- <div style="display: flex; justify-content: center; align-items: center; height: 50vh;"> -->
       <!-- <div id="qr-reader" style="width: 500px;"></div> -->
-       <div class="qr-container">
-        <div id="qr-reader"></div>
-      </div>
+       <div id="qr-reader" style="width: 500px; margin: 0 auto;"></div>
+
 
       
     <!-- </div> -->
@@ -269,35 +268,6 @@
     
   </div>
 
-<style>
-  /* Contenedor principal centrado */
-  .qr-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;            /* centra verticalmente en toda la pantalla */
-    width: 100%;
-    background: transparent;  /* o un color suave si quieres */
-  }
-
-  /* Lector QR adaptable */
-  #qr-reader {
-    width: 90vw;              /* usa 90% del ancho de la pantalla */
-    max-width: 500px;         /* límite máximo en pantallas grandes */
-    aspect-ratio: 1 / 1;      /* mantiene forma cuadrada sin distorsión */
-    box-shadow: 0 0 10px rgba(0,0,0,0.2);
-    border-radius: 12px;
-    overflow: hidden;
-  }
-
-  /* Opcional: ajusta márgenes en móviles */
-  @media (max-height: 600px) {
-    .qr-container {
-      height: auto;
-      padding: 2rem 0;
-    }
-  }
-</style>
 <!-- Traducciones y script -->
 <script>
   const translations = {
