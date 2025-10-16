@@ -227,8 +227,8 @@
             <tbody>
                 {% for qrcode in events %}
                 <tr class="{% if qrcode.recycled_count > 0 %}recycled-row{% endif %}" style="transition: background-color 0.2s;">
-                    <td>{{ qrcode.name }}</td>
-                    <td>{{ qrcode.shared_count }}/{{ qrcode.qr_code_count }}</td>
+                    <td style="font-weight: normal !important;">{{ qrcode.name }}</td>
+                    <td style="font-weight: normal !important;">{{ qrcode.shared_count }}/{{ qrcode.qr_code_count }}</td>
                     <td>
                         <div class="d-flex justify-content-center gap-2 flex-wrap">
 
