@@ -48,7 +48,7 @@ class UserEmailForm(forms.ModelForm):
 class ShareQRCodeForm(forms.Form):
     recipient_email = forms.EmailField(label="Recipient Email")
     number_of_codes   = forms.IntegerField(
-        label="Number of QR Codes to Share",
+        label="Number of Codes",
         min_value=1
     )
 
