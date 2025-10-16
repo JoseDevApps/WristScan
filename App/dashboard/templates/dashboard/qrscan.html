@@ -94,7 +94,7 @@
        <li class="nav-item">
           <a href="{% url 'dashboard:inicio' %}">
             <i class="fas fa-bars"></i>
-            <p style="font-weight: normal !important;">Home</p>
+            <p style="font-weight: normal !important;" data-i18n="nav_home">Home</p>
           </a>
         </li>
 
@@ -102,7 +102,7 @@
         <li class="nav-item ">
           <a href="{% url 'dashboard:tables' %}">
               <i class="fas fa-table"></i>
-              <span class="sub-item" style="font-weight: normal !important;">Event list</span>
+              <span class="sub-item" style="font-weight: normal !important;" data-i18n="nav_event_list">Event list</span>
             </a>
         </li>
 <!-- Monitor option-->
@@ -110,7 +110,7 @@
     <li class="nav-item active">
           <a href="{% url 'dashboard:qrscan' %}">
             <i class="fas fa-qrcode"></i>
-            <p class="sub-item" style="font-weight: normal !important;">QR Control</p>
+            <p class="sub-item" style="font-weight: normal !important;" data-i18n="nav_qr_control">QR Control</p>
           </a>
         </li>
         
@@ -120,14 +120,14 @@
         <li class="nav-item">
           <a data-bs-toggle="collapse" href="#submenu">
             <i class="fas fa-bars"></i>
-            <p class="sub-item" style="font-weight: normal !important;">Settings</p>
+            <p class="sub-item" style="font-weight: normal !important;" data-i18n="nav_settings">Settings</p>
             <span class="caret"></span>
           </a>
           <div class="collapse" id="submenu">
             <ul class="nav nav-collapse">
               <li>
                 <a  href="{% url 'dashboard:logout' %}">
-                  <span class="sub-item" style="font-weight: normal !important;">LogOut</span>
+                  <span class="sub-item" style="font-weight: normal !important;" data-i18n="nav_logout">LogOut</span>
                 </a>
                 
               </li>
@@ -217,7 +217,7 @@
 
     <!-- Botón para abrir el modal de reporte -->
     <div class="d-flex justify-content-center my-3">
-      <button id="openReportBtn" class="btn btn-info">
+      <button id="openReportBtn" class="btn btn-info" data-i18n="btn_view_report">
         View scan report
       </button>
     </div>
@@ -226,12 +226,14 @@
     <div id="reportModal" class="modal">
       <div class="modal-content">
         <span class="close-report">&times;</span>
-        <h2>Scan Report</h2>
+        <h2 data-i18n="report_title">Scan Report</h2>
 
         <!-- Tabla de los últimos 5 escaneos -->
         <table id="reportTable" class="table table-sm mt-3">
           <thead>
-            <tr><th>QR Data</th><th>Fecha de escaneo</th></tr>
+            <tr><th data-i18n="th_qr_data">QR Data</th>
+              <th data-i18n="th_scan_date">Scan date</th>
+            </tr>
           </thead>
           <tbody>
             <!-- Se llenará por JS -->
@@ -247,7 +249,7 @@
     <div id="qrModal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
-            <h2>QR Code Scanned!</h2>
+            <h2 id="qrModalLabel" data-i18n="qr_scanned_title">QR Code Scanned!</h2>
             <div id="response-message" class="resmess"></div>
             <p id="qrCodeText"></p>
         </div>
@@ -256,12 +258,106 @@
 
     <audio id="successSound" src="{% static 'dashboard/sounds/success.mp3' %}"></audio>
     <audio id="errorSound" src="{% static 'dashboard/sounds/error.mp3' %}"></audio>
-    <button id="stopButton" style="display:none;">Stop Scanning</button>
+    <button id="stopButton" style="display:none;" data-i18n="btn_stop_scanning">Stop Scanning</button>
 
     
     
   </div>
 
+
+<!-- Traducciones y script -->
+<script>
+  const translations = {
+    en: {
+      logo_title: "QR PASS",
+      nav_home: "Home",
+      nav_event_list: "Event list",
+      nav_qr_control: "QR Control",
+      nav_settings: "Settings",
+      nav_logout: "LogOut",
+      dashboard_title: "Manillas Bolivia",
+      btn_view_report: "View scan report",
+      report_close_label: "Close report",
+      report_title: "Scan Report",
+      th_qr_data: "QR Data",
+      th_scan_date: "Scan date",
+      qr_scanned_title: "QR Code Scanned!",
+      qr_response_placeholder: "",
+      qr_close_label: "Close",
+      btn_stop_scanning: "Stop Scanning"
+    },
+    es: {
+      logo_title: "QR PASS",
+      nav_home: "Inicio",
+      nav_event_list: "Lista de eventos",
+      nav_qr_control: "Control QR",
+      nav_settings: "Configuración",
+      nav_logout: "Cerrar sesión",
+      dashboard_title: "Manillas Bolivia",
+      btn_view_report: "Ver reporte de escaneos",
+      report_close_label: "Cerrar reporte",
+      report_title: "Reporte de escaneos",
+      th_qr_data: "Datos QR",
+      th_scan_date: "Fecha de escaneo",
+      qr_scanned_title: "¡Código QR escaneado!",
+      qr_response_placeholder: "",
+      qr_close_label: "Cerrar",
+      btn_stop_scanning: "Detener escaneo"
+    },
+    pt: {
+      logo_title: "QR PASS",
+      nav_home: "Início",
+      nav_event_list: "Lista de eventos",
+      nav_qr_control: "Controle QR",
+      nav_settings: "Configurações",
+      nav_logout: "Sair",
+      dashboard_title: "Manilhas Bolívia",
+      btn_view_report: "Ver relatório de escaneamento",
+      report_close_label: "Fechar relatório",
+      report_title: "Relatório de escaneamento",
+      th_qr_data: "Dados QR",
+      th_scan_date: "Data do escaneamento",
+      qr_scanned_title: "Código QR escaneado!",
+      qr_response_placeholder: "",
+      qr_close_label: "Fechar",
+      btn_stop_scanning: "Parar escaneamento"
+    }
+  };
+
+  function applyLang(lang) {
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.getAttribute('data-i18n');
+      const txt = (translations[lang] && translations[lang][key]) || translations.en[key] || key;
+      // Inputs and buttons may be <input> or <button> or plain elements
+      if (el.tagName === 'INPUT') {
+        if (el.type === 'submit' || el.type === 'button') {
+          el.value = txt;
+        } else {
+          el.placeholder = txt;
+        }
+      } else if (el.tagName === 'BUTTON') {
+        el.textContent = txt;
+      } else {
+        // default for spans, p, h*, th, etc.
+        el.textContent = txt;
+      }
+    });
+
+    // Some close buttons are just characters (×); we leave the visible sign but update aria-labels if provided
+    // Also set HTML lang and persist
+    document.documentElement.lang = lang;
+    localStorage.setItem('lang', lang);
+  }
+
+  // Init language selector
+  const langSelect = document.getElementById('lang');
+  if (langSelect) {
+    langSelect.addEventListener('change', e => applyLang(e.target.value));
+    const saved = localStorage.getItem('lang') || (navigator.language && navigator.language.slice(0,2)) || 'en';
+    langSelect.value = ['en','es','pt'].includes(saved) ? saved : 'en';
+    applyLang(langSelect.value);
+  }
+</script>
 
   <!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
