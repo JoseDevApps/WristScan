@@ -480,36 +480,34 @@ document.addEventListener('DOMContentLoaded', function () {
 
 <script>
   $(document).ready(function() {
-    // 1️⃣ Inicializa DataTables
-    var table = $('#eventTable').DataTable({
-      paging:   true,
-      searching:true,
-      ordering: true,
-      info:     true,
-      lengthMenu: [5,10,25,50,100],
-      pageLength:5
-    });
-
-    // 2️⃣ Oculta filas recicladas desde el inicio
-    $('.recycled-row').hide();
-
-    // 3️⃣ Control del botón
-    var showing = false;
-    $('#toggleRecycledBtn').on('click', function() {
-      showing = !showing;
-
-      if (showing) {
-        $('.recycled-row').show();
-        $(this).text('Hide recycled events');
-      } else {
-        $('.recycled-row').hide();
-        $(this).text('Show recycled events');
-      }
-
-      // 4️⃣ Re-dibuja la tabla sin cambiar de página
-      table.draw(false);
-    });
+  var table = $('#eventTable').DataTable({
+    paging:   true,
+    searching:true,
+    ordering: true,
+    info:     true,
+    lengthMenu: [5,10,25,50,100],
+    pageLength:5,
+    dom: '<"top"f>rt<"bottom"lp><"clear">' // <-- Aquí
   });
+
+  // Oculta filas recicladas desde el inicio
+  $('.recycled-row').hide();
+
+  // Botón toggle
+  var showing = false;
+  $('#toggleRecycledBtn').on('click', function() {
+    showing = !showing;
+    if (showing) {
+      $('.recycled-row').show();
+      $(this).text('Hide recycled events');
+    } else {
+      $('.recycled-row').hide();
+      $(this).text('Show recycled events');
+    }
+    table.draw(false);
+  });
+});
+
 </script>
 
 
