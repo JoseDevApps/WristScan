@@ -203,8 +203,8 @@
   </div>
 
   <div class="container">
-    <h2 class="fw-bold mb-3">Sent codes {{ user_events.shared_count }}/{{ user_events.qr_code_count }}</h3>
-    <h2>Share QR Codes for “{{ event.name }}”</h2>
+    <h2 class="fw-bold mb-3" style="font-weight: normal !important;">Send codes {{ user_events.shared_count }}/{{ user_events.qr_code_count }}</h3>
+    <h2>For “{{ event.name }}”</h2>
 
   <form method="post">
     {% csrf_token %}
@@ -220,7 +220,7 @@
       {{ form.number_of_codes.errors }}
     </div>
     <button class="btn btn-primary" type="submit">
-      Share
+      Send
     </button>
     <a href="{% url 'dashboard:tables' %}" class="btn btn-secondary">
       Cancel
