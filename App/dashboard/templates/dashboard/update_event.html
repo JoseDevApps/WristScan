@@ -184,12 +184,12 @@
    <!-- **************** -->
 
    <div class="container">
-      <h2>Update QR Codes for {{ event.name }}</h2>
+      <h2>Add Codes for {{ event.name }}</h2>
 
       <form method="post">
           {% csrf_token %}
           {{ form.as_p }}
-          <button type="submit">Update QR Codes</button>
+          <button type="submit">Add Codes</button>
       </form>
       
       {% if messages %}
