@@ -246,7 +246,7 @@
                                     <li><a class="dropdown-item" href="{% url 'dashboard:update_event' qrcode.id %}"><i class="fas fa-plus me-2"></i> <span data-i18n="act_add_qr">Add QR Codes</span></a></li>
                                     <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#maskModal-{{ qrcode.id }}"><i class="fas fa-image me-2"></i> <span data-i18n="act_upload_mask">Upload Mask</span></a></li>
                                     {% if qrcode.recycled_count == 0 %}
-                                    <li><a class="dropdown-item" href="{% url 'dashboard:reciclar_qr_evento' qrcode.id %}"><i class="fas fa-recycle me-2"></i> <span data-i18n="act_recycle_event">Recycle event</span></a></li>
+                                    <li><a class="dropdown-item" href="{% url 'dashboard:reciclar_qr_evento' qrcode.id %}"><i class="fas fa-eye-slash"></i> <span data-i18n="act_recycle_event">Hide event</span></a></li>
                                     {% else %}
                                     <li><span class="dropdown-item disabled"><i class="fas fa-recycle me-2"></i> <span data-i18n="act_already_recycled">Already recycled</span></span></li>
                                     {% endif %}
