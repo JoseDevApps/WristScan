@@ -220,9 +220,9 @@ class EventRecycleForm(forms.Form):
     )
 
     recycle_confirm = forms.ChoiceField(
-        choices=[('yes', 'Sí, deseo reciclar los códigos'), ('no', 'No, cancelar')],
+        choices=[('yes', 'Sí, reciclar los códigos'), ('no', 'No, cancelar')],
         widget=forms.RadioSelect,
-        label="¿Deseas reciclar los códigos QR disponibles de este evento?"
+        label=""
     )
 
     def __init__(self, *args, **kwargs):
