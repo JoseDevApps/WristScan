@@ -41,6 +41,7 @@ from .ads_selector import get_banner_for_country  # tu selector
 from django.utils import timezone
 from .forms import UserProfileForm
 from .forms import DownloadQRCodeForm
+from django.utils.text import slugify
 
 ################################################
 
