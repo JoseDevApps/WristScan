@@ -241,7 +241,8 @@
                                   <i class="fas fa-cog"></i>
                               </button>
                                 <ul class="dropdown-menu dropdown-menu-end">
-                                    <li><a class="dropdown-item" href="{% url 'dashboard:download_qr_zip' qrcode.id %}"><i class="fas fa-download me-2"></i> <span data-i18n="act_download_zip">Download ZIP</span></a></li>
+                                    <!-- <li><a class="dropdown-item" href="{% url 'dashboard:download_qr_zip' qrcode.id %}"><i class="fas fa-download me-2"></i> <span data-i18n="act_download_zip">Download ZIP</span></a></li> -->
+                                     <li><a class="dropdown-item" href="{% url 'dashboard:download_qr_batch' qrcode.id %}"><i class="fas fa-download me-2"></i> <span data-i18n="act_download_zip">Download ZIP</span></a></li>
                                     <li><a class="dropdown-item" href="{% url 'dashboard:export_qr_codes' qrcode.id %}"><i class="fas fa-file-excel me-2"></i> <span data-i18n="act_download_excel">Download Excel</span></a></li>
                                     <li><a class="dropdown-item" href="{% url 'dashboard:update_event' qrcode.id %}"><i class="fas fa-plus me-2"></i> <span data-i18n="act_add_qr">Add QR Codes</span></a></li>
                                     <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#maskModal-{{ qrcode.id }}"><i class="fas fa-image me-2"></i> <span data-i18n="act_upload_mask">Upload Mask</span></a></li>

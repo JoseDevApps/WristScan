@@ -1,0 +1,221 @@
+{% extends 'base.html' %}
+{% block title %}Manillas Bolivia{% endblock %}
+{% load static %}
+{% block content %}
+<div class="wrapper" style="background-color: #d3dbe5;">
+  <!-- Sidebar -->
+  <div class="sidebar" data-background-color="white">
+    <!-- *************** -->
+    <!-- CABECERA INICIO -->
+    <!-- *************** -->
+  <div class="sidebar-logo" style="text-align: center;">
+  <!-- Logo Header -->
+  <div class="logo-header d-flex justify-content-center align-items-center" data-background-color="white" style="flex-direction: column;">
+    <a href="{% url 'dashboard:inicio' %}" class="logo">
+      <h1 style="font-size: 2.5rem; color: #007bff; margin: 0;">
+        <i class="fas fa-qrcode"></i>
+      </h1>
+    </a>
+
+    <!-- Controles del sidebar, alineados separados si quieres -->
+    <div class="nav-toggle mt-2 d-flex justify-content-center gap-2">
+      <button class="btn btn-toggle toggle-sidebar">
+        <i class="gg-menu-right"></i>
+      </button>
+      <button class="btn btn-toggle sidenav-toggler">
+        <i class="gg-menu-left"></i>
+      </button>
+    </div>
+    <button class="topbar-toggler more mt-2">
+      <i class="gg-more-vertical-alt"></i>
+    </button>
+  </div>
+  <!-- End Logo Header -->
+</div>
+  
+<!-- ********************** -->
+<!-- INICIO DE Menu Lateral -->
+<!-- ********************** -->
+
+  <div class="sidebar-wrapper scrollbar scrollbar-inner">
+
+    <div class="sidebar-content">
+      <ul class="nav nav-secondary">
+
+
+        <li class="nav-item active">
+          <a data-bs-toggle="collapse" href="{% url 'dashboard:inicio' %}">
+            <i class="fas fa-home"></i>
+            <p class="sub-item" data-i18n="nav_home" style="font-weight: normal !important;">Home</p>
+          </a>
+          
+        </li>
+
+
+<!-- Monitor option-->
+        <li class="nav-item">
+          <a href="{% url 'dashboard:tables' %}">
+              <i class="fas fa-bars"></i>
+              <span data-i18n="nav_event_list" class="sub-item">Event list</span>
+            </a>
+        </li>
+<!-- Monitor option-->
+
+    <li class="nav-item">
+          <a href="{% url 'dashboard:qrscan' %}">
+            <i class="fas fa-qrcode"></i>
+            <p class="sub-item" data-i18n="nav_qr_control" style="font-weight: normal !important;">QR Control</p>
+          </a>
+        </li>
+        
+
+
+<!-- log Out -->
+        <li class="nav-item">
+          <a data-bs-toggle="collapse" href="#submenu">
+            <i class="fas fa-cog"></i>
+            <p class="sub-item" data-i18n="nav_settings" style="font-weight: normal !important;">Settings</p>
+            <span class="caret"></span>
+          </a>
+          <div class="collapse" id="submenu">
+            <ul class="nav nav-collapse">
+              <li>
+                <a  href="{% url 'dashboard:update_profile' %}">
+                  <span class="sub-item" data-i18n="Profile" style="font-weight: normal !important;">Profile</span>
+                </a>
+                
+              </li>
+              
+              <li>
+                <a  href="{% url 'dashboard:logout' %}">
+                  <span class="sub-item" data-i18n="nav_logout" style="font-weight: normal !important;">LogOut</span>
+                </a>
+                
+              </li>
+            </ul>
+          </div>
+        </li>
+        <!-- END -->
+           
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ********************** -->
+<!-- FIN DE Menu Lateral -->
+<!-- ********************** -->
+
+<div class="main-panel">
+  <div class="main-header">
+
+    <div class="main-header-logo">
+      <!-- Logo Header -->
+      <div class="logo-header" data-background-color="dark">
+        <a href="{% url 'dashboard:inicio' %}" class="logo">
+          <img
+            src= "{% static 'img/kaiadmin/logo_light.svg' %}"
+            alt="navbar brand"
+            class="navbar-brand"
+            height="20"
+          />
+        </a>
+        <div class="nav-toggle">
+          <button class="btn btn-toggle toggle-sidebar">
+            <i class="gg-menu-right"></i>
+          </button>
+          <button class="btn btn-toggle sidenav-toggler">
+            <i class="gg-menu-left"></i>
+          </button>
+        </div>
+        <button class="topbar-toggler more">
+          <i class="gg-more-vertical-alt"></i>
+        </button>
+      </div>
+      <!-- End Logo Header -->
+    </div>
+
+  <!-- Navbar Header -->
+  <nav class="navbar navbar-header navbar-header-transparent navbar-expand-lg border-bottom" style="background-color: #0f141a;">
+    <div class="container-fluid d-flex justify-content-between align-items-center">
+
+      <!-- Título / Logo -->
+      <div class="navbar-header-left d-flex align-items-center">
+        <h4 class="text-white fw-bold mb-0" style="font-weight: normal !important;">
+          QR PASS
+        </h4>
+      </div>
+
+      <!-- Selector de idioma -->
+      <div class="lang-selector">
+        <label for="lang" class="lang-label">🌐</label>
+        <select id="lang">
+          <option value="en">English</option>
+          <option value="es">Español</option>
+          <option value="pt">Português</option>
+        </select>
+      </div>
+
+    </div>
+  </nav>
+  <!-- End Navbar -->
+</div>
+
+  <!-- ******************** -->
+<!-- Cuerpo del Dashboard -->
+<!-- ******************** -->
+
+<div class="container my-4">
+  <h3>Descargar QR por lotes — {{ event.name }}</h3>
+
+  {% if messages %}
+    <div class="mb-3">
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <p class="text-muted">Disponibles: <strong>{{ available_count }}</strong></p>
+
+  <form method="post" class="card p-3" style="max-width: 420px;">
+    {% csrf_token %}
+    <div class="mb-3">
+      <label class="form-label" for="{{ form.quantity.id_for_label }}">{{ form.quantity.label }}</label>
+      {{ form.quantity }}
+      {% if form.quantity.errors %}
+        <div class="text-danger small">{{ form.quantity.errors|striptags }}</div>
+      {% endif %}
+      <div class="form-text">Se marcarán como vendidos/comprados.</div>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Descargar ZIP</button>
+    <a href="{% url 'dashboard:tables' %}" class="btn btn-secondary">Cancelar</a>
+  </form>
+</div>
+
+
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const spinner = document.getElementById("spinner");
+
+        document.querySelectorAll("form").forEach(form => {
+            form.addEventListener("submit", function () {
+                spinner.style.display = "block";
+            });
+        });
+
+        document.querySelectorAll("a").forEach(link => {
+            link.addEventListener("click", function () {
+                spinner.style.display = "block";
+            });
+        });
+    });
+</script>
+
+
+
+
+{% endblock %}

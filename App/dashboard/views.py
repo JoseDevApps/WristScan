@@ -40,6 +40,8 @@ from django.utils.timezone import localtime
 from .ads_selector import get_banner_for_country  # tu selector
 from django.utils import timezone
 from .forms import UserProfileForm
+from .forms import DownloadQRCodeForm
+
 ################################################
 
 @login_required
@@ -303,6 +305,80 @@ def share_qr_codes(request, event_id):
         'form':  form,
         'user_events': user_events
     })
+
+################################################
+# Descarga por lotes
+###############################################
+
+@login_required
+def download_qr_batch(request, event_id):
+    """
+    Descarga localmente un ZIP con N QR del evento y marca esos N como purchased.
+    No envía emails.
+    """
+    event = get_object_or_404(Event, id=event_id, created_by=request.user)
+
+    if request.method == "POST":
+        form = DownloadQRCodeForm(request.POST)
+        if form.is_valid():
+            qty = form.cleaned_data["quantity"]
+
+            # Tomar exactamente qty disponibles
+            available_qs = list(event.qr_codes.filter(status_purchased="available")[:qty])
+            if len(available_qs) < qty:
+                messages.warning(
+                    request,
+                    f"Solo hay {len(available_qs)} QR(s) disponibles para descargar."
+                )
+                return render(request, "dashboard/download_qr_batch.html", {
+                    "form": form,
+                    "event": event,
+                    "available_count": event.qr_codes.filter(status_purchased="available").count(),
+                })
+
+            # Marcar como purchased (vendidos/comprados)
+            QRCode.objects.filter(id__in=[q.id for q in available_qs]).update(status_purchased="purchased")
+
+            # Armar ZIP en memoria
+            zip_buffer = BytesIO()
+            with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zf:
+                for qr in available_qs:
+                    # Nombre seguro dentro del zip
+                    filename = os.path.basename(qr.image.name) if (qr.image and qr.image.name) else f"qr_{qr.id}.png"
+                    try:
+                        if qr.image:
+                            # Si storage es local y tiene path real
+                            if hasattr(qr.image, "path") and os.path.exists(qr.image.path):
+                                zf.write(qr.image.path, arcname=filename)
+                            else:
+                                # Storage remoto u otro backend: leer bytes y escribir
+                                qr.image.open("rb")
+                                data = qr.image.read()
+                                qr.image.close()
+                                zf.writestr(filename, data)
+                        else:
+                            zf.writestr(f"qr_{qr.id}_missing.txt", f"QR {qr.id} no tiene imagen asociada.")
+                    except Exception as e:
+                        zf.writestr(f"qr_{qr.id}_error.txt", f"Error leyendo imagen de QR {qr.id}: {e}")
+
+            zip_buffer.seek(0)
+            safe_event = slugify(event.name or f"event_{event.id}")
+            response = HttpResponse(zip_buffer.getvalue(), content_type="application/zip")
+            response["Content-Disposition"] = f'attachment; filename="{safe_event}_QRs_{qty}.zip"'
+            return response
+        else:
+            messages.error(request, "Formulario inválido. Revisa los campos.")
+    else:
+        # GET: prellenar con la cantidad disponible (o 50 por comodidad)
+        available_count = event.qr_codes.filter(status_purchased="available").count()
+        form = DownloadQRCodeForm(initial={"quantity": min(available_count, 50)})
+
+    return render(request, "dashboard/download_qr_batch.html", {
+        "form": form,
+        "event": event,
+        "available_count": event.qr_codes.filter(status_purchased="available").count(),
+    })
+
 ################################################
 #   Pagina de bienvenida report
 ################################################

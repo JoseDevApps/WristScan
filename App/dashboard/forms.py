@@ -4,6 +4,14 @@ from django.core.exceptions import ValidationError
 from django.utils.safestring import mark_safe
 from django.contrib.auth.models import User
 
+
+class DownloadQRCodeForm(forms.Form):
+    quantity = forms.IntegerField(
+        min_value=1,
+        label="Cantidad de QR a descargar",
+        widget=forms.NumberInput(attrs={"class": "form-control", "min": 1})
+    )
+
 class UserProfileForm(forms.ModelForm):
     username = forms.CharField(
         max_length=150,
