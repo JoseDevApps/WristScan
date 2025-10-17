@@ -69,10 +69,15 @@ class UpdateQRCodesForm(forms.ModelForm):
     new_qr_code_count = forms.IntegerField(
         min_value=1,
         label="",
-        help_text="Enter the total number of QR codes for this event.",
+        # help_text="Enter the total number of QR codes for this event.",
         widget=forms.NumberInput(attrs={
-            'class': 'form-control',  # para bootstrap si quieres
+            'class': 'form-control text-center',  # 👈 centrado
+            'min': 1,
+            'placeholder': 'Enter the total number of QR codes for this event.'
         })
+        # widget=forms.NumberInput(attrs={
+        #     'class': 'form-control',  # para bootstrap si quieres
+        # })
     )
 
     class Meta:
