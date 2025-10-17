@@ -165,181 +165,67 @@
 <!-- Cuerpo del Dashboard -->
 <!-- ******************** -->
 
- <div class="container py-4">
+<div class="container py-4">
 
-  <!-- Mensajes (success/warning/error) -->
-  {% if messages %}
-    <div class="mb-3">
-      {% for message in messages %}
-        <div class="alert alert-{{ message.tags }} mb-2">{{ message }}</div>
-      {% endfor %}
-    </div>
-  {% endif %}
+  <!-- Título y progreso -->
+  <div class="mb-4 text-center">
+    <h2 class="fw-bold mb-1" style="font-weight: normal !important;">
+      Send Codes <span class="text-primary">{{ user_events.shared_count }}</span>/<span class="text-secondary">{{ user_events.qr_code_count }}</span>
+    </h2>
+    <h5 class="text-muted">Event: “{{ event.name }}”</h5>
 
-  <!-- Header -->
-  <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
-    <div>
-      <h2 class="h4 mb-1">Enviar códigos</h2>
-      <div class="text-muted">Evento: <strong>“{{ event.name }}”</strong></div>
+    <div class="progress mt-3" style="height: 12px; max-width: 400px; margin: 0 auto;">
+      {% if user_events.qr_code_count > 0 %}
+        {% with percent=user_events.shared_count|divisibleby:user_events.qr_code_count %}
+        <div class="progress-bar bg-primary" role="progressbar" style="width: {{ user_events.shared_count|floatformat:0|divisibleby:user_events.qr_code_count|yesno:'100,0' }}%"></div>
+        {% endwith %}
+      {% endif %}
     </div>
-    <a href="{% url 'dashboard:tables' %}" class="btn btn-outline-secondary">
-      <i class="bi bi-arrow-left"></i> Volver
-    </a>
+    <small class="text-muted d-block mt-2">You have shared {{ user_events.shared_count }} of {{ user_events.qr_code_count }} codes</small>
   </div>
-
-  <!-- Resumen del evento -->
-  {% with sent=user_events.shared_count total=user_events.qr_code_count %}
-  {% with remaining=total|add:sent|add:"-2"|default:0 %}
-
-  <div class="card shadow-sm mb-4">
-    <div class="card-body">
-      <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
-        <div>
-          <div class="fw-semibold mb-1">Progreso de envío</div>
-          <div class="small text-muted mb-2">
-            Enviados: <span class="fw-semibold">{{ sent }}</span> de <span class="fw-semibold">{{ total }}</span>
-            &nbsp;•&nbsp; Disponibles: <span id="availableCount" class="badge bg-success">{{ remaining }}</span>
-          </div>
-          <div class="progress" style="max-width: 520px;">
-            <div class="progress-bar" role="progressbar"
-                 style="width: {{ sent|floatformat:2|divisibleby:total|yesno:'100,0' }}%; width: {% if total > 0 %}{{ sent|floatformat:0|add:'0'|floatformat:0|divisibleby:total|yesno:'100,0' }}{% endif %}%;"></div>
-          </div>
-        </div>
-        <div class="text-end">
-          <span class="badge rounded-pill bg-primary">
-            {{ sent }}/{{ total }}
-          </span>
-        </div>
-      </div>
-    </div>
-  </div>
-  {% endwith %}
-  {% endwith %}
 
   <!-- Formulario -->
-  <div class="card shadow-sm">
-    <div class="card-header bg-white">
-      <div class="fw-semibold">Compartir códigos por email</div>
-      <div class="small text-muted">Se enviará un archivo .zip con las imágenes de QR.</div>
-    </div>
+  <div class="card shadow-sm mx-auto" style="max-width: 480px;">
     <div class="card-body">
-      <form method="post" novalidate id="shareForm">
+      <form method="post" novalidate>
         {% csrf_token %}
         {{ form.non_field_errors }}
 
         <!-- Email -->
         <div class="mb-3">
-          <label for="{{ form.recipient_email.id_for_label }}" class="form-label">
-            {{ form.recipient_email.label|default:"Correo del destinatario" }}
-          </label>
-          <div class="input-group">
-            <span class="input-group-text">@</span>
-            {{ form.recipient_email|add_class:"form-control" }}
-          </div>
+          {{ form.recipient_email.label_tag }}
+          {{ form.recipient_email|add_class:"form-control" }}
           {% if form.recipient_email.errors %}
             <div class="invalid-feedback d-block">{{ form.recipient_email.errors|striptags }}</div>
           {% else %}
-            <div class="form-text">Usaremos este correo para enviar el ZIP con los códigos.</div>
+            <div class="form-text">Enter the recipient email to send the QR codes ZIP file.</div>
           {% endif %}
         </div>
 
-        <!-- Cantidad -->
-        {% with sent=user_events.shared_count total=user_events.qr_code_count %}
-        {% with remaining=total|add:-sent %}
+        <!-- Number of codes -->
         <div class="mb-3">
-          <label for="{{ form.number_of_codes.id_for_label }}" class="form-label">
-            {{ form.number_of_codes.label|default:"Cantidad de códigos a enviar" }}
-          </label>
-
-          <!-- Slider + number input sincronizados -->
-          <div class="row g-2 align-items-center">
-            <div class="col-12 col-md">
-              <input type="range"
-                     class="form-range"
-                     id="qtyRange"
-                     min="1"
-                     max="{{ remaining|default:0 }}"
-                     value="{{ form.number_of_codes.value|default_if_none:1 }}">
-            </div>
-            <div class="col-6 col-md-3">
-              {{ form.number_of_codes|add_class:"form-control" }}
-            </div>
-          </div>
-
+          {{ form.number_of_codes.label_tag }}
+          {{ form.number_of_codes|add_class:"form-control" }}
           {% if form.number_of_codes.errors %}
             <div class="invalid-feedback d-block">{{ form.number_of_codes.errors|striptags }}</div>
           {% else %}
-            <div class="form-text">
-              Disponibles: <span class="fw-semibold">{{ remaining }}</span>.
-              Selecciona cuántos quieres enviar.
-            </div>
+            <div class="form-text">Select how many codes you want to send.</div>
           {% endif %}
         </div>
 
-        <!-- CTA -->
-        <div class="d-flex gap-2">
-          <button type="submit" class="btn btn-primary" id="sendBtn">
-            Enviar códigos
+        <!-- Buttons -->
+        <div class="d-flex justify-content-end gap-2">
+          <a href="{% url 'dashboard:tables' %}" class="btn btn-outline-secondary">
+            Cancel
+          </a>
+          <button class="btn btn-primary" type="submit">
+            <i class="fas fa-paper-plane me-1"></i> Send
           </button>
-          <a href="{% url 'dashboard:tables' %}" class="btn btn-outline-secondary">Cancelar</a>
         </div>
-        {% endwith %}
-        {% endwith %}
       </form>
     </div>
   </div>
-
 </div>
-
-<!-- Opcional: Bootstrap Icons (si no los tienes ya) -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-
-<script>
-  (function() {
-    // Elementos
-    const qtyInput = document.getElementById("{{ form.number_of_codes.id_for_label }}") ||
-                     document.getElementById("id_number_of_codes");
-    const qtyRange = document.getElementById("qtyRange");
-    const sendBtn  = document.getElementById("sendBtn");
-    const available = parseInt(document.getElementById("availableCount")?.textContent || "0", 10);
-
-    if (!qtyInput || !qtyRange) return;
-
-    // Ajusta límites
-    qtyInput.min = 1;
-    qtyInput.max = available;
-    if (!qtyInput.value) qtyInput.value = Math.min(available, 1);
-    qtyRange.min = 1;
-    qtyRange.max = available;
-    if (!qtyRange.value) qtyRange.value = qtyInput.value;
-
-    // Sincronización bidireccional
-    qtyRange.addEventListener("input", () => {
-      qtyInput.value = qtyRange.value;
-      validate();
-    });
-    qtyInput.addEventListener("input", () => {
-      // Normaliza a límites
-      let v = parseInt(qtyInput.value || "0", 10);
-      if (isNaN(v)) v = 1;
-      if (v < 1) v = 1;
-      if (v > available) v = available;
-      qtyInput.value = v;
-      qtyRange.value = v;
-      validate();
-    });
-
-    function validate() {
-      const n = parseInt(qtyInput.value || "0", 10);
-      const ok = available > 0 && n >= 1 && n <= available;
-      sendBtn.disabled = !ok;
-    }
-
-    // Estado inicial
-    validate();
-  })();
-</script>
-
 
 
 <script>
