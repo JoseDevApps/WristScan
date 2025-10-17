@@ -6,6 +6,7 @@ urlpatterns = [
     path('', views.inicio, name="inicio"),
     path("profile/edit/", views.update_profile, name="update_profile"),
     path('export_qr_summary/', views.export_qr_summary_to_excel, name="export_qr_summary"),
+    path("events/<int:event_id>/download-batch/", views.download_qr_batch, name="download_qr_batch"),
     # path('export_qr_codes/', views.export_qr_codes_to_excel, name="export_qr_codes"),
     path('export_qr_codes/<int:event_id>/', views.export_qr_codes_to_excel, name='export_qr_codes'),
     path("geo-test/", views.geo_test, name="geo_test"),
