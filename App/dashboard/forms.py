@@ -169,16 +169,12 @@ class InviteForm(forms.Form):
     email = forms.EmailField(label="Guest email")
 
 class AutoTicketAssignmentForm(forms.ModelForm):
-    """
-    Minimal form: only event name, quantity, and optional mask.
-    Other decisions (free/paid, ads, country, dates) are handled by the view.
-    """
     quantity = forms.IntegerField(
         min_value=1,
         required=True,
-        label='',  # Hide label
+        label='Cantidad de QRs',
         widget=forms.NumberInput(attrs={
-            'class': 'form-control',
+            'class': 'form-control text-center',  # centra el input
             'min': 1,
             'placeholder': 'Number of QRs'
         })
@@ -186,8 +182,8 @@ class AutoTicketAssignmentForm(forms.ModelForm):
 
     mask_image = forms.ImageField(
         required=False,
-        label="",
-        help_text="Central mask 720x1150 (optional)"
+        label="Máscara central (opcional)",
+        help_text="720x1150 px"
     )
 
     class Meta:
@@ -195,22 +191,19 @@ class AutoTicketAssignmentForm(forms.ModelForm):
         fields = ['event', 'quantity', 'mask_image']
         widgets = {
             'event': forms.TextInput(attrs={
-                'class': 'form-control',
+                'class': 'form-control text-center',
                 'placeholder': 'Event name'
             }),
         }
         labels = {
-            'event': '',  # Hide label for event
+            'event': 'Nombre del evento',
         }
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
 
-    def clean_event(self):
-        name = self.cleaned_data['event']
-        return name.strip()
-
+        
 class EventRecycleForm(forms.Form):
     event = forms.ModelChoiceField(
         queryset=Event.objects.none(),
