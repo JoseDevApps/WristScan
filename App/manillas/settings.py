@@ -205,15 +205,15 @@ LOGIN_REDIRECT_URL = 'dashboard:inicio'
 LOGOUT_REDIRECT_URL = 'registration:login'
 
 # SMTP Config
-DEFAULT_FROM_EMAIL = 'minusmaya@zohomail.com'
+DEFAULT_FROM_EMAIL = 'info@uniqbo.com'
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.zoho.com'
 EMAIL_USE_SSL = True  # Enable SSL
 EMAIL_USE_TLS = False
 EMAIL_PORT = 465
-EMAIL_HOST_USER = 'minusmaya@zohomail.com'
-EMAIL_HOST_PASSWORD = 'kUyRVUsKBJ9C'
+EMAIL_HOST_USER = 'info@uniqbo.com'
+EMAIL_HOST_PASSWORD = 'hD8xvPRWmD8F'
 
 
 PASSWORD_RESET_TIMEOUT = 3600
