@@ -176,9 +176,9 @@ class AutoTicketAssignmentForm(forms.ModelForm):
     quantity = forms.IntegerField(
         min_value=1,
         required=True,
-        label='',  # Hide label
+        label='',  # Keep label hidden
         widget=forms.NumberInput(attrs={
-            'class': 'form-control',
+            'class': 'form-control text-center',  # 👈 centrado
             'min': 1,
             'placeholder': 'Number of QRs'
         })
@@ -195,12 +195,12 @@ class AutoTicketAssignmentForm(forms.ModelForm):
         fields = ['event', 'quantity', 'mask_image']
         widgets = {
             'event': forms.TextInput(attrs={
-                'class': 'form-control',
+                'class': 'form-control text-center',  # 👈 centrado
                 'placeholder': 'Event name'
             }),
         }
         labels = {
-            'event': '',  # Hide label for event
+            'event': '',  # Keep label hidden
         }
 
     def __init__(self, *args, **kwargs):
@@ -210,7 +210,8 @@ class AutoTicketAssignmentForm(forms.ModelForm):
     def clean_event(self):
         name = self.cleaned_data['event']
         return name.strip()
-
+    
+    
 class EventRecycleForm(forms.Form):
     event = forms.ModelChoiceField(
         queryset=Event.objects.none(),
