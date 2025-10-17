@@ -187,7 +187,7 @@ class AutoTicketAssignmentForm(forms.ModelForm):
     mask_image = forms.ImageField(
         required=False,
         label="",
-        help_text="Central mask 720x1150 optional"
+        help_text="Central mask 720x1150 (optional)"
     )
 
     class Meta:

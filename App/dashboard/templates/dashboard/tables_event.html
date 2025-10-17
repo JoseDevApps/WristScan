@@ -188,22 +188,35 @@
               <div class="modal-dialog">
                 <form method="POST" enctype="multipart/form-data" action="{% url 'dashboard:tables' %}">
                   {% csrf_token %}
-                  <div class="modal-content">
-                    <div class="modal-header position-relative">
-                      <h5 class="modal-title w-100 text-center" id="modalLabel" data-i18n="modal_create_event_title">Add Event</h5>
-                      <button type="button" class="btn-close position-absolute end-0 top-50 translate-middle-y" 
-                              data-bs-dismiss="modal" aria-label="Close"></button>
+                  <div class="modal-content shadow-lg border-0 rounded-3">
+                    <!-- Modal header -->
+                    <div class="modal-header justify-content-center position-relative">
+                      <h5 class="modal-title fw-semibold" id="modalLabel" data-i18n="modal_create_event_title">
+                        Add Event
+                      </h5>
+                      <button type="button"
+                              class="btn-close"
+                              data-bs-dismiss="modal"
+                              aria-label="Close"
+                              style="position: absolute; right: 1rem; top: 1rem;">
+                      </button>
                     </div>
-                    <div class="modal-body">
+
+                    <!-- Modal body -->
+                    <div class="modal-body px-4">
                       {{ form.as_p }}
-                    </div>
-                    <div class="modal-footer justify-content-center">
-                      <button type="submit" class="btn btn-info" data-i18n="modal_create_event_create">Add</button>
-                    </div>
-                  </div>
-                </form>
               </div>
-            </div>
+
+        <!-- Modal footer -->
+        <div class="modal-footer justify-content-center border-0 pb-4">
+          <button type="submit" class="btn btn-info px-4" data-i18n="modal_create_event_create">
+            Add
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
 
           </div>
         </div>
