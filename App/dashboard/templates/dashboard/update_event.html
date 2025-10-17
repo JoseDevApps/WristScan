@@ -183,28 +183,68 @@
   <!--  Tablas -->
    <!-- **************** -->
 
-   <div class="container">
-      <h2>Add Codes for {{ event.name }}</h2>
+<div class="container py-4">
 
-      <form method="post">
-          {% csrf_token %}
-          {{ form.as_p }}
-          <button type="submit">Add Codes</button>
-      </form>
-      
-      {% if messages %}
-          <ul>
-              {% for message in messages %}
-                  <li>{{ message }}</li>
-              {% endfor %}
-          </ul>
-      {% endif %}
-      
-      <a href="{% url 'dashboard:inicio' %}">Back to Events</a>
+  <!-- Título -->
+  <div class="text-center mb-4">
+    <h3 class="fw-bold mb-1">Add More QR Codes</h3>
+    <h5 class="text-muted">Event: “{{ event.name }}”</h5>
+  </div>
 
-
+  <!-- Mensajes -->
+  {% if messages %}
+    <div class="mb-3">
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endfor %}
     </div>
-  
+  {% endif %}
+
+  <!-- Formulario principal -->
+  <div class="card shadow-sm mx-auto" style="max-width: 480px;">
+    <div class="card-body">
+      <form method="post" novalidate>
+        {% csrf_token %}
+        
+        {% if form.non_field_errors %}
+          <div class="alert alert-danger">
+            {{ form.non_field_errors }}
+          </div>
+        {% endif %}
+
+        <!-- Renderiza los campos manualmente para mejor control -->
+        {% for field in form %}
+          <div class="mb-3">
+            <label for="{{ field.id_for_label }}" class="form-label fw-semibold">
+              {{ field.label }}
+            </label>
+            {{ field }}
+            {% if field.errors %}
+              <div class="invalid-feedback d-block">
+                {{ field.errors|striptags }}
+              </div>
+            {% elif field.help_text %}
+              <div class="form-text">{{ field.help_text }}</div>
+            {% endif %}
+          </div>
+        {% endfor %}
+
+        <!-- Botones -->
+        <div class="d-flex justify-content-end gap-2 mt-4">
+          <a href="{% url 'dashboard:inicio' %}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i> Back to Events
+          </a>
+          <button type="submit" class="btn btn-primary">
+            <i class="fas fa-plus-circle me-1"></i> Add Codes
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
 
 
   </div>
