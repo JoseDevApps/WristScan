@@ -166,54 +166,86 @@
 <!-- ******************** -->
 
 <div class="container py-4">
-
-  <!-- Título y progreso -->
+  <!-- Encabezado -->
   <div class="mb-4 text-center">
     <h2 class="fw-bold mb-1" style="font-weight: normal !important;">
-      Send Codes <span class="text-primary">{{ user_events.shared_count }}</span>/<span class="text-secondary">{{ user_events.qr_code_count }}</span>
+      Send Codes
+      <span class="text-primary">{{ user_events.shared_count }}</span> /
+      <span class="text-secondary">{{ user_events.qr_code_count }}</span>
     </h2>
     <h5 class="text-muted">Event: “{{ event.name }}”</h5>
 
-    <div class="progress mt-3" style="height: 12px; max-width: 400px; margin: 0 auto;">
-      {% if user_events.qr_code_count > 0 %}
-        {% with percent=user_events.shared_count|divisibleby:user_events.qr_code_count %}
-        <div class="progress-bar bg-primary" role="progressbar" style="width: {{ user_events.shared_count|floatformat:0|divisibleby:user_events.qr_code_count|yesno:'100,0' }}%"></div>
-        {% endwith %}
-      {% endif %}
-    </div>
-    <small class="text-muted d-block mt-2">You have shared {{ user_events.shared_count }} of {{ user_events.qr_code_count }} codes</small>
+    {% if user_events.qr_code_count %}
+      {% widthratio user_events.shared_count user_events.qr_code_count 100 as pct %}
+      <div class="progress mt-3 mx-auto" style="height: 12px; max-width: 420px;">
+        <div class="progress-bar" role="progressbar" style="width: {{ pct }}%;" aria-valuenow="{{ pct }}" aria-valuemin="0" aria-valuemax="100"></div>
+      </div>
+      <small class="text-muted d-block mt-2">
+        You have shared {{ user_events.shared_count }} of {{ user_events.qr_code_count }} codes ({{ pct }}%)
+      </small>
+    {% else %}
+      <div class="alert alert-warning mt-3 mb-0 py-2 px-3 d-inline-block">
+        This event has no generated codes yet.
+      </div>
+    {% endif %}
   </div>
 
-  <!-- Formulario -->
-  <div class="card shadow-sm mx-auto" style="max-width: 480px;">
+  <!-- Card con el formulario -->
+  <div class="card shadow-sm mx-auto" style="max-width: 520px;">
     <div class="card-body">
       <form method="post" novalidate>
         {% csrf_token %}
-        {{ form.non_field_errors }}
 
-        <!-- Email -->
+        {% if form.non_field_errors %}
+          <div class="alert alert-danger">
+            {{ form.non_field_errors }}
+          </div>
+        {% endif %}
+
+        <!-- Campo Email -->
         <div class="mb-3">
-          {{ form.recipient_email.label_tag }}
-          {{ form.recipient_email|add_class:"form-control" }}
+          <label for="{{ form.recipient_email.id_for_label }}" class="form-label">
+            {{ form.recipient_email.label }}
+          </label>
+          <input
+            type="email"
+            name="{{ form.recipient_email.name }}"
+            id="{{ form.recipient_email.id_for_label }}"
+            value="{{ form.recipient_email.value|default_if_none:'' }}"
+            class="form-control"
+            placeholder="recipient@example.com"
+            required
+          />
           {% if form.recipient_email.errors %}
             <div class="invalid-feedback d-block">{{ form.recipient_email.errors|striptags }}</div>
           {% else %}
-            <div class="form-text">Enter the recipient email to send the QR codes ZIP file.</div>
+            <div class="form-text">Enter the recipient email to receive the ZIP with QR codes.</div>
           {% endif %}
         </div>
 
-        <!-- Number of codes -->
+        <!-- Campo Número de códigos -->
         <div class="mb-3">
-          {{ form.number_of_codes.label_tag }}
-          {{ form.number_of_codes|add_class:"form-control" }}
+          <label for="{{ form.number_of_codes.id_for_label }}" class="form-label">
+            {{ form.number_of_codes.label }}
+          </label>
+          <input
+            type="number"
+            name="{{ form.number_of_codes.name }}"
+            id="{{ form.number_of_codes.id_for_label }}"
+            value="{{ form.number_of_codes.value|default_if_none:'' }}"
+            class="form-control"
+            min="{{ form.number_of_codes.field.min_value|default:'1' }}"
+            step="1"
+            required
+          />
           {% if form.number_of_codes.errors %}
             <div class="invalid-feedback d-block">{{ form.number_of_codes.errors|striptags }}</div>
           {% else %}
-            <div class="form-text">Select how many codes you want to send.</div>
+            <div class="form-text">Choose how many codes you want to send.</div>
           {% endif %}
         </div>
 
-        <!-- Buttons -->
+        <!-- Botones -->
         <div class="d-flex justify-content-end gap-2">
           <a href="{% url 'dashboard:tables' %}" class="btn btn-outline-secondary">
             Cancel
