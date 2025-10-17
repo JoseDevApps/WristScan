@@ -68,7 +68,7 @@ class EventUpdateForm(forms.Form):
 class UpdateQRCodesForm(forms.ModelForm):
     new_qr_code_count = forms.IntegerField(
         min_value=1,
-        label="New QR Code Count",
+        label="",
         help_text="Enter the total number of QR codes for this event.",
         widget=forms.NumberInput(attrs={
             'class': 'form-control',  # para bootstrap si quieres
@@ -211,7 +211,7 @@ class AutoTicketAssignmentForm(forms.ModelForm):
         name = self.cleaned_data['event']
         return name.strip()
     
-    
+
 class EventRecycleForm(forms.Form):
     event = forms.ModelChoiceField(
         queryset=Event.objects.none(),
