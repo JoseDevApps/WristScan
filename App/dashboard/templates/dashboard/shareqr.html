@@ -189,7 +189,8 @@
 
   <!-- Resumen del evento -->
   {% with sent=user_events.shared_count total=user_events.qr_code_count %}
-  {% with remaining=total|add:-sent %}
+  {% with remaining=total|add:sent|add:"-2"|default:0 %}
+
   <div class="card shadow-sm mb-4">
     <div class="card-body">
       <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
