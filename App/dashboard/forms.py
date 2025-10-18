@@ -172,9 +172,9 @@ class InviteForm(forms.Form):
         label="",  # no visible label
         widget=forms.EmailInput(attrs={
             "class": "form-control",
-            "placeholder": "Guest email",
+            "placeholder": "Partner email",
             "autocomplete": "email",
-            "aria-label": "Guest email",  # keeps it accessible
+            "aria-label": "Partner email",  # keeps it accessible
         })
     )
 
