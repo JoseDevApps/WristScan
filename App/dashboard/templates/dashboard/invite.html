@@ -32,73 +32,61 @@
 <!-- ********************** -->
 <!-- INICIO DE Menu Lateral -->
 <!-- ********************** -->
+ <div class="sidebar-wrapper scrollbar scrollbar-inner">
 
-  <div class="sidebar-wrapper scrollbar scrollbar-inner">
     <div class="sidebar-content">
       <ul class="nav nav-secondary">
 
-        <li class="nav-item">
-          <a href="{% url 'dashboard:inicio' %}">
-            <i class="fas fa-bars"></i>
-            <p>Home</p>
-          </a>
-        </li>
-
 
         <li class="nav-item">
-          <a href="{% url 'dashboard:qrscan' %}">
-            <i class="fas fa-qrcode"></i>
-            <p>QR Control</p>
+          <a data-bs-toggle="collapse" href="{% url 'dashboard:inicio' %}">
+            <i class="fas fa-home"></i>
+            <p class="sub-item" data-i18n="nav_home" style="font-weight: normal !important;">Home</p>
           </a>
+          
         </li>
-        
-        <!-- <li class="nav-item">
-          <a data-bs-toggle="collapse" href="#forms">
-            <i class="fas fa-pen-square"></i>
-            <p>Create Event</p>
-            <span class="caret"></span>
-          </a>
-          <div class="collapse" id="forms">
-            <ul class="nav nav-collapse">
-              <li>
-                <a href="{% url 'dashboard:create' %}">
-                  <span class="sub-item">Create</span>
-                </a>
-              </li>
-              <li>
-                <a href="{% url 'dashboard:assign' %}">
-                  <span class="sub-item">Monitor QR</span>
-                </a>
-              </li>
-            </ul>
-          </div>
-        </li> -->
+
 
 <!-- Monitor option-->
         <li class="nav-item active">
           <a href="{% url 'dashboard:tables' %}">
-              <i class="fas fa-table"></i>
-              <span class="sub-item">Event list</span>
+              <i class="fas fa-bars"></i>
+              <span data-i18n="nav_event_list" class="sub-item">Event list</span>
             </a>
         </li>
+<!-- Monitor option-->
+
+    <li class="nav-item">
+          <a href="{% url 'dashboard:qrscan' %}">
+            <i class="fas fa-qrcode"></i>
+            <p class="sub-item" data-i18n="nav_qr_control" style="font-weight: normal !important;">QR Control</p>
+          </a>
+        </li>
+        
 
 
 <!-- log Out -->
         <li class="nav-item">
           <a data-bs-toggle="collapse" href="#submenu">
-            <i class="fas fa-bars"></i>
-            <p>Log Out</p>
+            <i class="fas fa-cog"></i>
+            <p class="sub-item" data-i18n="nav_settings" style="font-weight: normal !important;">Settings</p>
             <span class="caret"></span>
           </a>
           <div class="collapse" id="submenu">
             <ul class="nav nav-collapse">
               <li>
-                <a  href="{% url 'dashboard:logout' %}">
-                  <span class="sub-item">LogOut</span>
+                <a  href="{% url 'dashboard:update_profile' %}">
+                  <span class="sub-item" data-i18n="Profile" style="font-weight: normal !important;">Profile</span>
                 </a>
                 
               </li>
               
+              <li>
+                <a  href="{% url 'dashboard:logout' %}">
+                  <span class="sub-item" data-i18n="nav_logout" style="font-weight: normal !important;">LogOut</span>
+                </a>
+                
+              </li>
             </ul>
           </div>
         </li>
@@ -143,59 +131,26 @@
     </div>
 
   <!-- Navbar Header -->
-  <nav
-    class="navbar navbar-header navbar-header-transparent navbar-expand-lg border-bottom"
-  >
-    <div class="container-fluid">
-      <nav
-        class="navbar navbar-header-left navbar-expand-lg navbar-form nav-search p-0 d-none d-lg-flex"
-      >
-      <div>
-        <h4 class="text-primary fw-bold mb-12">
-          WristScan
+  <nav class="navbar navbar-header navbar-header-transparent navbar-expand-lg border-bottom" style="background-color: #0f141a;">
+    <div class="container-fluid d-flex justify-content-between align-items-center">
+
+      <!-- Título / Logo -->
+      <div class="navbar-header-left d-flex align-items-center">
+        <h4 class="text-white fw-bold mb-0" style="font-weight: normal !important;">
+          QR PASS
         </h4>
       </div>
-      </nav>
 
-      <ul class="navbar-nav topbar-nav ms-md-auto align-items-center">
-        
-        <li class="nav-item topbar-user dropdown hidden-caret">
-          <a
-            class="dropdown-toggle profile-pic"
-            data-bs-toggle="dropdown"
-            href="#"
-            aria-expanded="false"
-          >
-            <div class="avatar-sm">
-              <!-- Imagen de Perfil -->
-             <img
-                src="{% static 'img/profile.jpg' %}"
-                alt="..."
-                class="avatar-img rounded-circle"
-              /> 
+      <!-- Selector de idioma -->
+      <div class="lang-selector">
+        <label for="lang" class="lang-label">🌐</label>
+        <select id="lang">
+          <option value="en">English</option>
+          <option value="es">Español</option>
+          <option value="pt">Português</option>
+        </select>
+      </div>
 
-            </div>
-            <span class="profile-username">
-              <span class="op-7">Hi,</span>
-              <span class="fw-bold">{{user}}</span>
-            </span>
-          </a>
-          <ul class="dropdown-menu dropdown-user animated fadeIn">
-            <div class="dropdown-user-scroll scrollbar-outer">
-              <li>
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="#">My Profile</a>
-                <a class="dropdown-item" href="#">My Balance</a>
-                <a class="dropdown-item" href="#">Inbox</a>
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="#">Account Setting</a>
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="#">Logout</a>
-              </li>
-            </div>
-          </ul>
-        </li>
-      </ul>
     </div>
   </nav>
   <!-- End Navbar -->
@@ -257,7 +212,7 @@
 
         <!-- Botones (centrados) -->
         <div class="d-flex justify-content-center gap-2 mt-4 flex-wrap">
-          <a href="{% url 'dashboard:inicio' %}" class="btn btn-outline-secondary">
+          <a href="{% url 'dashboard:tables' %}" class="btn btn-outline-secondary">
             <i class="fas fa-arrow-left me-1"></i> Back to Events
           </a>
           <button type="submit" class="btn btn-primary">
