@@ -1253,22 +1253,46 @@ def download_qr_zip(request, event_id):
 ################################################
 #   Pagina de QR update event form db
 ################################################
+# def updatedb(request, pk):
+#     event = get_object_or_404(Event, id=pk)
+#     user_name = request.user
+#     if request.method == "POST":
+#         form = UpdateQRCodesForm(request.POST, instance=event)
+#         if form.is_valid():
+#             new_total_qr_count = form.cleaned_data["new_qr_code_count"]
+#             event.update_qr_codes(new_total_qr_count)  # Call the method from the model
+#             messages.success(request, f"QR codes updated to {new_total_qr_count}.")
+
+#             url = reverse('dashboard:create_checkout_session', kwargs={'pk': 1, 'slug': pk })
+#             return redirect(url)
+#     else:
+#         form = UpdateQRCodesForm(instance=event, initial={"new_qr_code_count": event.qr_code_count})
+
+#     return render(request, "dashboard/update_event.html", {"form": form, "event": event,'user':user_name})
 def updatedb(request, pk):
     event = get_object_or_404(Event, id=pk)
     user_name = request.user
+
     if request.method == "POST":
         form = UpdateQRCodesForm(request.POST, instance=event)
         if form.is_valid():
             new_total_qr_count = form.cleaned_data["new_qr_code_count"]
-            event.update_qr_codes(new_total_qr_count)  # Call the method from the model
-            messages.success(request, f"QR codes updated to {new_total_qr_count}.")
+            event.update_qr_codes(new_total_qr_count)
+            messages.success(request, f"Se actualizó el número de QR a {new_total_qr_count}.")
 
-            url = reverse('dashboard:create_checkout_session', kwargs={'pk': 1, 'slug': pk })
+            url = reverse('dashboard:create_checkout_session', kwargs={'pk': 1, 'slug': pk})
             return redirect(url)
     else:
-        form = UpdateQRCodesForm(instance=event, initial={"new_qr_code_count": event.qr_code_count})
+        form = UpdateQRCodesForm(instance=event)
 
-    return render(request, "dashboard/update_event.html", {"form": form, "event": event,'user':user_name})
+    # 🔹 Pasamos el número actual como variable separada (no placeholder)
+    context = {
+        "form": form,
+        "event": event,
+        "current_qr_count": event.qr_code_count,
+        "user": user_name,
+    }
+    return render(request, "dashboard/update_event.html", context)
 
 ################################################
 #   Pagina de QR create event form db
