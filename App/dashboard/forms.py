@@ -214,18 +214,41 @@ class AutoTicketAssignmentForm(forms.ModelForm):
         return name.strip()
     
 
+# class EventRecycleForm(forms.Form):
+#     event = forms.ModelChoiceField(
+#         queryset=Event.objects.none(),
+#         widget=forms.HiddenInput(),  # 🔒 Hidden: can't be changed in UI
+#         label="",
+#         required=True
+#     )
+
+#     recycle_confirm = forms.ChoiceField(
+#         choices=[('yes', 'Sí, reciclar los códigos'), ('no', 'No, cancelar')],
+#         widget=forms.RadioSelect,
+#         label=""
+#     )
+
+#     def __init__(self, *args, **kwargs):
+#         user = kwargs.pop('user', None)
+#         event_id = kwargs.pop('event_id', None)
+#         super().__init__(*args, **kwargs)
+
+#         if user:
+#             self.fields['event'].queryset = Event.objects.filter(created_by=user)
+
+#         if event_id:
+#             try:
+#                 self.fields['event'].initial = Event.objects.get(id=event_id, created_by=user)
+#             except Event.DoesNotExist:
+#                 pass
+
+
 class EventRecycleForm(forms.Form):
     event = forms.ModelChoiceField(
         queryset=Event.objects.none(),
-        widget=forms.HiddenInput(),  # 🔒 Hidden: can't be changed in UI
+        widget=forms.HiddenInput(),
         label="",
         required=True
-    )
-
-    recycle_confirm = forms.ChoiceField(
-        choices=[('yes', 'Sí, reciclar los códigos'), ('no', 'No, cancelar')],
-        widget=forms.RadioSelect,
-        label=""
     )
 
     def __init__(self, *args, **kwargs):
@@ -241,7 +264,6 @@ class EventRecycleForm(forms.Form):
                 self.fields['event'].initial = Event.objects.get(id=event_id, created_by=user)
             except Event.DoesNotExist:
                 pass
-
 
 class PrintQRForm(forms.Form):
     quantity = forms.IntegerField(
