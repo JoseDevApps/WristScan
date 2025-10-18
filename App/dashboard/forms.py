@@ -174,7 +174,15 @@ class InviteForm(forms.Form):
             "class": "form-control",
             "placeholder": "Partner email",
             "autocomplete": "email",
-            "aria-label": "Partner email",  # keeps it accessible
+            "aria-label": "Partner email",
+            # Center while placeholder is visible
+            "style": "text-align:center;",
+            # Switch to left align as soon as there's input (and back to center if cleared)
+            "oninput": "this.style.textAlign = this.value ? 'left' : 'center';",
+            "onfocus": "this.style.textAlign = this.value ? 'left' : 'center';",
+            "onblur":  "this.style.textAlign = this.value ? 'left' : 'center';",
+            # Handle browser autofill changes
+            "onchange": "this.style.textAlign = this.value ? 'left' : 'center';",
         })
     )
 
