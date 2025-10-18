@@ -294,19 +294,25 @@
                           <form method="post" enctype="multipart/form-data" action="{% url 'dashboard:update_event_mask' qrcode.id %}">
                             {% csrf_token %}
                             <div class="modal-header">
-                              <h5 class="modal-title">Subir máscara — {{ qrcode.name }}</h5>
+                              <h5 class="modal-title w-100 text-center">Upload mask — {{ qrcode.name }}</h5>
                               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
+
                             <div class="modal-body">
                               <div class="mb-3">
-                                <label for="mask_image_{{ qrcode.id }}" class="form-label">Máscara (PNG/JPG) — 720x1150 recomendado</label>
+                                <label for="mask_image_{{ qrcode.id }}" class="form-label d-block text-center">
+                                  Mask (PNG/JPG) — 720×1150 recommended
+                                </label>
                                 <input class="form-control" type="file" id="mask_image_{{ qrcode.id }}" name="mask_image" accept="image/*" required>
                               </div>
-                              <div class="form-text">La máscara se aplicará a todos los QR del evento y se intentará re-renderizar un lote.</div>
+                              <div class="form-text text-center">
+                               The mask will be applied to all event QR codes, and the system will attempt a batch re-render.
+                              </div>
                             </div>
-                            <div class="modal-footer">
+
+                            <div class="modal-footer justify-content-center gap-2">
                               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                              <button type="submit" class="btn btn-primary">Subir máscara</button>
+                              <button type="submit" class="btn btn-primary">Upload Mask</button>
                             </div>
                           </form>
                         </div>
