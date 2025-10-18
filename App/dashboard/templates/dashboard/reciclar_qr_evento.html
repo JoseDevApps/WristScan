@@ -173,16 +173,16 @@
 
     <!-- Header -->
     <div class="text-center mb-4">
-      <h3 class="fw-bold mb-1 text-success">Recycle Unsold QR Codes</h3>
-      <h5 class="text-muted">Event: “{{ event.name }}”</h5>
+      <h3 class="fw-bold mb-1">Hide Event</h3>
+      <h5 class="text-muted">Event: {{ event.name }}</h5>
     </div>
 
     <!-- Summary Info -->
     <div class="text-center mb-4">
       <p class="fs-5 text-dark">
-        There are <strong>{{ recyclable_count }}</strong> QR codes available for recycling.
+        <strong>{{ recyclable_count }}</strong> unsend codes.
       </p>
-      <p class="text-muted mb-0">Once confirmed, these codes will become reusable for new events.</p>
+      <p class="text-muted mb-0"> will become reusable for new events.</p>
     </div>
 
     <!-- Alerts -->
