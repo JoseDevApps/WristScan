@@ -168,69 +168,72 @@
   <!--  Tablas -->
    <!-- **************** -->
 
-   <div class="container py-4">
+<div class="py-5" style="background-color: #f5f6f8; min-height: 100vh;">
+  <div class="container py-4">
 
-  <!-- Encabezado -->
-  <div class="text-center mb-4">
-    <h3 class="fw-bold mb-1 text-success">Recycle Unsold QR Codes</h3>
-    <h5 class="text-muted">Event: “{{ event.name }}”</h5>
-  </div>
-
-  <!-- Info resumen -->
-  <div class="text-center mb-4">
-    <p class="fs-5">
-      There are <strong>{{ recyclable_count }}</strong> QR codes available for recycling.
-    </p>
-    <p class="text-muted mb-0">Once confirmed, these codes will become reusable for new events.</p>
-  </div>
-
-  <!-- Mensajes -->
-  {% if messages %}
-    <div class="mb-3">
-      {% for message in messages %}
-        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-          {{ message }}
-          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-      {% endfor %}
+    <!-- Header -->
+    <div class="text-center mb-4">
+      <h3 class="fw-bold mb-1 text-success">Recycle Unsold QR Codes</h3>
+      <h5 class="text-muted">Event: “{{ event.name }}”</h5>
     </div>
-  {% endif %}
 
-  <!-- Card principal -->
-  <div class="card shadow-sm mx-auto" style="max-width: 460px;">
-    <div class="card-body text-center">
-      <form method="post" novalidate>
-        {% csrf_token %}
-        {{ form.event }}  <!-- campo oculto -->
-        
-        <div class="mb-3">
-          <div class="form-check d-inline-flex align-items-center gap-2">
-            {{ form.recycle_confirm }}
-            <label class="form-check-label fw-semibold" for="{{ form.recycle_confirm.id_for_label }}">
-              {{ form.recycle_confirm.label }}
-            </label>
+    <!-- Summary Info -->
+    <div class="text-center mb-4">
+      <p class="fs-5 text-dark">
+        There are <strong>{{ recyclable_count }}</strong> QR codes available for recycling.
+      </p>
+      <p class="text-muted mb-0">Once confirmed, these codes will become reusable for new events.</p>
+    </div>
+
+    <!-- Alerts -->
+    {% if messages %}
+      <div class="container-sm mb-3" style="max-width: 600px;">
+        {% for message in messages %}
+          <div class="alert alert-{{ message.tags }} alert-dismissible fade show shadow-sm" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <!-- Main Card -->
+    <div class="card shadow-sm mx-auto border-0" style="max-width: 460px; border-radius: 12px;">
+      <div class="card-body text-center py-4">
+        <form method="post" novalidate>
+          {% csrf_token %}
+          {{ form.event }}  <!-- hidden field -->
+
+          <div class="mb-3">
+            <div class="form-check d-inline-flex align-items-center gap-2">
+              {{ form.recycle_confirm }}
+              <label class="form-check-label fw-semibold" for="{{ form.recycle_confirm.id_for_label }}">
+                {{ form.recycle_confirm.label }}
+              </label>
+            </div>
+
+            {% if form.recycle_confirm.errors %}
+              <div class="invalid-feedback d-block mt-2">
+                {{ form.recycle_confirm.errors|striptags }}
+              </div>
+            {% endif %}
           </div>
 
-          {% if form.recycle_confirm.errors %}
-            <div class="invalid-feedback d-block">
-              {{ form.recycle_confirm.errors|striptags }}
-            </div>
-          {% endif %}
-        </div>
-
-        <!-- Botones -->
-        <div class="d-flex justify-content-center gap-3 mt-3">
-          <a href="{% url 'dashboard:tables' %}" class="btn btn-outline-secondary">
-            <i class="fas fa-arrow-left me-1"></i> Back to Events
-          </a>
-          <button type="submit" class="btn btn-success">
-            <i class="fas fa-recycle me-1"></i> Confirm Recycling
-          </button>
-        </div>
-      </form>
+          <!-- Buttons -->
+          <div class="d-flex justify-content-center gap-3 mt-3">
+            <a href="{% url 'dashboard:tables' %}" class="btn btn-outline-secondary px-3">
+              <i class="fas fa-arrow-left me-1"></i> Back to Events
+            </a>
+            <button type="submit" class="btn btn-success px-3">
+              <i class="fas fa-recycle me-1"></i> Confirm Recycling
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   </div>
 </div>
+
 
   </div>
 
