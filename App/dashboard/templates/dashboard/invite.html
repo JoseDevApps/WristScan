@@ -275,11 +275,14 @@
   </div>
 
 <!-- SCRIPTS DE USUARIO -->
-<style>
-  /* Center when placeholder is visible; left-align once the user types */
-  .placeholder-center { text-align: left; }
-  .placeholder-center:placeholder-shown { text-align: center; }
-</style>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const els = document.querySelectorAll('.placeholder-center');
+    const sync = el => el.style.textAlign = el.value ? 'left' : 'center';
+    els.forEach(el => { sync(el); el.addEventListener('input', () => sync(el)); });
+  });
+</script>
+
 
 <script>
   document.addEventListener("DOMContentLoaded", function () {
