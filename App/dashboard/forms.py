@@ -168,7 +168,15 @@ class EventSelectorForm(forms.Form):
 
 
 class InviteForm(forms.Form):
-    email = forms.EmailField(label="Guest email")
+    email = forms.EmailField(
+        label="",  # no visible label
+        widget=forms.EmailInput(attrs={
+            "class": "form-control",
+            "placeholder": "Guest email",
+            "autocomplete": "email",
+            "aria-label": "Guest email",  # keeps it accessible
+        })
+    )
 
 class AutoTicketAssignmentForm(forms.ModelForm):
     """
