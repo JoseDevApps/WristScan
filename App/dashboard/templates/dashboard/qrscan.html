@@ -56,6 +56,65 @@
     }
 }
 </style>
+
+<!-- Pega este bloque <style> en el mismo HTML -->
+<style>
+  /* Limitar ancho en escritorio y centrar */
+  #reportModal .modal-content {
+    position: relative;                 /* para colocar la X */
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 760px;                   /* <-- ajusta este valor si quieres más/menos ancho */
+    margin: 1rem auto;                  /* centra horizontalmente */
+    border-radius: .75rem;              /* suave, opcional */
+    padding: 1rem;                      /* espacio interior cómodo */
+  }
+
+  /* Un poco más de respiro en pantallas grandes */
+  @media (min-width: 992px) {
+    #reportModal {
+      padding: 1.5rem 1rem;             /* margen interno del overlay */
+    }
+  }
+
+  /* En móviles, usar todo el ancho sin desbordar */
+  @media (max-width: 575.98px) {
+    #reportModal .modal-content {
+      max-width: 100%;
+      margin: 0.5rem auto;
+      border-radius: .5rem;
+    }
+  }
+
+  /* Botón “×” manteniendo tu <span class="close-report"> */
+  #reportModal .close-report {
+    position: absolute;
+    top: .5rem;
+    right: .75rem;
+    font-size: 1.5rem;
+    line-height: 1;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  /* H2 con espacio para que no choque con la “×” */
+  #reportModal h2 {
+    margin-right: 2rem;
+    margin-bottom: .5rem;
+    font-size: 1.25rem;                 /* parecido a tu estilo sobrio */
+    font-weight: 600;
+  }
+
+  /* Que el canvas sea fluido y mantenga forma cuadrada */
+  #statusChart {
+    display: block;
+    width: 100% !important;
+    height: auto !important;
+    aspect-ratio: 1 / 1;                /* cuadrado y responsive */
+  }
+</style>
+
+
 <div class="wrapper" style="background-color: #d3dbe5;">
   <!-- Sidebar -->
   <div class="sidebar" data-background-color="white">
