@@ -135,12 +135,46 @@ class TicketAssignmentForm(forms.ModelForm):
                 )
         return cleaned_data
 
+# class EventSelectorForm(forms.Form):
+#     event = forms.ModelChoiceField(
+#         queryset=Event.objects.none(),
+#         widget=forms.Select(attrs={
+#             'class': 'form-control mx-auto',
+#             'style': 'display:block; margin-left:auto; margin-right:auto; width:50%;'
+#         }),
+#         label="Select Event",
+#         empty_label="Choose one of your events...",
+#     )
+
+#     def __init__(self, *args, user=None, events=None, **kwargs):
+#         super().__init__(*args, **kwargs)
+
+#         # Centrar el label con estilo inline
+#         self.fields['event'].label_suffix = ''  # elimina los dos puntos automáticos
+#         self.fields['event'].label_tag = lambda label_for=None, label_suffix=None: (
+#             f'<label for="id_event" '
+#             f'style="display:block; text-align:center; margin-bottom:5px;">'
+#             f'{self.fields["event"].label}</label>'
+#         )
+
+#         if events is not None:
+#             self.fields['event'].queryset = Event.objects.filter(
+#                 id__in=[e.id for e in events]
+#             ).order_by('-date')
+#         elif user:
+#             self.fields['event'].queryset = Event.objects.filter(
+#                 created_by=user
+#             ).order_by('-date')
+
 class EventSelectorForm(forms.Form):
     event = forms.ModelChoiceField(
         queryset=Event.objects.none(),
         widget=forms.Select(attrs={
-            'class': 'form-control mx-auto',
-            'style': 'display:block; margin-left:auto; margin-right:auto; width:50%;'
+            'class': 'form-select text-center',  # centrado del texto
+            'style': (
+                'display:block; margin:0 auto; width:60%; '
+                'text-align-last:center; padding:8px;'
+            ),
         }),
         label="Select Event",
         empty_label="Choose one of your events...",
@@ -149,14 +183,14 @@ class EventSelectorForm(forms.Form):
     def __init__(self, *args, user=None, events=None, **kwargs):
         super().__init__(*args, **kwargs)
 
-        # Centrar el label con estilo inline
-        self.fields['event'].label_suffix = ''  # elimina los dos puntos automáticos
-        self.fields['event'].label_tag = lambda label_for=None, label_suffix=None: (
-            f'<label for="id_event" '
-            f'style="display:block; text-align:center; margin-bottom:5px;">'
-            f'{self.fields["event"].label}</label>'
+        # ✅ Centrar el label como título superior
+        self.label_html = (
+            '<h5 style="text-align:center; margin-bottom:10px; font-weight:600;">'
+            f'{self.fields["event"].label}'
+            '</h5>'
         )
 
+        # ✅ Asignar los eventos disponibles
         if events is not None:
             self.fields['event'].queryset = Event.objects.filter(
                 id__in=[e.id for e in events]
@@ -165,6 +199,15 @@ class EventSelectorForm(forms.Form):
             self.fields['event'].queryset = Event.objects.filter(
                 created_by=user
             ).order_by('-date')
+
+    def as_centered(self):
+        """Render del formulario centrado con título limpio."""
+        return f"""
+        <div class="text-center my-4">
+            {self.label_html}
+            {self['event']}
+        </div>
+        """
 
 
 class InviteForm(forms.Form):
