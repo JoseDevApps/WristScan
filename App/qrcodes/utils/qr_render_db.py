@@ -388,54 +388,56 @@ def draw_footer(canvas: Image.Image, qr_id_display: str, font_path: Optional[str
     y0, y1, h = CANVAS_H - FOOTER_H, CANVAS_H, FOOTER_H
     black, white = (0, 0, 0, 255), (255, 255, 255, 255)
 
-    # Tercios
-    L0, L1 = 0, CANVAS_W // 3
-    C0, C1 = L1, (CANVAS_W * 2) // 3
-    R0, R1 = C1, CANVAS_W
-
-    # 1) Fondo negro en todo el footer
+    # Fondo negro completo
     draw.rectangle([0, y0, CANVAS_W, y1], fill=black)
 
-    # 2) Cinta blanca central con laterales en ángulo (estilo del ejemplo)
-    tip_top = 28     # cuánto se mete el “pico” en la parte superior
-    tip_bottom = 56  # cuánto se abre en la parte inferior (más grande para más inclinación)
-    # Polígono tipo trapecio con puntas
-    white_banner = [
-        (C0 + tip_top, y0),   # arriba-izq (inset)
-        (C1 - tip_top, y0),   # arriba-der (inset)
-        (C1 + tip_bottom, y1),# abajo-der (sale hacia la derecha)
-        (C0 - tip_bottom, y1) # abajo-izq (sale hacia la izquierda)
+    # ⚙️ Polígono central en forma de "V" invertida
+    #     ┌───────────────┐
+    #     │               │
+    #     └──────▼────────┘
+    v_depth = 40  # profundidad de la punta
+    center_x = CANVAS_W // 2
+    white_triangle = [
+        (CANVAS_W // 3, y0),        # esquina superior izquierda
+        (CANVAS_W * 2 // 3, y0),    # esquina superior derecha
+        (center_x, y1 + v_depth)    # punta hacia abajo (fuera del footer)
     ]
-    draw.polygon(white_banner, fill=white)
+    draw.polygon(white_triangle, fill=white)
 
-    # 3) Texto
+    # 📍 Tip: ajusta v_depth para hacer la “V” más pronunciada o más suave
+
+    # Fuente más grande para el ID
     try:
-        font = ImageFont.truetype(font_path, 22) if font_path else ImageFont.load_default()
+        font_large = ImageFont.truetype(font_path, 32) if font_path else ImageFont.load_default()
     except Exception:
-        font = ImageFont.load_default()
+        font_large = ImageFont.load_default()
+    try:
+        font_small = ImageFont.truetype(font_path, 22) if font_path else ImageFont.load_default()
+    except Exception:
+        font_small = ImageFont.load_default()
 
-    # Izquierda (en negro de fondo → texto blanco)
+    # Texto izquierdo (blanco sobre negro)
     left_text = "Uniqbo.com"
-    th = draw.textbbox((0, 0), left_text, font=font)[3]
-    draw.text((20, y0 + (h - th) // 2), left_text, font=font, fill=white)
+    bbox = draw.textbbox((0, 0), left_text, font=font_small)
+    th = bbox[3] - bbox[1]
+    draw.text((20, y0 + (h - th) // 2), left_text, font=font_small, fill=white)
 
-    # Centro (sobre la franja blanca → texto negro)
+    # Texto central (negro sobre blanco dentro del triángulo)
     center_text = f"ID {qr_id_display}"
-    bbox = draw.textbbox((0, 0), center_text, font=font)
+    bbox = draw.textbbox((0, 0), center_text, font=font_large)
     tw, th = bbox[2] - bbox[0], bbox[3] - bbox[1]
-    cx = (C0 + C1 - tw) // 2
+    cx = (CANVAS_W - tw) // 2
     cy = y0 + (h - th) // 2
-    draw.text((cx, cy), center_text, font=font, fill=black)
+    draw.text((cx, cy), center_text, font=font_large, fill=black)
 
-    # Derecha (en negro → texto blanco)
+    # Texto derecho (blanco sobre negro)
     if valid_until:
         right_text = valid_until.strftime("%d/%m %H:%M")
-        bbox = draw.textbbox((0, 0), right_text, font=font)
+        bbox = draw.textbbox((0, 0), right_text, font=font_small)
         tw, th = bbox[2] - bbox[0], bbox[3] - bbox[1]
-        rx = R1 - tw - 20
+        rx = CANVAS_W - tw - 20
         ry = y0 + (h - th) // 2
-        draw.text((rx, ry), right_text, font=font, fill=white)
-
+        draw.text((rx, ry), right_text, font=font_small, fill=white)
 
 def compose_qr_from_db(
     qr: QRCode,
