@@ -515,7 +515,7 @@
           if (window._statusChart) { window._statusChart.destroy(); }
           const ctx = document.getElementById('statusChart').getContext('2d');
           window._statusChart = new Chart(ctx, {
-                type: 'pie',
+                type: 'doughnut',
                 data: {
                   labels: ['Nuevo','Concedido'],
                   datasets: [{ 
