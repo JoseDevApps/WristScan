@@ -15,12 +15,24 @@ class DownloadQRCodeForm(forms.Form):
 class UserProfileForm(forms.ModelForm):
     username = forms.CharField(
         max_length=150,
-        label="Nombre de usuario",
-        widget=forms.TextInput(attrs={"class": "form-control"})
+        label="Username",
+        widget=forms.TextInput(attrs={
+            "class": "form-control text-center d-block mx-auto",
+            "placeholder": "Username",
+            "style": "max-width: 420px;",
+            "autocomplete": "username",
+            "aria-label": "Username",
+        })
     )
     email = forms.EmailField(
-        label="Correo electrónico",
-        widget=forms.EmailInput(attrs={"class": "form-control"})
+        label="Email",
+        widget=forms.EmailInput(attrs={
+            "class": "form-control text-center d-block mx-auto",
+            "placeholder": "Email address",
+            "style": "max-width: 420px;",
+            "autocomplete": "email",
+            "aria-label": "Email address",
+        })
     )
 
     class Meta:
@@ -28,16 +40,16 @@ class UserProfileForm(forms.ModelForm):
         fields = ("username", "email")
 
     def __init__(self, *args, **kwargs):
-        # recibimos user actual para validaciones exclusivas
+        # keep current user for unique validations
         self.current_user = kwargs.pop("user", None)
         super().__init__(*args, **kwargs)
 
     def clean_username(self):
         username = self.cleaned_data["username"].strip()
         if self.current_user and username == self.current_user.username:
-            return username  # sin cambio
+            return username  # no change
         if User.objects.filter(username__iexact=username).exclude(pk=getattr(self.current_user, "pk", None)).exists():
-            raise ValidationError("Este nombre de usuario ya está en uso.")
+            raise ValidationError("This username is already taken.")
         return username
 
     def clean_email(self):
@@ -45,7 +57,7 @@ class UserProfileForm(forms.ModelForm):
         if self.current_user and email == (self.current_user.email or "").lower():
             return email
         if User.objects.filter(email__iexact=email).exclude(pk=getattr(self.current_user, "pk", None)).exists():
-            raise ValidationError("Este correo ya está registrado con otra cuenta.")
+            raise ValidationError("This email is already registered to another account.")
         return email
 
 class UserEmailForm(forms.ModelForm):
