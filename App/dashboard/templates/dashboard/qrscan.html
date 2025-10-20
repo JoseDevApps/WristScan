@@ -515,52 +515,60 @@
           if (window._statusChart) { window._statusChart.destroy(); }
           const ctx = document.getElementById('statusChart').getContext('2d');
           window._statusChart = new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                  labels: ['Nuevo','Concedido'],
-                  datasets: [{ 
-                    data: [counts.nuevo, counts.concedido], 
-                    backgroundColor: [
-                      '#1A1E37', // Nuevo → azul
-                      '#49AAF7'  // Concedido → celeste
-                    ]
-                  }],
-                },
-                options: { responsive: true },
-                plugins: [{
-                  id: 'percentInside',
-                  afterDatasetsDraw(chart) {
-                    const { ctx } = chart;
-                    const dataset = chart.data.datasets[0];
-                    if (!dataset) return;
-                    const data = dataset.data.map(Number);
-                    const total = data.reduce((a,b)=>a+b, 0) || 0;
-                    if (!total) return;
-
-                    const meta = chart.getDatasetMeta(0);
-                    meta.data.forEach((arc, i) => {
-                      const value = data[i];
-                      if (!value) return;
-
-                      const pct = Math.round((value / total) * 100);
-                      const angle = (arc.startAngle + arc.endAngle) / 2;
-                      const r = (arc.innerRadius + arc.outerRadius) / 2;
-                      const x = arc.x + Math.cos(angle) * r;
-                      const y = arc.y + Math.sin(angle) * r;
-
-                      ctx.save();
-                      ctx.fillStyle = '#fff';
-                      ctx.font = 'bold 12px system-ui, -apple-system, "Segoe UI", Roboto, Arial';
-                      ctx.textAlign = 'center';
-                      ctx.textBaseline = 'middle';
-                      ctx.shadowColor = 'rgba(0,0,0,.35)';
-                      ctx.shadowBlur = 4;
-                      ctx.fillText(`${pct}%`, x, y);
-                      ctx.restore();
-                    });
-                  }
-                }]
-              });
+  type: 'pie',
+  data: {
+    labels: ['Nuevo','Concedido'],
+    datasets: [{ 
+      data: [counts.nuevo, counts.concedido], 
+      backgroundColor: [
+        '#1A1E37', // Nuevo → azul
+        '#49AAF7'  // Concedido → celeste
+      ]
+    }],
+  },
+  options: { 
+    responsive: true,
+    plugins: {
+      // % in tooltip
+      tooltip: {
+        callbacks: {
+          label: (context) => {
+            const data = context.dataset.data.map(Number);
+            const total = data.reduce((a, b) => a + b, 0);
+            const value = data[context.dataIndex] || 0;
+            const pct = total ? Math.round((value / total) * 100) : 0;
+            const label = context.label ?? '';
+            return `${label}: ${value} (${pct}%)`;
+          }
+        }
+      },
+      // % in legend text
+      legend: {
+        labels: {
+          generateLabels: (chart) => {
+            const meta = chart.getDatasetMeta(0);
+            const data = chart.data.datasets[0].data.map(Number);
+            const total = data.reduce((a, b) => a + b, 0) || 0;
+            const labels = chart.data.labels || [];
+            return labels.map((label, i) => {
+              const style = meta.controller.getStyle(i);
+              const value = data[i] || 0;
+              const pct = total ? Math.round((value / total) * 100) : 0;
+              return {
+                text: `${label} (${pct}%)`,
+                fillStyle: style.backgroundColor,
+                strokeStyle: style.borderColor,
+                lineWidth: style.borderWidth,
+                hidden: isNaN(value) || value === null || meta.data[i]?.hidden,
+                index: i
+              };
+            });
+          }
+        }
+      }
+    }
+  }
+});
         }
 
         const data = JSON.parse(event.data);
