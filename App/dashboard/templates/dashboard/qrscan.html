@@ -519,57 +519,57 @@
 
     const ctx = document.getElementById('statusChart').getContext('2d');
 
-    window._statusChart = new Chart(ctx, {
-      type: 'doughnut',
-      data: {
-        labels: ['Nuevo'- total, 'Concedido'],
-        datasets: [{
-          data: values,
-          backgroundColor: ['#1A1E37', '#49AAF7'],
-          borderColor: '#fff',
-          borderWidth: 2
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        cutout: '60%',
-        plugins: {
-          legend: {
-            position: 'bottom',
-            labels: {
-              // 👉 Solo mostrar porcentajes en la leyenda
-              generateLabels(chart) {
-                const { data } = chart;
-                return data.labels.map((label, i) => {
-                  const value = data.datasets[0].data[i] || 0;
-                  const pct = ((value / total) * 100).toFixed(1);
-                  const color = data.datasets[0].backgroundColor[i];
-                  return {
-                    text: `${label}: ${pct}%`,
-                    fillStyle: color,
-                    strokeStyle: color,
-                    lineWidth: 0,
-                    hidden: false,
-                    index: i
-                  };
-                });
-              }
-            }
-          },
-          tooltip: {
-            callbacks: {
-              // Tooltip detallado
-              label(ctx) {
-                const val = ctx.parsed;
-                const pct = ((val / total) * 100).toFixed(1);
-                return `${ctx.label}: ${pct}% (${val})`;
-              }
+    const counts = msg.report.counts || { nuevo: 0, concedido: 0 };
+  const nuevo = Number(counts.nuevo) || 0;
+  const concedido = Number(counts.concedido) || 0;
+  const total = nuevo + concedido || 1;
+
+  const pctNuevo = ((nuevo / total) * 100).toFixed(1);
+  const pctConcedido = ((concedido / total) * 100).toFixed(1);
+
+  if (window._statusChart) window._statusChart.destroy();
+
+  const ctx = document.getElementById('statusChart').getContext('2d');
+
+  window._statusChart = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      // 👉 Labels now include the percentage text directly
+      labels: [
+        `Nuevo – ${pctNuevo}%`,
+        `Concedido – ${pctConcedido}%`
+      ],
+      datasets: [{
+        data: [nuevo, concedido],
+        backgroundColor: [
+          '#1A1E37', // Nuevo → azul oscuro
+          '#49AAF7'  // Concedido → celeste
+        ],
+        borderColor: '#fff',
+        borderWidth: 2
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      cutout: '60%',
+      plugins: {
+        legend: {
+          position: 'bottom'
+        },
+        tooltip: {
+          callbacks: {
+            // Tooltip showing both value and %
+            label(ctx) {
+              const v = ctx.parsed || 0;
+              const pct = ((v / total) * 100).toFixed(1);
+              return `${ctx.label}: ${v} (${pct}%)`;
             }
           }
         }
       }
-    });
+    }
+  });
         }
 
         const data = JSON.parse(event.data);
