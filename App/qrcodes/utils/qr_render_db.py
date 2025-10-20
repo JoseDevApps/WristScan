@@ -383,45 +383,43 @@ def make_qr(data: str, size: int = QR_SIZE) -> Image.Image:
     qr_raw = qrcode.make(data)
     return qr_raw.resize((size, size), Image.NEAREST).convert("RGBA")
 
+from typing import Optional
+from datetime import datetime
+from PIL import Image, ImageDraw, ImageFont
+
 def draw_footer(canvas: Image.Image, qr_id_display: str, font_path: Optional[str], valid_until: Optional[datetime]):
     draw = ImageDraw.Draw(canvas)
     y0, y1, h = CANVAS_H - FOOTER_H, CANVAS_H, FOOTER_H
     black, white = (0, 0, 0, 255), (255, 255, 255, 255)
 
-    # Fondo negro completo
+    # Full black footer
     draw.rectangle([0, y0, CANVAS_W, y1], fill=black)
 
-    # ==========================
-    #  Triángulos "\    /"
-    #  con hueco central = QR_SIZE
-    # ==========================
-    gap = QR_SIZE                 # ancho del "pasillo" negro entre puntas
-    center_x = CANVAS_W // 2
-    mid_y = (y0 + y1) // 2
+    # === White "pill": central rectangle + two side triangles ===
+    # Tweak these to taste
+    vpad = 12                               # vertical padding inside footer
+    pill_width = int(CANVAS_W * 0.62)       # width of the central white rectangle
+    rect_top = y0 + vpad
+    rect_bot = y1 - vpad
+    rect_h = rect_bot - rect_top
 
-    # Para no tapar el texto "Uniqbo.com", deja un margen negro a la izquierda
-    # (ajusta si lo necesitas).
-    left_text_margin = 160
+    rect_left = (CANVAS_W - pill_width) // 2
+    rect_right = rect_left + pill_width
+    mid_y = (rect_top + rect_bot) // 2
 
-    # Triángulo izquierdo (apunta hacia el centro, punta en x = center_x - gap/2)
-    left_triangle = [
-        (left_text_margin, y0),                # base arriba (margen)
-        (left_text_margin, y1),                # base abajo (margen)
-        (center_x - gap // 2, mid_y)           # punta hacia el centro
-    ]
-    draw.polygon(left_triangle, fill=white)
+    # Draw central white rectangle
+    draw.rectangle([rect_left, rect_top, rect_right, rect_bot], fill=white)
 
-    # Triángulo derecho (apunta hacia el centro, punta en x = center_x + gap/2)
-    right_triangle = [
-        (CANVAS_W, y0),                        # base arriba (borde derecho)
-        (CANVAS_W, y1),                        # base abajo (borde derecho)
-        (center_x + gap // 2, mid_y)           # punta hacia el centro
-    ]
-    draw.polygon(right_triangle, fill=white)
+    # Side triangles (white), attached to the rectangle's laterals
+    # tri_size controls how far the triangle apex sticks out horizontally
+    tri_size = max(1, rect_h // 2)          # gives a balanced "pill" look
+    left_tri = [(rect_left, rect_top), (rect_left, rect_bot), (rect_left - tri_size, mid_y)]
+    right_tri = [(rect_right, rect_top), (rect_right, rect_bot), (rect_right + tri_size, mid_y)]
+    draw.polygon(left_tri, fill=white)
+    draw.polygon(right_tri, fill=white)
+    # === end pill ===
 
-    # ==========================
-    #  Tipografías
-    # ==========================
+    # Fonts
     try:
         font_large = ImageFont.truetype(font_path, 40) if font_path else ImageFont.load_default()
     except Exception:
@@ -431,24 +429,21 @@ def draw_footer(canvas: Image.Image, qr_id_display: str, font_path: Optional[str
     except Exception:
         font_small = ImageFont.load_default()
 
-    # Texto izquierdo (blanco sobre negro, queda en la zona de margen)
+    # Left text (white on black)
     left_text = "Uniqbo.com"
     bbox = draw.textbbox((0, 0), left_text, font=font_small)
     th = bbox[3] - bbox[1]
     draw.text((20, y0 + (h - th) // 2), left_text, font=font_small, fill=white)
 
-    # Texto central (ID), centrado en el “pasillo” negro de ancho = QR_SIZE
+    # Center text (black inside the white pill)
     center_text = f"ID {qr_id_display}"
     bbox = draw.textbbox((0, 0), center_text, font=font_large)
     tw, th = bbox[2] - bbox[0], bbox[3] - bbox[1]
+    cx = rect_left + (pill_width - tw) // 2
+    cy = rect_top + (rect_h - th) // 2
+    draw.text((cx, cy), center_text, font=font_large, fill=black)
 
-    # centramos horizontalmente el texto dentro del gap
-    gap_left = center_x - gap // 2
-    cx = gap_left + (gap - tw) // 2
-    cy = y0 + (h - th) // 2
-    draw.text((cx, cy), center_text, font=font_large, fill=white)
-
-    # Texto derecho (fecha/hora) blanco sobre negro
+    # Right text (white on black)
     if valid_until:
         right_text = valid_until.strftime("%d/%m %H:%M")
         bbox = draw.textbbox((0, 0), right_text, font=font_small)
