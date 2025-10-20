@@ -1,88 +1,123 @@
 {% load static %}
 <!DOCTYPE html>
-<!-- Coding By CodingNepal - codingnepalweb.com -->
-<html lang="en" dir="ltr">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title> Registration </title> 
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Registration</title>
   <link rel="stylesheet" href="{% static 'registration/css/style2.css' %}">
+  <style>
+    .errorlist{color:#dc3545; margin:6px 0 0}
+    .is-invalid{border-color:#dc3545}
+    .invalid-feedback{color:#dc3545; font-size:13px}
+    .alert{padding:10px 12px; border-radius:8px; margin-bottom:12px}
+    .alert-warning{background:#fff3cd; border:1px solid #ffeeba}
+    .alert-error,.alert-danger{background:#f8d7da; border:1px solid #f5c6cb}
+    .alert-success{background:#d4edda; border:1px solid #c3e6cb}
+  </style>
 </head>
-<body style="background-color: #d3dbe5;">
-  <div class="wrapper" style="background-color: #d3dbe5;">
-    <style>.errorlist{color:red;} label{display: none;}</style>
+<body style="background-color:#d3dbe5">
+  <div class="wrapper" style="background-color:#d3dbe5">
     <h2>Registration</h2>
-   
-    <form action="" method="post" style="max-width: 500px; margin: auto; padding: 20px; background-color: #f5f6fa; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); font-family: Arial, sans-serif;">
+
+    <!-- Django messages (warnings/info/success) -->
+    {% if messages %}
+      <div>
+        {% for message in messages %}
+          <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <form action="" method="post"
+          style="max-width:500px; margin:auto; padding:20px; background:#f5f6fa; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,.1); font-family:Arial,sans-serif;">
       {% csrf_token %}
 
-      <h2 style="text-align:center; margin-bottom: 20px; color: #0f141a;">User Registration</h2>
+      <h2 style="text-align:center; margin-bottom:20px; color:#0f141a;">User Registration</h2>
+
+      <!-- Non-field errors (e.g., password mismatch) -->
+      {% if form.non_field_errors %}
+        <div class="alert alert-danger">
+          {% for err in form.non_field_errors %}
+            <div>{{ err }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
 
       <!-- Username -->
-      <div class="form-group" style="margin-bottom: 15px; display: flex; flex-direction: column;">
-        <label for="id_username" style="margin-bottom: 5px; font-weight: bold;">Username:</label>
+      <div class="form-group" style="margin-bottom:15px; display:flex; flex-direction:column;">
+        <label for="id_username" style="margin-bottom:5px; font-weight:bold;">Username:</label>
         <input type="text" name="username" id="id_username" placeholder="Username" required
-               style="padding: 10px; border-radius: 8px; border: 1px solid #ccc; font-size: 16px;">
-        <small id="id_username_helptext" style="color: #666; font-size: 13px; margin-top: 3px;">
+               value="{{ form.username.value|default_if_none:'' }}"
+               class="{% if form.username.errors %}is-invalid{% endif %}"
+               style="padding:10px; border-radius:8px; border:1px solid #ccc; font-size:16px;">
+        {% for err in form.username.errors %}
+          <div class="invalid-feedback">{{ err }}</div>
+        {% endfor %}
+        <small id="id_username_helptext" style="color:#666; font-size:13px; margin-top:3px;">
         </small>
       </div>
 
       <!-- Email -->
-      <div class="form-group" style="margin-bottom: 15px; display: flex; flex-direction: column;">
-        <label for="id_email" style="margin-bottom: 5px; font-weight: bold;">Email:</label>
+      <div class="form-group" style="margin-bottom:15px; display:flex; flex-direction:column;">
+        <label for="id_email" style="margin-bottom:5px; font-weight:bold;">Email:</label>
         <input type="email" name="email" id="id_email" placeholder="Email address" required
-               style="padding: 10px; border-radius: 8px; border: 1px solid #ccc; font-size: 16px;">
-        <small id="id_email_helptext" style="color: #666; font-size: 13px; margin-top: 3px;">
-        </small>
+               value="{{ form.email.value|default_if_none:'' }}"
+               class="{% if form.email.errors %}is-invalid{% endif %}"
+               style="padding:10px; border-radius:8px; border:1px solid #ccc; font-size:16px;">
+        {% for err in form.email.errors %}
+          <div class="invalid-feedback">{{ err }}</div>
+        {% endfor %}
+        <small id="id_email_helptext" style="color:#666; font-size:13px; margin-top:3px;"></small>
       </div>
 
       <!-- Password -->
-      <div class="form-group" style="margin-bottom: 15px; display: flex; flex-direction: column;">
-        <label for="id_password1" style="margin-bottom: 5px; font-weight: bold;">Password:</label>
+      <div class="form-group" style="margin-bottom:15px; display:flex; flex-direction:column;">
+        <label for="id_password1" style="margin-bottom:5px; font-weight:bold;">Password:</label>
         <input type="password" name="password1" id="id_password1" placeholder="Password" required
-               style="padding: 10px; border-radius: 8px; border: 1px solid #ccc; font-size: 16px;">
-        <small id="id_password1_helptext" style="color: #666; font-size: 13px; margin-top: 3px;">
+               class="{% if form.password1.errors %}is-invalid{% endif %}"
+               style="padding:10px; border-radius:8px; border:1px solid #ccc; font-size:16px;">
+        {% for err in form.password1.errors %}
+          <div class="invalid-feedback">{{ err }}</div>
+        {% endfor %}
+        <small id="id_password1_helptext" style="color:#666; font-size:13px; margin-top:3px;">
           Your password cannot be too similar to your personal information, must be at least 8 characters long.
         </small>
       </div>
 
       <!-- Confirm Password -->
-      <div class="form-group" style="margin-bottom: 20px; display: flex; flex-direction: column;">
-        <label for="id_password2" style="margin-bottom: 5px; font-weight: bold;">Password (confirmation):</label>
+      <div class="form-group" style="margin-bottom:20px; display:flex; flex-direction:column;">
+        <label for="id_password2" style="margin-bottom:5px; font-weight:bold;">Password (confirmation):</label>
         <input type="password" name="password2" id="id_password2" placeholder="Repeat password" required
-               style="padding: 10px; border-radius: 8px; border: 1px solid #ccc; font-size: 16px;">
-        <small id="id_password2_helptext" style="color: #666; font-size: 13px; margin-top: 3px;">
+               class="{% if form.password2.errors %}is-invalid{% endif %}"
+               style="padding:10px; border-radius:8px; border:1px solid #ccc; font-size:16px;">
+        {% for err in form.password2.errors %}
+          <div class="invalid-feedback">{{ err }}</div>
+        {% endfor %}
+        <small id="id_password2_helptext" style="color:#666; font-size:13px; margin-top:3px;">
           To verify, enter the same password as above.
         </small>
       </div>
 
       <!-- Submit Button -->
-      <div style="text-align: center;">
+      <div style="text-align:center;">
         <input type="submit" value="Register Now"
-               style="padding: 12px 25px; font-size: 16px; border-radius: 8px; border: none; background-color: #0f141a; color: white; cursor: pointer; transition: background 0.3s;">
+               style="padding:12px 25px; font-size:16px; border-radius:8px; border:none; background:#0f141a; color:white; cursor:pointer;">
       </div>
 
       <!-- Login Link -->
-      <div style="text-align: center; margin-top: 15px; font-size: 14px;">
-        Already have an account? <a href="{% url 'login' %}" style="color: #0c63e8; text-decoration: none;">Login</a>
+      <div style="text-align:center; margin-top:15px; font-size:14px;">
+        Already have an account?
+        <a href="{% url 'login' %}" style="color:#0c63e8; text-decoration:none;">Login</a>
       </div>
 
-      <!-- Responsive -->
       <style>
-        @media (max-width: 576px) {
-          form {
-            padding: 15px;
-          }
-          input[type="text"], input[type="email"], input[type="password"] {
-            font-size: 14px;
-          }
-          input[type="submit"] {
-            width: 100%;
-          }
+        @media (max-width:576px){
+          form{padding:15px}
+          input[type="text"],input[type="email"],input[type="password"]{font-size:14px}
+          input[type="submit"]{width:100%}
         }
-        input[type="submit"]:hover {
-          background-color: #1b1f25;
-        }
+        input[type="submit"]:hover{background:#1b1f25}
       </style>
     </form>
   </div>
