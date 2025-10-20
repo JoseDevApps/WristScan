@@ -515,24 +515,26 @@
           if (window._statusChart) { window._statusChart.destroy(); }
           const ctx = document.getElementById('statusChart').getContext('2d');
           window._statusChart = new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-              labels: ['Nuevo','Concedido'],
-              datasets: [{ 
-                data: [counts.nuevo, counts.concedido], 
-                backgroundColor: [
-                  '#1A1E37', // Nuevo → azul
-                  '#49AAF7'  // Concedido → celeste
-                ]
-               }],
-            },
-            options: { 
+  type: 'pie',
+  data: {
+    labels: ['Nuevo','Concedido'],
+    datasets: [{ 
+      data: [Number(counts.nuevo) || 0, Number(counts.concedido) || 0],
+      backgroundColor: [
+        '#1A1E37', // Nuevo → azul
+        '#49AAF7'  // Concedido → celeste
+      ],
+      borderWidth: 0
+    }],
+  },
+  options: { 
     responsive: true,
+    maintainAspectRatio: false, // respeta el tamaño real del canvas/contenedor
     plugins: {
       tooltip: {
         callbacks: {
           label: (ctx) => {
-            const data = ctx.dataset.data.map(Number);
+            const data = ctx.dataset.data.map(n => Number(n) || 0);
             const total = data.reduce((a,b)=>a+b, 0);
             const value = data[ctx.dataIndex] || 0;
             const pct = total ? Math.round((value/total)*100) : 0;
@@ -543,12 +545,15 @@
       legend: { position: 'bottom' }
     }
   },
-  // Dibuja % dentro de cada porción
+  // Inline plugin to draw % inside each slice
   plugins: [{
     id: 'percentInside',
-    afterDatasetsDraw(chart) {
+    afterDatasetsDraw(chart, args, opts) {
       const { ctx } = chart;
-      const data = chart.data.datasets[0].data.map(n => Number(n) || 0);
+      const ds = chart.data.datasets[0];
+      if (!ds) return;
+
+      const data = ds.data.map(n => Number(n) || 0);
       const total = data.reduce((a,b)=>a+b, 0);
       if (!total) return;
 
@@ -565,7 +570,7 @@
 
         ctx.save();
         ctx.fillStyle = '#fff';
-        ctx.font = 'bold 12px system-ui, -apple-system, "Segoe UI", Roboto, Arial';
+        ctx.font = (opts && opts.font) || 'bold 12px system-ui, -apple-system, "Segoe UI", Roboto, Arial';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.shadowColor = 'rgba(0,0,0,.35)';
@@ -575,7 +580,7 @@
       });
     }
   }]
-          });
+});
         }
 
         const data = JSON.parse(event.data);
