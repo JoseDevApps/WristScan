@@ -395,12 +395,12 @@ def draw_footer(canvas: Image.Image, qr_id_display: str, font_path: Optional[str
     #     ┌───────────────┐
     #     │               │
     #     └──────▼────────┘
-    v_depth = 40  # profundidad de la punta
+    v_depth = 40  # profundidad de la muesca hacia adentro
     center_x = CANVAS_W // 2
     white_triangle = [
-        (CANVAS_W // 3, y0),        # esquina superior izquierda
-        (CANVAS_W * 2 // 3, y0),    # esquina superior derecha
-        (center_x, y1 + v_depth)    # punta hacia abajo (fuera del footer)
+    (CANVAS_W // 3, y1),        # base izquierda en la parte inferior
+    (CANVAS_W * 2 // 3, y1),    # base derecha
+    (center_x, y1 - v_depth)    # punta hacia arriba (hacia adentro del footer)
     ]
     draw.polygon(white_triangle, fill=white)
 
@@ -408,11 +408,11 @@ def draw_footer(canvas: Image.Image, qr_id_display: str, font_path: Optional[str
 
     # Fuente más grande para el ID
     try:
-        font_large = ImageFont.truetype(font_path, 32) if font_path else ImageFont.load_default()
+        font_large = ImageFont.truetype(font_path, 40) if font_path else ImageFont.load_default()
     except Exception:
         font_large = ImageFont.load_default()
     try:
-        font_small = ImageFont.truetype(font_path, 32) if font_path else ImageFont.load_default()
+        font_small = ImageFont.truetype(font_path, 40) if font_path else ImageFont.load_default()
     except Exception:
         font_small = ImageFont.load_default()
 
