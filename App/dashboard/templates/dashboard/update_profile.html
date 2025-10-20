@@ -55,7 +55,13 @@
     }
 }
 </style>
-
+<style>
+  .center-form .field-wrap input,
+  .center-form .field-wrap select,
+  .center-form .field-wrap textarea {
+    width: 100%;
+  }
+</style>
 
 <div class="wrapper" style="background-color: #d3dbe5;">
   <!-- Sidebar -->
@@ -223,41 +229,62 @@
   
 
     <div class="container my-4">
-      <h3>Editar perfil</h3>
+  <div class="row justify-content-center">
+    <div class="col-12 col-md-8 col-lg-6">
 
-      {% if messages %}
-      <div>
-        {% for message in messages %}
-          <div class="alert alert-{{ message.tags }}">{{ message }}</div>
-        {% endfor %}
+      <!-- Centered header and messages -->
+      <div class="text-center">
+        <h3 class="mb-3">Editar perfil</h3>
+
+        {% if messages %}
+          <div>
+            {% for message in messages %}
+              <div class="alert alert-{{ message.tags }} d-inline-block text-start w-100">
+                {{ message }}
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
       </div>
-      {% endif %}
 
-      <form method="post" novalidate>
+      <!-- Form centered with a max width -->
+      <form method="post" novalidate class="center-form text-center">
         {% csrf_token %}
+
         <div class="mb-3">
-          <label for="{{ form.username.id_for_label }}" class="form-label">{{ form.username.label }}</label>
-          {{ form.username }}
+          <label for="{{ form.username.id_for_label }}" class="form-label w-100">
+            {{ form.username.label }}
+          </label>
+          <div class="field-wrap mx-auto" style="max-width: 420px;">
+            {{ form.username }}
+          </div>
           {% if form.username.errors %}
-            <div class="text-danger small">{{ form.username.errors|striptags }}</div>
+            <div class="text-danger small mt-1">{{ form.username.errors|striptags }}</div>
           {% endif %}
         </div>
 
         <div class="mb-3">
-          <label for="{{ form.email.id_for_label }}" class="form-label">{{ form.email.label }}</label>
-          {{ form.email }}
+          <label for="{{ form.email.id_for_label }}" class="form-label w-100">
+            {{ form.email.label }}
+          </label>
+          <div class="field-wrap mx-auto" style="max-width: 420px;">
+            {{ form.email }}
+          </div>
           {% if form.email.errors %}
-            <div class="text-danger small">{{ form.email.errors|striptags }}</div>
+            <div class="text-danger small mt-1">{{ form.email.errors|striptags }}</div>
           {% endif %}
         </div>
 
+        <!-- Centered buttons -->
         <div class="d-flex flex-wrap justify-content-center gap-2 mt-3">
           <a href="{% url 'dashboard:inicio' %}" class="btn btn-outline-secondary">Cancelar</a>
           <button type="submit" class="btn btn-primary">Save</button>
         </div>
       </form>
-    </div>
 
+    </div>
+  </div>
+</div>
 
    
     </div>
