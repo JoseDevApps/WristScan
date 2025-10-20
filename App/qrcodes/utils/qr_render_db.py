@@ -412,7 +412,7 @@ def draw_footer(canvas: Image.Image, qr_id_display: str, font_path: Optional[str
     except Exception:
         font_large = ImageFont.load_default()
     try:
-        font_small = ImageFont.truetype(font_path, 22) if font_path else ImageFont.load_default()
+        font_small = ImageFont.truetype(font_path, 32) if font_path else ImageFont.load_default()
     except Exception:
         font_small = ImageFont.load_default()
 
