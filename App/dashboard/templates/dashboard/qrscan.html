@@ -237,27 +237,47 @@
     </div>
 
     <!-- Modal de Reporte -->
-    <div id="reportModal" class="modal">
-      <div class="modal-content">
-        <span class="close-report">&times;</span>
-        <h2 data-i18n="report_title">Scan Report</h2>
+    <!-- ===== Modal Bootstrap 5 ===== -->
+<div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg modal-fullscreen-sm-down">
+    <div class="modal-content">
+      <div class="modal-header py-2">
+        <h5 class="modal-title" id="reportModalLabel" data-i18n="report_title">Scan Report</h5>
+        <!-- Botón “×” para mantener tu estilo -->
+        <button type="button" class="btn p-0 px-2 fs-3 lh-1" data-bs-dismiss="modal" aria-label="Close">&times;</button>
+      </div>
 
+      <div class="modal-body">
         <!-- Tabla de los últimos 5 escaneos -->
-        <table id="reportTable" class="table table-sm mt-3">
-          <thead>
-            <tr><th data-i18n="th_qr_data">QR Data</th>
-              <th data-i18n="th_scan_date">Scan date</th>
-            </tr>
-          </thead>
-          <tbody>
-            <!-- Se llenará por JS -->
-          </tbody>
-        </table>
+        <div class="table-responsive">
+          <table id="reportTable" class="table table-sm align-middle mb-0 mt-1">
+            <thead class="table-light">
+              <tr>
+                <th scope="col" data-i18n="th_qr_data">QR Data</th>
+                <th scope="col" data-i18n="th_scan_date">Scan date</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Se llenará por JS -->
+            </tbody>
+          </table>
+        </div>
 
         <!-- Gráfico de estado -->
-        <canvas id="statusChart" width="300" height="300" class="mt-4"></canvas>
+        <div class="mt-4">
+          <!-- Mantener proporción cuadrada y que se adapte -->
+          <div class="ratio ratio-1x1">
+            <canvas id="statusChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer py-2">
+        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal" data-i18n="btn_close">Close</button>
       </div>
     </div>
+  </div>
+</div>
 
     <!-- Modal HTML -->
     <div id="qrModal" class="modal">
@@ -277,7 +297,24 @@
     
     
   </div>
+<style>
+  /* Mantener el look simple */
+  #reportModal .modal-content {
+    border-radius: .75rem;
+  }
 
+  /* Título similar a tu <h2> original */
+  #reportModal .modal-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+
+  /* Canvas responsive dentro de su contenedor */
+  #statusChart {
+    width: 100% !important;
+    height: 100% !important;
+  }
+</style>
 <!-- Traducciones y script -->
 <script>
   const translations = {
