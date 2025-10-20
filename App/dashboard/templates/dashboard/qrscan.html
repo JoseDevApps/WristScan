@@ -512,14 +512,6 @@
 
           // 2) Actualizar gráfico
           const counts = msg.report.counts || { nuevo: 0, concedido: 0 };
-    const values = [Number(counts.nuevo) || 0, Number(counts.concedido) || 0];
-    const total = values.reduce((a, b) => a + b, 0) || 1;
-
-    if (window._statusChart) window._statusChart.destroy();
-
-    const ctx = document.getElementById('statusChart').getContext('2d');
-
-    const counts = msg.report.counts || { nuevo: 0, concedido: 0 };
   const nuevo = Number(counts.nuevo) || 0;
   const concedido = Number(counts.concedido) || 0;
   const total = nuevo + concedido || 1;
