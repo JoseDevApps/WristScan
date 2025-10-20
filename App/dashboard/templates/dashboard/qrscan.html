@@ -511,76 +511,65 @@
           });
 
           // 2) Actualizar gráfico
-          const counts = msg.report.counts;
-          if (window._statusChart) { window._statusChart.destroy(); }
-          const ctx = document.getElementById('statusChart').getContext('2d');
-          window._statusChart = new Chart(ctx, {
-  type: 'pie',
-  data: {
-    labels: ['Nuevo','Concedido'],
-    datasets: [{ 
-      data: [Number(counts.nuevo) || 0, Number(counts.concedido) || 0],
-      backgroundColor: [
-        '#1A1E37', // Nuevo → azul
-        '#49AAF7'  // Concedido → celeste
-      ],
-      borderWidth: 0
-    }],
-  },
-  options: { 
-    responsive: true,
-    maintainAspectRatio: false, // respeta el tamaño real del canvas/contenedor
-    plugins: {
-      tooltip: {
-        callbacks: {
-          label: (ctx) => {
-            const data = ctx.dataset.data.map(n => Number(n) || 0);
-            const total = data.reduce((a,b)=>a+b, 0);
-            const value = data[ctx.dataIndex] || 0;
-            const pct = total ? Math.round((value/total)*100) : 0;
-            return `${ctx.label}: ${value} (${pct}%)`;
+          const counts = msg.report.counts || { nuevo: 0, concedido: 0 };
+    const values = [Number(counts.nuevo) || 0, Number(counts.concedido) || 0];
+    const total = values.reduce((a, b) => a + b, 0) || 1;
+
+    if (window._statusChart) window._statusChart.destroy();
+
+    const ctx = document.getElementById('statusChart').getContext('2d');
+
+    window._statusChart = new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: ['Nuevo', 'Concedido'],
+        datasets: [{
+          data: values,
+          backgroundColor: ['#1A1E37', '#49AAF7'],
+          borderColor: '#fff',
+          borderWidth: 2
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: '60%',
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: {
+              // 👉 Solo mostrar porcentajes en la leyenda
+              generateLabels(chart) {
+                const { data } = chart;
+                return data.labels.map((label, i) => {
+                  const value = data.datasets[0].data[i] || 0;
+                  const pct = ((value / total) * 100).toFixed(1);
+                  const color = data.datasets[0].backgroundColor[i];
+                  return {
+                    text: `${label}: ${pct}%`,
+                    fillStyle: color,
+                    strokeStyle: color,
+                    lineWidth: 0,
+                    hidden: false,
+                    index: i
+                  };
+                });
+              }
+            }
+          },
+          tooltip: {
+            callbacks: {
+              // Tooltip detallado
+              label(ctx) {
+                const val = ctx.parsed;
+                const pct = ((val / total) * 100).toFixed(1);
+                return `${ctx.label}: ${pct}% (${val})`;
+              }
+            }
           }
         }
-      },
-      legend: { position: 'bottom' }
-    }
-  },
-  // Inline plugin to draw % inside each slice
-  plugins: [{
-    id: 'percentInside',
-    afterDatasetsDraw(chart, args, opts) {
-      const { ctx } = chart;
-      const ds = chart.data.datasets[0];
-      if (!ds) return;
-
-      const data = ds.data.map(n => Number(n) || 0);
-      const total = data.reduce((a,b)=>a+b, 0);
-      if (!total) return;
-
-      const meta = chart.getDatasetMeta(0);
-      meta.data.forEach((arc, i) => {
-        const val = data[i];
-        if (!val) return;
-
-        const pct = Math.round((val / total) * 100);
-        const angle = (arc.startAngle + arc.endAngle) / 2;
-        const r = (arc.innerRadius + arc.outerRadius) / 2;
-        const x = arc.x + Math.cos(angle) * r;
-        const y = arc.y + Math.sin(angle) * r;
-
-        ctx.save();
-        ctx.fillStyle = '#fff';
-        ctx.font = (opts && opts.font) || 'bold 12px system-ui, -apple-system, "Segoe UI", Roboto, Arial';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.shadowColor = 'rgba(0,0,0,.35)';
-        ctx.shadowBlur = 4;
-        ctx.fillText(`${pct}%`, x, y);
-        ctx.restore();
-      });
-    }
-  }]
-});
+      }
+    });
         }
 
         const data = JSON.parse(event.data);
