@@ -388,33 +388,46 @@ def draw_footer(canvas: Image.Image, qr_id_display: str, font_path: Optional[str
     y0, y1, h = CANVAS_H - FOOTER_H, CANVAS_H, FOOTER_H
     black, white = (0, 0, 0, 255), (255, 255, 255, 255)
 
+    # Tercios
     L0, L1 = 0, CANVAS_W // 3
     C0, C1 = L1, (CANVAS_W * 2) // 3
     R0, R1 = C1, CANVAS_W
 
-    draw.rectangle([L0, y0, L1, y1], fill=black)
-    draw.rectangle([C0, y0, C1, y1], fill=white)
-    draw.rectangle([R0, y0, R1, y1], fill=black)
+    # 1) Fondo negro en todo el footer
+    draw.rectangle([0, y0, CANVAS_W, y1], fill=black)
 
-    draw.polygon([(L1 - 15, y0), (L1 + 15, y0), (L1 - 15, y1), (L1 - 45, y1)], fill=black)
-    draw.polygon([(C1 - 15, y0), (C1 + 15, y0), (C1 + 45, y1), (C1 + 15, y1)], fill=black)
+    # 2) Cinta blanca central con laterales en ángulo (estilo del ejemplo)
+    tip_top = 28     # cuánto se mete el “pico” en la parte superior
+    tip_bottom = 56  # cuánto se abre en la parte inferior (más grande para más inclinación)
+    # Polígono tipo trapecio con puntas
+    white_banner = [
+        (C0 + tip_top, y0),   # arriba-izq (inset)
+        (C1 - tip_top, y0),   # arriba-der (inset)
+        (C1 + tip_bottom, y1),# abajo-der (sale hacia la derecha)
+        (C0 - tip_bottom, y1) # abajo-izq (sale hacia la izquierda)
+    ]
+    draw.polygon(white_banner, fill=white)
 
+    # 3) Texto
     try:
         font = ImageFont.truetype(font_path, 22) if font_path else ImageFont.load_default()
     except Exception:
         font = ImageFont.load_default()
 
+    # Izquierda (en negro de fondo → texto blanco)
     left_text = "Uniqbo.com"
     th = draw.textbbox((0, 0), left_text, font=font)[3]
     draw.text((20, y0 + (h - th) // 2), left_text, font=font, fill=white)
 
+    # Centro (sobre la franja blanca → texto negro)
     center_text = f"ID {qr_id_display}"
     bbox = draw.textbbox((0, 0), center_text, font=font)
     tw, th = bbox[2] - bbox[0], bbox[3] - bbox[1]
-    cx = C0 + (C1 - C0 - tw) // 2
+    cx = (C0 + C1 - tw) // 2
     cy = y0 + (h - th) // 2
     draw.text((cx, cy), center_text, font=font, fill=black)
 
+    # Derecha (en negro → texto blanco)
     if valid_until:
         right_text = valid_until.strftime("%d/%m %H:%M")
         bbox = draw.textbbox((0, 0), right_text, font=font)
@@ -422,6 +435,7 @@ def draw_footer(canvas: Image.Image, qr_id_display: str, font_path: Optional[str
         rx = R1 - tw - 20
         ry = y0 + (h - th) // 2
         draw.text((rx, ry), right_text, font=font, fill=white)
+
 
 def compose_qr_from_db(
     qr: QRCode,
