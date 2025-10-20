@@ -523,45 +523,54 @@
 
   const ctx = document.getElementById('statusChart').getContext('2d');
 
-  window._statusChart = new Chart(ctx, {
-    type: 'doughnut',
-    data: {
-      // 👉 Labels now include the percentage text directly
-      labels: [
-        `To Scan – ${pctNuevo}% :${nuevo}`,
-        `Granted – ${pctConcedido}% :${concedido}`
+ window._statusChart = new Chart(ctx, {
+  type: 'doughnut',
+  data: {
+    // 👉 Labels with percentage and values
+    labels: [
+      `To Scan – ${nuevo}: ${pctNuevo}%`,
+      `Granted – ${concedido}: ${pctConcedido}%`
+    ],
+    datasets: [{
+      data: [nuevo, concedido],
+      backgroundColor: [
+        '#d3dbe5', // To Scan → gris suave
+        '#49AAF7'  // Granted → celeste
       ],
-      datasets: [{
-        data: [nuevo, concedido],
-        backgroundColor: [
-          '#1A1E37', // Nuevo → azul oscuro
-          '#49AAF7'  // Concedido → celeste
-        ],
-        borderColor: '#fff',
-        borderWidth: 2
-      }]
+      borderColor: '#fff',
+      borderWidth: 2,
+      hoverOffset: 4
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false, // mantiene control total del tamaño vía CSS
+    // 👇 ajustes para hacerlo más compacto visualmente
+    cutout: '78%',              // aumenta el centro vacío
+    radius: '70%',              // reduce tamaño general
+    layout: {
+      padding: { top: 10, bottom: 10 } // menos espacio vertical
     },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      cutout: '60%',
-      plugins: {
-        legend: {
-          position: 'bottom'
-        },
-        tooltip: {
-          callbacks: {
-            // Tooltip showing both value and %
-            label(ctx) {
-              const v = ctx.parsed || 0;
-              const pct = ((v / total) * 100).toFixed(1);
-              return `${ctx.label}: ${v} (${pct}%)`;
-            }
+    plugins: {
+      legend: {
+        position: 'bottom',
+        labels: {
+          boxWidth: 14,         // cuadraditos más pequeños
+          font: { size: 12 }
+        }
+      },
+      tooltip: {
+        callbacks: {
+          label(ctx) {
+            const v = ctx.parsed || 0;
+            const pct = ((v / total) * 100).toFixed(1);
+            return `${ctx.label}: ${v} (${pct}%)`;
           }
         }
       }
     }
-  });
+  }
+});
         }
 
         const data = JSON.parse(event.data);
