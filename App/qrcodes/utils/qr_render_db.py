@@ -395,7 +395,7 @@ def draw_footer(canvas: Image.Image, qr_id_display: str, font_path: Optional[str
     #     ┌───────────────┐
     #     │               │
     #     └──────▼────────┘
-    v_depth = 40  # profundidad de la muesca hacia adentro
+    v_depth = 20  # profundidad de la muesca hacia adentro
     center_x = CANVAS_W // 2
     white_triangle = [
     (CANVAS_W // 3, y1),        # base izquierda en la parte inferior
