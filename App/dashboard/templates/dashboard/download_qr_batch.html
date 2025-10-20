@@ -2,6 +2,12 @@
 {% block title %}Manillas Bolivia{% endblock %}
 {% load static %}
 {% block content %}
+
+<style>
+  /* Opcional: asegura que el placeholder y el valor del input cantidad estén centrados */
+  #{{ form.quantity.id_for_label }}::placeholder { text-align: center; }
+  #{{ form.quantity.id_for_label }}:placeholder-shown { text-align: center; }
+</style>
 <div class="wrapper" style="background-color: #d3dbe5;">
   <!-- Sidebar -->
   <div class="sidebar" data-background-color="white">
@@ -170,14 +176,14 @@
   <!-- Título -->
   <div class="text-center mb-4">
     <h3 class="fw-bold mb-1">Download QR Batches</h3>
-    <h5 class="text-muted">Event: “{{ event.name }}”</h5>
+    <h5 class="text-muted">Event: {{ event.name }}</h5>
   </div>
 
   <!-- Mensajes -->
   {% if messages %}
-    <div class="mb-3">
+    <div class="mb-3 text-center">
       {% for message in messages %}
-        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show d-inline-block text-center" role="alert" style="max-width:460px;">
           {{ message }}
           <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
@@ -187,13 +193,13 @@
 
   <!-- Card principal -->
   <div class="card shadow-sm mx-auto" style="max-width: 460px;">
-    <div class="card-body">
+    <div class="card-body text-center">
       <form method="post" novalidate>
         {% csrf_token %}
 
         <!-- Campo cantidad -->
         <div class="mb-3">
-          <label for="{{ form.quantity.id_for_label }}" class="form-label fw-semibold">
+          <label for="{{ form.quantity.id_for_label }}" class="form-label fw-semibold w-100 text-center">
             {{ form.quantity.label }}
           </label>
           <input
@@ -201,17 +207,18 @@
             name="{{ form.quantity.name }}"
             id="{{ form.quantity.id_for_label }}"
             value="{{ form.quantity.value|default_if_none:'' }}"
-            class="form-control"
+            class="form-control text-center d-block mx-auto"
+            style="max-width: 300px;"
             min="{{ form.quantity.field.min_value|default:1 }}"
             step="1"
             required
           />
           {% if form.quantity.errors %}
-            <div class="invalid-feedback d-block">
+            <div class="invalid-feedback d-block text-center">
               {{ form.quantity.errors|striptags }}
             </div>
           {% else %}
-            <div class="form-text">
+            <div class="form-text text-center">
               Enter the number of QR codes you want to download.
               These will be marked as <strong>purchased/sold</strong>.
             </div>
@@ -219,12 +226,12 @@
         </div>
 
         <!-- Disponibles -->
-        <p class="text-muted mb-4">
+        <p class="text-muted mb-4 text-center">
           Available QR codes: <strong>{{ available_count }}</strong>
         </p>
 
         <!-- Botones -->
-        <div class="d-flex justify-content-end gap-2">
+        <div class="d-flex justify-content-center gap-2">
           <a href="{% url 'dashboard:tables' %}" class="btn btn-outline-secondary">
             Cancel
           </a>
@@ -236,7 +243,6 @@
     </div>
   </div>
 </div>
-
 
 
 
