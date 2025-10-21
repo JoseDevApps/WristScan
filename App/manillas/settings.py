@@ -183,6 +183,10 @@ STATICFILES_DIRS = [
 MEDIA_URL = '/media/'
 MEDIA_ROOT =  os.path.join(BASE_DIR, 'media')
 
+# Fuentes para Pillow
+QR_FONT_REGULAR = BASE_DIR / "static/fonts/fontawesome/fa-regular-400.ttf"
+QR_FONT_BOLD    = BASE_DIR / "static/fonts/fontawesome/fa-brands-400.ttf"
+
 # Celery settings
 # Redis as the message broker
 CELERY_BROKER_URL = "redis://redis:6379/0"
