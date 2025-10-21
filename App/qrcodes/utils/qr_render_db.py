@@ -574,7 +574,7 @@ def draw_footer(canvas, qr_id_display: str, font_path_unused: Optional[str], val
     mid_y = cy + cth / 2.0
 
     # Si el centro del texto está por encima del piso de la muesca, está en zona blanca -> usa negro.
-    id_fill = black if mid_y < notch_bottom_y else white
+    id_fill = black
 
     # Dibuja el ID
     draw.text((cx, cy), center_text, font=font_for_id, fill=id_fill)
