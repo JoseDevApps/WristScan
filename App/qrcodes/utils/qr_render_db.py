@@ -386,21 +386,18 @@ def make_qr(data: str, size: int = QR_SIZE) -> Image.Image:
 from typing import Optional
 from datetime import datetime
 from PIL import Image, ImageDraw, ImageFont
+from django.conf import settings
 
-from typing import Optional
-from datetime import datetime
-from PIL import Image, ImageDraw, ImageFont
 
-def draw_footer(canvas: Image.Image, qr_id_display: str, font_path: Optional[str], valid_until: Optional[datetime]):
+def draw_footer(canvas, qr_id_display: str, font_path_unused: Optional[str], valid_until: Optional[datetime]):
     draw = ImageDraw.Draw(canvas)
     y0, y1, h = CANVAS_H - FOOTER_H, CANVAS_H, FOOTER_H
     black, white = (0, 0, 0, 255), (255, 255, 255, 255)
 
-    # === Fondo blanco completo del footer ===
+    # === 1) Fondo blanco completo ===
     draw.rectangle([0, y0, CANVAS_W, y1], fill=white)
 
-    # === Polígono negro con la forma solicitada ===
-    # Mantengo exactamente las dimensiones/relaciones que pasaste.
+    # === 2) Polígono negro (mismas dimensiones que enviaste) ===
     design = [
         (0,            CANVAS_H - FOOTER_H),
         (195,          CANVAS_H - FOOTER_H),
@@ -413,32 +410,64 @@ def draw_footer(canvas: Image.Image, qr_id_display: str, font_path: Optional[str
     ]
     draw.polygon(design, fill=black)
 
-    # === Tipografías ===
-    try:
-        font_large = ImageFont.truetype(font_path, 40) if font_path else ImageFont.load_default()
-    except Exception:
-        font_large = ImageFont.load_default()
-    try:
-        font_small = ImageFont.truetype(font_path, 40) if font_path else ImageFont.load_default()
-    except Exception:
-        font_small = ImageFont.load_default()
+    # === 3) Carga de fuentes desde settings (con fallbacks) ===
+    def _path_exists(p):
+        try:
+            import os
+            return p and os.path.exists(str(p))
+        except Exception:
+            return False
 
-    # === Textos ===
-    # Izquierda (blanco sobre negro)
+    def _resolve_font_path(kind: str = "regular") -> Optional[str]:
+        # Preferencia por settings
+        if hasattr(settings, "QR_FONT_PATH") and _path_exists(settings.QR_FONT_PATH):
+            return str(settings.QR_FONT_PATH)
+
+        if kind == "bold" and hasattr(settings, "QR_FONT_BOLD") and _path_exists(settings.QR_FONT_BOLD):
+            return str(settings.QR_FONT_BOLD)
+
+        if kind == "regular" and hasattr(settings, "QR_FONT_REGULAR") and _path_exists(settings.QR_FONT_REGULAR):
+            return str(settings.QR_FONT_REGULAR)
+
+        # Candidatas de sistema
+        for cand in (
+            "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+            "/usr/share/fonts/truetype/noto/NotoSans-Regular.ttf",
+            "/Library/Fonts/Arial.ttf",
+            "C:\\Windows\\Fonts\\arial.ttf",
+        ):
+            if _path_exists(cand):
+                return cand
+
+        # Intento por nombre (si instalada)
+        try:
+            ImageFont.truetype("DejaVuSans.ttf", 12)
+            return "DejaVuSans.ttf"
+        except Exception:
+            return None
+
+    def _get_font(size: int, kind: str = "regular"):
+        path = _resolve_font_path(kind)
+        if path:
+            try:
+                return ImageFont.truetype(path, size)
+            except Exception:
+                pass
+        try:
+            return ImageFont.truetype("DejaVuSans.ttf", size)
+        except Exception:
+            return ImageFont.load_default()  # bitmap, último recurso
+
+    # === 4) Fuentes (sizes base) ===
+    # Lateral: 40 px; ID: se ajusta dinámicamente pero nunca < 48 px
+    font_small = _get_font(40, kind="regular")
+
+    # === 5) Textos laterales (blanco sobre negro) ===
     left_text = "Uniqbo.com"
     lb = draw.textbbox((0, 0), left_text, font=font_small)
     ltw, lth = lb[2] - lb[0], lb[3] - lb[1]
     draw.text((20, y0 + (h - lth) // 2), left_text, font=font_small, fill=white)
 
-    # Centro (blanco para contrastar con el polígono negro)
-    center_text = f"ID {qr_id_display}"
-    cb = draw.textbbox((0, 0), center_text, font=font_large)
-    ctw, cth = cb[2] - cb[0], cb[3] - cb[1]
-    cx = (CANVAS_W - ctw) // 2
-    cy = y0 + (h - cth) // 2
-    draw.text((cx, cy), center_text, font=font_large, fill=black)
-
-    # Derecha (blanco sobre negro)
     if valid_until:
         right_text = valid_until.strftime("%d/%m %H:%M")
         rb = draw.textbbox((0, 0), right_text, font=font_small)
@@ -446,6 +475,38 @@ def draw_footer(canvas: Image.Image, qr_id_display: str, font_path: Optional[str
         rx = CANVAS_W - rtw - 20
         ry = y0 + (h - rth) // 2
         draw.text((rx, ry), right_text, font=font_small, fill=white)
+
+    # === 6) ID centrado (forzar > 40 px y ajustar al espacio) ===
+    center_text = f"ID {qr_id_display}"
+
+    # Márgenes de seguridad dentro del footer
+    MARGIN_W = 40
+    MARGIN_H = 8
+    avail_w = CANVAS_W - 2 * MARGIN_W
+    avail_h = h - 2 * MARGIN_H
+
+    MIN_ID_PX = 72              # Forzado > 40 px
+    MAX_ID_PX = min(128, int(h * 0.9))  # techo razonable
+
+    size = MAX_ID_PX
+    font_for_id = _get_font(size, kind="bold")
+    # Reduce hasta que quepa (sin bajar del mínimo)
+    while size > MIN_ID_PX:
+        cb = draw.textbbox((0, 0), center_text, font=font_for_id)
+        ctw, cth = cb[2] - cb[0], cb[3] - cb[1]
+        if ctw <= avail_w and cth <= avail_h:
+            break
+        size -= 1
+        font_for_id = _get_font(size, kind="bold")
+
+    # Posición centrada
+    cb = draw.textbbox((0, 0), center_text, font=font_for_id)
+    ctw, cth = cb[2] - cb[0], cb[3] - cb[1]
+    cx = (CANVAS_W - ctw) // 2
+    cy = y0 + (h - cth) // 2
+
+    # ID en blanco para contrastar con el polígono negro
+    draw.text((cx, cy), center_text, font=font_for_id, fill=white)
 
 
 def compose_qr_from_db(
