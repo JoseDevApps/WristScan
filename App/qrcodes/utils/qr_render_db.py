@@ -394,29 +394,121 @@ try:
 except Exception:
     finders = None
 
+def _safe_truetype(path_or_name: str, size: int):
+    """Carga una TTF de forma robusta con fallbacks."""
+    # 1) Intento directo
+    try:
+        return ImageFont.truetype(path_or_name, size)
+    except Exception:
+        pass
+    # 2) Fallbacks de sistema comunes
+    for cand in (
+        "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+        "/usr/share/fonts/truetype/noto/NotoSans-Regular.ttf",
+        "/Library/Fonts/Arial.ttf",
+        "C:\\Windows\\Fonts\\arial.ttf",
+        "DejaVuSans.ttf",  # por nombre si existe en el sistema
+    ):
+        try:
+            return ImageFont.truetype(cand, size)
+        except Exception:
+            continue
+    # 3) Último recurso (bitmap, no escala bien)
+    return ImageFont.load_default() 
+
+# def draw_footer(canvas: Image.Image, qr_id_display: str, font_path: Optional[str], valid_until: Optional[datetime]):
+#     draw = ImageDraw.Draw(canvas)
+#     BASE_DIR = Path(__file__).resolve().parent.parent
+#     font_path = BASE_DIR / "static/fonts/fontawesome/fa-regular-400.ttf"
+#     y0, y1, h = CANVAS_H - FOOTER_H, CANVAS_H, FOOTER_H
+#     black, white = (0, 0, 0, 255), (255, 255, 255, 255)
+
+#     # === Fondo blanco completo del footer ===
+#     draw.rectangle([0, y0, CANVAS_W, y1], fill=white)
+
+#     # === Polígono negro con la forma solicitada ===
+#     # Mantengo exactamente las dimensiones/relaciones que pasaste.
+#     design = [
+#         (0,            CANVAS_H - FOOTER_H),
+#         (195,          CANVAS_H - FOOTER_H),
+#         (195 + 50,     CANVAS_H - 10),
+#         (475,          CANVAS_H - 10),
+#         (475 + 50,     CANVAS_H - FOOTER_H),
+#         (CANVAS_W,     CANVAS_H - FOOTER_H),
+#         (CANVAS_W,     CANVAS_H),
+#         (0,            CANVAS_H)
+#     ]
+#     draw.polygon(design, fill=black)
+
+#     # === Tipografías ===
+#     try:
+#         font_large = ImageFont.truetype(font_path, 42) if font_path else ImageFont.load_default()
+#     except Exception:
+#         font_large = ImageFont.load_default()
+#     try:
+#         font_small = ImageFont.truetype(font_path, 42) if font_path else ImageFont.load_default()
+#     except Exception:
+#         font_small = ImageFont.load_default()
+
+#     # === Textos ===
+#     # Izquierda (blanco sobre negro)
+#     left_text = "Uniqbo.com"
+#     lb = draw.textbbox((0, 0), left_text, font=font_small)
+#     ltw, lth = lb[2] - lb[0], lb[3] - lb[1]
+#     draw.text((20, y0 + (h - lth) // 2), left_text, font=font_small, fill=white)
+
+#     # Centro (blanco para contrastar con el polígono negro)
+#     center_text = f"ID {qr_id_display}"
+#     cb = draw.textbbox((0, 0), center_text, font=font_large)
+#     ctw, cth = cb[2] - cb[0], cb[3] - cb[1]
+#     cx = (CANVAS_W - ctw) // 2
+#     cy = y0 + (h - cth) // 2
+#     draw.text((cx, cy), center_text, font=font_large, fill=black)
+
+#     # Derecha (blanco sobre negro)
+#     if valid_until:
+#         right_text = valid_until.strftime("%d/%m %H:%M")
+#         rb = draw.textbbox((0, 0), right_text, font=font_small)
+#         rtw, rth = rb[2] - rb[0], rb[3] - rb[1]
+#         rx = CANVAS_W - rtw - 20
+#         ry = y0 + (h - rth) // 2
+#         draw.text((rx, ry), right_text, font=font_small, fill=white)
+
 def draw_footer(canvas: Image.Image, qr_id_display: str, font_path: Optional[str], valid_until: Optional[datetime]):
     draw = ImageDraw.Draw(canvas)
 
-    # === Resolver BASE_DIR y la ruta a la fuente en /static/fonts/fontawesome/fa-regular-400.ttf ===
+    # === Resolver la fuente desde static y con fallback ===
     BASE_DIR = Path(__file__).resolve().parent.parent
-    # 1) Intentar via staticfiles (si está disponible)
+    static_rel = "fonts/fontawesome/fa-regular-400.ttf"  # dentro de /static/
     resolved_font = None
+
+    # 1) Intentar via staticfiles
     if finders is not None:
-        resolved_font = finders.find("fonts/fontawesome/fa-regular-400.ttf")
-    # 2) Fallback directo a carpeta static/ del proyecto
+        resolved_font = finders.find(static_rel)
+
+    # 2) Fallback directo al árbol del proyecto
     if not resolved_font:
-        resolved_font = BASE_DIR / "static/fonts/fontawesome/fa-regular-400.ttf"
+        candidate = BASE_DIR / "static" / static_rel
+        if os.path.exists(candidate):
+            resolved_font = str(candidate)
 
-    # Mantener la variable font_path que ya usas luego
-    font_path = str(resolved_font)
+    # 3) Si pasó font_path explícito, úsalo como última opción
+    if not resolved_font and font_path and os.path.exists(str(font_path)):
+        resolved_font = str(font_path)
 
+    # Aviso: Font Awesome es de íconos; para texto normal podría no renderizar.
+    # Por eso usamos _safe_truetype() que pone una TTF legible si esta no sirve.
+    font_small = _safe_truetype(resolved_font or "DejaVuSans.ttf", 42)
+    font_large = _safe_truetype(resolved_font or "DejaVuSans.ttf", 42)
+
+    # === Geometría base ===
     y0, y1, h = CANVAS_H - FOOTER_H, CANVAS_H, FOOTER_H
     black, white = (0, 0, 0, 255), (255, 255, 255, 255)
 
     # === Fondo blanco completo del footer ===
     draw.rectangle([0, y0, CANVAS_W, y1], fill=white)
 
-    # === Polígono negro con la forma solicitada (mismas dimensiones) ===
+    # === Polígono negro (tus mismos vértices) ===
     design = [
         (0,            CANVAS_H - FOOTER_H),
         (195,          CANVAS_H - FOOTER_H),
@@ -429,32 +521,12 @@ def draw_footer(canvas: Image.Image, qr_id_display: str, font_path: Optional[str
     ]
     draw.polygon(design, fill=black)
 
-    # === Tipografías (manteniendo tu lógica) ===
-    try:
-        font_large = ImageFont.truetype(font_path, 42) if font_path else ImageFont.load_default()
-    except Exception:
-        font_large = ImageFont.load_default()
-    try:
-        font_small = ImageFont.truetype(font_path, 42) if font_path else ImageFont.load_default()
-    except Exception:
-        font_small = ImageFont.load_default()
-
-    # === Textos ===
-    # Izquierda (blanco sobre negro)
+    # === Textos laterales (BLANCO sobre negro) ===
     left_text = "Uniqbo.com"
     lb = draw.textbbox((0, 0), left_text, font=font_small)
     ltw, lth = lb[2] - lb[0], lb[3] - lb[1]
     draw.text((20, y0 + (h - lth) // 2), left_text, font=font_small, fill=white)
 
-    # Centro (NEGRO para contrastar con fondo blanco; si quieres que detecte fondo, avísame)
-    center_text = f"ID {qr_id_display}"
-    cb = draw.textbbox((0, 0), center_text, font=font_large)
-    ctw, cth = cb[2] - cb[0], cb[3] - cb[1]
-    cx = (CANVAS_W - ctw) // 2
-    cy = y0 + (h - cth) // 2
-    draw.text((cx, cy), center_text, font=font_large, fill=black)
-
-    # Derecha (blanco sobre negro)
     if valid_until:
         right_text = valid_until.strftime("%d/%m %H:%M")
         rb = draw.textbbox((0, 0), right_text, font=font_small)
@@ -463,6 +535,24 @@ def draw_footer(canvas: Image.Image, qr_id_display: str, font_path: Optional[str
         ry = y0 + (h - rth) // 2
         draw.text((rx, ry), right_text, font=font_small, fill=white)
 
+    # === ID centrado — elegir color según fondo para que no “desaparezca” ===
+    center_text = f"ID {qr_id_display}"
+
+    cb = draw.textbbox((0, 0), center_text, font=font_large)
+    ctw, cth = cb[2] - cb[0], cb[3] - cb[1]
+    cx = (CANVAS_W - ctw) // 2
+    cy = y0 + (h - cth) // 2
+
+    # “Piso” de la muesca de tu polígono está en CANVAS_H - 10
+    notch_bottom_y = CANVAS_H - 10
+    mid_y = cy + cth / 2.0
+
+    # Si el centro del texto está por encima del piso de la muesca -> zona blanca => pinta NEGRO.
+    id_fill = black if mid_y < notch_bottom_y else white
+
+    draw.text((cx, cy), center_text, font=font_large, fill=id_fill)
+
+    
 def compose_qr_from_db(
     qr: QRCode,
     *,
