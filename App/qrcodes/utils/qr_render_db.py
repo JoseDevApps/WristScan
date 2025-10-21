@@ -395,6 +395,8 @@ from django.conf import settings
 
 def draw_footer(canvas: Image.Image, qr_id_display: str, font_path: Optional[str], valid_until: Optional[datetime]):
     draw = ImageDraw.Draw(canvas)
+    BASE_DIR = Path(__file__).resolve().parent.parent
+    font_path = BASE_DIR / "/static/fonts/fontawesome/fa-regular-400.ttf"
     y0, y1, h = CANVAS_H - FOOTER_H, CANVAS_H, FOOTER_H
     black, white = (0, 0, 0, 255), (255, 255, 255, 255)
 
@@ -417,11 +419,11 @@ def draw_footer(canvas: Image.Image, qr_id_display: str, font_path: Optional[str
 
     # === Tipografías ===
     try:
-        font_large = ImageFont.truetype(font_path, 40) if font_path else ImageFont.load_default()
+        font_large = ImageFont.truetype(font_path, 42) if font_path else ImageFont.load_default()
     except Exception:
         font_large = ImageFont.load_default()
     try:
-        font_small = ImageFont.truetype(font_path, 40) if font_path else ImageFont.load_default()
+        font_small = ImageFont.truetype(font_path, 42) if font_path else ImageFont.load_default()
     except Exception:
         font_small = ImageFont.load_default()
 
