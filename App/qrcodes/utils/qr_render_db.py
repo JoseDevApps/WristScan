@@ -396,46 +396,13 @@ def draw_footer(canvas: Image.Image, qr_id_display: str, font_path: Optional[str
     y0, y1, h = CANVAS_H - FOOTER_H, CANVAS_H, FOOTER_H
     black, white = (0, 0, 0, 255), (255, 255, 255, 255)
 
-    # Fondo negro completo
-    draw.rectangle([0, y0, CANVAS_W, y1], fill=black)
+    # Fondo blanco completo
+    draw.rectangle([0, y0, CANVAS_W, y1], fill=white)
 
-    # ============================
-    #  Banda blanca con muesca:  |------\_______/------|
-    # ============================
-    vpad = 12                                # padding vertical dentro del footer
-    bar_top = y0 + vpad
-    bar_bot = y1 - vpad
-    bar_h   = bar_bot - bar_top
 
-    x_margin = int(CANVAS_W * 0.08)          # margen lateral negro (para tus textos laterales)
-    bar_left  = x_margin
-    bar_right = CANVAS_W - x_margin
-    center_x  = CANVAS_W // 2
-
-    # 1) Dibujar la banda blanca
-    draw.rectangle([bar_left, bar_top, bar_right, bar_bot], fill=white)
-
-    # 2) Recortar la muesca central tipo "\_______/"
-    #    - lados inclinados desde la parte superior de la banda
-    #    - base plana en la parte inferior de la muesca
-    notch_top_w       = int((bar_right - bar_left) * 0.38)     # ancho en la parte alta de la muesca
-    notch_bottom_w    = int(notch_top_w * 0.55)                # ancho de la base plana
-    notch_depth       = int(bar_h * 0.65)                      # profundidad de la muesca (hacia abajo)
-    notch_bottom_y    = min(bar_top + notch_depth, bar_bot - 2)
-
-    left_top_x  = center_x - notch_top_w // 2
-    right_top_x = center_x + notch_top_w // 2
-    left_bot_x  = center_x - notch_bottom_w // 2
-    right_bot_x = center_x + notch_bottom_w // 2
-
-    # Polígono negro que "recorta" la muesca en la banda blanca
-    notch_poly = [
-        (left_top_x,  bar_top),          # inicio arriba-izq
-        (left_bot_x,  notch_bottom_y),   # abajo-izq (base plana)
-        (right_bot_x, notch_bottom_y),   # abajo-der (base plana)
-        (right_top_x, bar_top)           # arriba-der
-    ]
-    draw.polygon(notch_poly, fill=black)
+    # 1) Dibujar la banda negra
+    design = [(0, CANVAS_H - FOOTER_H,), (195, CANVAS_H - FOOTER_H,), (195+50, CANVAS_H-10), (475,CANVAS_H-10),(475+50,CANVAS_H-FOOTER_H),(CANVAS_W,CANVAS_H-FOOTER_H),(CANVAS_W,CANVAS_H),(0,CANVAS_H)]
+    draw.polygon(design, fill=(0, 0, 0, 255))  # dark blue
 
     # ============================
     #           Tipografías
