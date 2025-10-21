@@ -498,8 +498,9 @@ def draw_footer(canvas: Image.Image, qr_id_display: str, font_path: Optional[str
 
     # Aviso: Font Awesome es de íconos; para texto normal podría no renderizar.
     # Por eso usamos _safe_truetype() que pone una TTF legible si esta no sirve.
-    font_small = _safe_truetype(resolved_font or "DejaVuSans.ttf", 42)
-    font_large = _safe_truetype(resolved_font or "DejaVuSans.ttf", 42)
+    font_small = ImageFont.truetype(resolved_font, 42) if resolved_font else ImageFont.load_default()
+    font_large = ImageFont.truetype(resolved_font, 42) if resolved_font else ImageFont.load_default()
+
 
     # === Geometría base ===
     y0, y1, h = CANVAS_H - FOOTER_H, CANVAS_H, FOOTER_H
@@ -552,7 +553,7 @@ def draw_footer(canvas: Image.Image, qr_id_display: str, font_path: Optional[str
 
     draw.text((cx, cy), center_text, font=font_large, fill=id_fill)
 
-    
+
 def compose_qr_from_db(
     qr: QRCode,
     *,
