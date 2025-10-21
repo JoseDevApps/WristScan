@@ -510,7 +510,7 @@ def draw_footer(canvas, qr_id_display: str, font_path_unused: Optional[str], val
     cy = y0 + (h - cth) // 2
 
     # ID en blanco para contrastar con el polígono negro
-    draw.text((cx, cy), center_text, font=font_for_id, fill=white)
+    draw.text((cx, cy), center_text, font=font_for_id, fill=black)
 
 
 def compose_qr_from_db(
