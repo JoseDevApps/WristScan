@@ -396,50 +396,24 @@ def draw_footer(canvas: Image.Image, qr_id_display: str, font_path: Optional[str
     y0, y1, h = CANVAS_H - FOOTER_H, CANVAS_H, FOOTER_H
     black, white = (0, 0, 0, 255), (255, 255, 255, 255)
 
-    # Fondo negro completo
+    # === Fondo blanco completo del footer ===
     draw.rectangle([0, y0, CANVAS_W, y1], fill=white)
 
-    # ============================
-    #  Banda blanca con muesca:  |------\_______/------|
-    # ============================
-    vpad = 12                                # padding vertical dentro del footer
-    bar_top = y0 + vpad
-    bar_bot = y1 - vpad
-    bar_h   = bar_bot - bar_top
-
-    x_margin = int(CANVAS_W * 0.08)          # margen lateral negro (para tus textos laterales)
-    bar_left  = x_margin
-    bar_right = CANVAS_W - x_margin
-    center_x  = CANVAS_W // 2
-
-    # 1) Dibujar la banda blanca
-    draw.rectangle([bar_left, bar_top, bar_right, bar_bot], fill=white)
-
-    # 2) Recortar la muesca central tipo "\_______/"
-    #    - lados inclinados desde la parte superior de la banda
-    #    - base plana en la parte inferior de la muesca
-    notch_top_w       = int((bar_right - bar_left) * 0.38)     # ancho en la parte alta de la muesca
-    notch_bottom_w    = int(notch_top_w * 0.55)                # ancho de la base plana
-    notch_depth       = int(bar_h * 0.65)                      # profundidad de la muesca (hacia abajo)
-    notch_bottom_y    = min(bar_top + notch_depth, bar_bot - 2)
-
-    left_top_x  = center_x - notch_top_w // 2
-    right_top_x = center_x + notch_top_w // 2
-    left_bot_x  = center_x - notch_bottom_w // 2
-    right_bot_x = center_x + notch_bottom_w // 2
-
-    # Polígono negro que "recorta" la muesca en la banda blanca
-    notch_poly = [
-        (left_top_x,  bar_top),          # inicio arriba-izq
-        (left_bot_x,  notch_bottom_y),   # abajo-izq (base plana)
-        (right_bot_x, notch_bottom_y),   # abajo-der (base plana)
-        (right_top_x, bar_top)           # arriba-der
+    # === Polígono negro con la forma solicitada ===
+    # Mantengo exactamente las dimensiones/relaciones que pasaste.
+    design = [
+        (0,            CANVAS_H - FOOTER_H),
+        (195,          CANVAS_H - FOOTER_H),
+        (195 + 50,     CANVAS_H - 10),
+        (475,          CANVAS_H - 10),
+        (475 + 50,     CANVAS_H - FOOTER_H),
+        (CANVAS_W,     CANVAS_H - FOOTER_H),
+        (CANVAS_W,     CANVAS_H),
+        (0,            CANVAS_H)
     ]
-    draw.polygon(notch_poly, fill=black)
+    draw.polygon(design, fill=black)
 
-    # ============================
-    #           Tipografías
-    # ============================
+    # === Tipografías ===
     try:
         font_large = ImageFont.truetype(font_path, 40) if font_path else ImageFont.load_default()
     except Exception:
@@ -449,30 +423,29 @@ def draw_footer(canvas: Image.Image, qr_id_display: str, font_path: Optional[str
     except Exception:
         font_small = ImageFont.load_default()
 
-    # Texto izquierdo (blanco sobre negro)
+    # === Textos ===
+    # Izquierda (blanco sobre negro)
     left_text = "Uniqbo.com"
-    bbox = draw.textbbox((0, 0), left_text, font=font_small)
-    th = bbox[3] - bbox[1]
-    draw.text((20, y0 + (h - th) // 2), left_text, font=font_small, fill=white)
+    lb = draw.textbbox((0, 0), left_text, font=font_small)
+    ltw, lth = lb[2] - lb[0], lb[3] - lb[1]
+    draw.text((20, y0 + (h - lth) // 2), left_text, font=font_small, fill=white)
 
-    # Texto central (negro sobre blanco) — lo coloco debajo de la muesca para que no se solape
+    # Centro (blanco para contrastar con el polígono negro)
     center_text = f"ID {qr_id_display}"
-    tw, th = draw.textbbox((0, 0), center_text, font=font_large)[2:]
-    # Centrar horizontalmente en la banda blanca
-    cx = center_x - tw // 2
-    # Centrar verticalmente entre la base de la muesca y el borde inferior de la banda
-    white_zone_top = notch_bottom_y
-    cy = white_zone_top + max(0, (bar_bot - white_zone_top - th) // 2)
-    draw.text((cx, cy), center_text, font=font_large, fill=black)
+    cb = draw.textbbox((0, 0), center_text, font=font_large)
+    ctw, cth = cb[2] - cb[0], cb[3] - cb[1]
+    cx = (CANVAS_W - ctw) // 2
+    cy = y0 + (h - cth) // 2
+    draw.text((cx, cy), center_text, font=font_large, fill=white)
 
-    # Texto derecho (blanco sobre negro)
+    # Derecha (blanco sobre negro)
     if valid_until:
         right_text = valid_until.strftime("%d/%m %H:%M")
-        tw_r, th_r = draw.textbbox((0, 0), right_text, font=font_small)[2:]
-        rx = CANVAS_W - tw_r - 20
-        ry = y0 + (h - th_r) // 2
+        rb = draw.textbbox((0, 0), right_text, font=font_small)
+        rtw, rth = rb[2] - rb[0], rb[3] - rb[1]
+        rx = CANVAS_W - rtw - 20
+        ry = y0 + (h - rth) // 2
         draw.text((rx, ry), right_text, font=font_small, fill=white)
-
 
 
 def compose_qr_from_db(
