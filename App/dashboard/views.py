@@ -1298,30 +1298,201 @@ def download_qr_zip(request, event_id):
 #         form = UpdateQRCodesForm(instance=event, initial={"new_qr_code_count": event.qr_code_count})
 
 #     return render(request, "dashboard/update_event.html", {"form": form, "event": event,'user':user_name})
+# def updatedb(request, pk):
+#     event = get_object_or_404(Event, id=pk)
+#     user_name = request.user
+
+#     if request.method == "POST":
+#         form = UpdateQRCodesForm(request.POST, instance=event)
+#         if form.is_valid():
+#             new_total_qr_count = form.cleaned_data["new_qr_code_count"]
+#             event.update_qr_codes(new_total_qr_count)
+#             messages.success(request, f"Se actualizó el número de QR a {new_total_qr_count}.")
+
+#             url = reverse('dashboard:create_checkout_session', kwargs={'pk': 1, 'slug': pk})
+#             return redirect(url)
+#     else:
+#         form = UpdateQRCodesForm(instance=event)
+
+#     # 🔹 Pasamos el número actual como variable separada (no placeholder)
+#     context = {
+#         "form": form,
+#         "event": event,
+#         "current_qr_count": event.qr_code_count,
+#         "user": user_name,
+#     }
+#     return render(request, "dashboard/update_event.html", context)
+
 def updatedb(request, pk):
-    event = get_object_or_404(Event, id=pk)
-    user_name = request.user
+    """
+    Aumenta la cantidad de QRs de un evento existente usando la cuota disponible:
+    - Primero consume tickets pagados
+    - Luego usa tickets 'free con Ads' (aplica enable_top_banner a esos nuevos QR)
+    - Renderiza hasta 200 nuevos QR en línea
+    """
+    event = get_object_or_404(Event, id=pk, created_by=request.user)
 
     if request.method == "POST":
         form = UpdateQRCodesForm(request.POST, instance=event)
-        if form.is_valid():
-            new_total_qr_count = form.cleaned_data["new_qr_code_count"]
-            event.update_qr_codes(new_total_qr_count)
-            messages.success(request, f"Se actualizó el número de QR a {new_total_qr_count}.")
+        if not form.is_valid():
+            messages.error(request, "Formulario inválido.")
+            return render(request, "dashboard/update_event.html", {
+                "form": form,
+                "event": event,
+                "current_qr_count": event.qr_code_count,
+                "user": request.user,
+            })
 
-            url = reverse('dashboard:create_checkout_session', kwargs={'pk': 1, 'slug': pk})
-            return redirect(url)
+        new_total_qr_count = form.cleaned_data["new_qr_code_count"]
+        current_count = event.qr_codes.count()
+        if new_total_qr_count <= current_count:
+            messages.info(request, "El total solicitado no es mayor al actual; no hay QRs que agregar.")
+            return redirect('dashboard:tables')
+
+        to_add = new_total_qr_count - current_count  # QRs adicionales requeridos
+
+        # --- 1) Verificar cupos disponibles del usuario
+        user_id = request.user.id
+        paid_tickets = Ticket.objects.filter(user_name=user_id, is_paid=True)
+        paid_unassigned = sum(t.unassigned_quantity() for t in paid_tickets)
+
+        free_tickets = Ticket.objects.filter(
+            user_name=user_id, plan='free', ads_enabled=True, is_paid=False
+        )
+        free_unassigned = sum(t.unassigned_quantity() for t in free_tickets)
+
+        total_available = paid_unassigned + free_unassigned
+        if to_add > total_available:
+            messages.warning(
+                request,
+                (
+                    f"No tienes cupo suficiente para agregar {to_add} QR(s). "
+                    f"Disponibles → Pagados: {paid_unassigned}, Free con Ads: {free_unassigned}. "
+                    f"Máximo agregable ahora: {total_available}."
+                )
+            )
+            # Redirige a home para adquirir más
+            return redirect('dashboard:inicio')
+
+        # --- 2) Generar los QRs faltantes en el evento
+        # (usa tu método existente que ya crea y agrega QR a event.qr_codes)
+        event.update_qr_codes(new_total_qr_count)
+
+        # Obtén exactamente los QRs nuevos (los más recientes por ID)
+        new_qrs_qs = event.qr_codes.order_by("-id")[:to_add]
+        new_qr_ids = list(new_qrs_qs.values_list("id", flat=True))
+
+        # --- 3) Asignar desde tickets PAGADOS
+        use_paid = min(to_add, paid_unassigned)
+        remaining = to_add - use_paid
+        if use_paid > 0:
+            remaining_paid = use_paid
+            for ticket in paid_tickets:
+                unassigned = ticket.unassigned_quantity()
+                if unassigned <= 0:
+                    continue
+                assign_now = min(remaining_paid, unassigned)
+                TicketAssignment.objects.create(
+                    ticket=ticket,
+                    event=event.name,
+                    quantity=assign_now,
+                    event_fk=event
+                )
+                remaining_paid -= assign_now
+                if remaining_paid == 0:
+                    break
+
+        # --- 4) Asignar desde tickets FREE (ads)
+        use_free = min(remaining, free_unassigned)
+        if use_free > 0:
+            remaining_free = use_free
+            for ticket in free_tickets:
+                unassigned = ticket.unassigned_quantity()
+                if unassigned <= 0:
+                    continue
+                assign_now = min(remaining_free, unassigned)
+                TicketAssignment.objects.create(
+                    ticket=ticket,
+                    event=event.name,
+                    quantity=assign_now,
+                    event_fk=event
+                )
+                remaining_free -= assign_now
+                if remaining_free == 0:
+                    break
+
+        # --- 5) Aplicar Ads SOLO a los `use_free` nuevos QRs
+        # Por consistencia, marcamos como “paid” por defecto y luego activamos Ads en exactamente use_free
+        QRCode.objects.filter(id__in=new_qr_ids).update(
+            enable_top_banner=False, top_banner=None,
+            footer_text="", footer_bg="#111111", footer_fg="#FFFFFF"
+        )
+
+        if use_free > 0:
+            detected_cc = getattr(request, "country_code", None)
+            detected_cn = getattr(request, "country_name", None)
+
+            ad = None
+            try:
+                ad = get_banner_for_country(detected_cc, detected_cn)
+            except Exception:
+                ad = None
+
+            try:
+                preset = get_footer_preset(detected_cc, detected_cn)
+            except Exception:
+                preset = {"text": "Gratis con Ads", "bg": "#111111", "fg": "#FFFFFF"}
+
+            # De entre los nuevos, toma EXACTAMENTE use_free (por ejemplo, los últimos)
+            free_ids = new_qr_ids[:use_free]  # ya vienen ordenados desc por ID
+
+            updates = {
+                "enable_top_banner": True,
+                "footer_text": preset["text"],
+                "footer_bg": preset["bg"],
+                "footer_fg": preset["fg"],
+            }
+            if ad and getattr(ad, "image", None):
+                updates["top_banner"] = ad.image.name
+
+            QRCode.objects.filter(id__in=free_ids).update(**updates)
+
+        # --- 6) Render exprés de los nuevos (hasta 200)
+        MAX_INLINE = 200
+        done = 0
+        to_render_qs = QRCode.objects.filter(id__in=new_qr_ids).only("id", "data", "mask_banner", "top_banner", "enable_top_banner")
+        for qr in to_render_qs[:MAX_INLINE]:
+            try:
+                compose_qr_from_db(
+                    qr,
+                    country_code=getattr(request, "country_code", None),
+                    country_name=getattr(request, "country_name", None)
+                )
+                done += 1
+            except Exception as e:
+                print(f"Error render new QR {qr.id}: {e}")
+
+        remaining_to_render = max(to_render_qs.count() - done, 0)
+        if remaining_to_render > 0:
+            messages.info(request, f"Se agregaron {to_add} QR(s). Renderizados ahora {done}. Quedan {remaining_to_render}.")
+        else:
+            messages.success(request, f"Se agregaron y renderizaron {to_add} QR(s) correctamente.")
+
+        # Si quieres enviar email solo si TODO fue pagado (sin usar free):
+        if use_free == 0:
+            messages.info(request, "Todos los nuevos QR son pagados (sin Ads).")
+
+        return redirect('dashboard:tables')
+
     else:
         form = UpdateQRCodesForm(instance=event)
 
-    # 🔹 Pasamos el número actual como variable separada (no placeholder)
-    context = {
+    return render(request, "dashboard/update_event.html", {
         "form": form,
         "event": event,
         "current_qr_count": event.qr_code_count,
-        "user": user_name,
-    }
-    return render(request, "dashboard/update_event.html", context)
+        "user": request.user,
+    })
 
 ################################################
 #   Pagina de QR create event form db
