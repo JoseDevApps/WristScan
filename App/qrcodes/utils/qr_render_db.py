@@ -476,37 +476,44 @@ def draw_footer(canvas, qr_id_display: str, font_path_unused: Optional[str], val
         ry = y0 + (h - rth) // 2
         draw.text((rx, ry), right_text, font=font_small, fill=white)
 
-    # === 6) ID centrado (forzar > 40 px y ajustar al espacio) ===
+    # === 6) ID centrado — maximizar tamaño para FOOTER_H=60 ===
     center_text = f"ID {qr_id_display}"
 
-    # Márgenes de seguridad dentro del footer
-    MARGIN_W = 40
-    MARGIN_H = 8
+    # Márgenes mínimos para exprimir el alto (h = FOOTER_H)
+    MARGIN_W = 24                               # margen lateral seguro
+    MARGIN_H = max(1, int(h * 0.03))            # ~2 px cuando h=60
+    stroke_w = 0                                # si luego quieres contorno, súbelo y se re-mide
+
     avail_w = CANVAS_W - 2 * MARGIN_W
     avail_h = h - 2 * MARGIN_H
 
-    MIN_ID_PX = 72              # Forzado > 40 px
-    MAX_ID_PX = min(128, int(h * 0.9))  # techo razonable
+    def _max_font_for(text, max_w, max_h, kind="bold"):
+        # Busca el tamaño de fuente más grande que quepa (incluyendo stroke_width)
+        lo, hi = 1, 512
+        best_font = _get_font(1, kind)
+        while lo <= hi:
+            mid = (lo + hi) // 2
+            f = _get_font(mid, kind)
+            bbox = draw.textbbox((0, 0), text, font=f, stroke_width=stroke_w)
+            tw, th = bbox[2] - bbox[0], bbox[3] - bbox[1]
+            if tw <= max_w and th <= max_h:
+                best_font = f
+                lo = mid + 1
+            else:
+                hi = mid - 1
+        return best_font
 
-    size = MAX_ID_PX
-    font_for_id = _get_font(size, kind="bold")
-    # Reduce hasta que quepa (sin bajar del mínimo)
-    while size > MIN_ID_PX:
-        cb = draw.textbbox((0, 0), center_text, font=font_for_id)
-        ctw, cth = cb[2] - cb[0], cb[3] - cb[1]
-        if ctw <= avail_w and cth <= avail_h:
-            break
-        size -= 1
-        font_for_id = _get_font(size, kind="bold")
+    # Calcula la fuente más grande que cabe en el footer de 60 px
+    font_for_id = _max_font_for(center_text, avail_w, avail_h, kind="bold")
 
     # Posición centrada
-    cb = draw.textbbox((0, 0), center_text, font=font_for_id)
+    cb = draw.textbbox((0, 0), center_text, font=font_for_id, stroke_width=stroke_w)
     ctw, cth = cb[2] - cb[0], cb[3] - cb[1]
     cx = (CANVAS_W - ctw) // 2
     cy = y0 + (h - cth) // 2
 
-    # ID en blanco para contrastar con el polígono negro
-    draw.text((cx, cy), center_text, font=font_for_id, fill=white)
+    # Dibuja el ID (en blanco si está sobre el polígono negro)
+    draw.text((cx, cy), center_text, font=font_for_id, fill=white, stroke_width=stroke_w)
 
 
 def compose_qr_from_db(
