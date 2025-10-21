@@ -436,7 +436,7 @@ def draw_footer(canvas: Image.Image, qr_id_display: str, font_path: Optional[str
     ctw, cth = cb[2] - cb[0], cb[3] - cb[1]
     cx = (CANVAS_W - ctw) // 2
     cy = y0 + (h - cth) // 2
-    draw.text((cx, cy), center_text, font=font_large, fill=white)
+    draw.text((cx, cy), center_text, font=font_large, fill=black)
 
     # Derecha (blanco sobre negro)
     if valid_until:
