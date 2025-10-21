@@ -1346,7 +1346,7 @@ def updatedb(request, pk):
         new_total_qr_count = form.cleaned_data["new_qr_code_count"]
         current_count = event.qr_codes.count()
         if new_total_qr_count <= current_count:
-            messages.info(request, "El total solicitado no es mayor al actual; no hay QRs que agregar.")
+            messages.info(request, "The requested total is not greater than the current count; there are no QRs to add.")
             return redirect('dashboard:tables')
 
         to_add = new_total_qr_count - current_count  # QRs adicionales requeridos
@@ -1474,7 +1474,7 @@ def updatedb(request, pk):
 
         remaining_to_render = max(to_render_qs.count() - done, 0)
         if remaining_to_render > 0:
-            messages.info(request, f"Se agregaron {to_add} QR(s). Renderizados ahora {done}. Quedan {remaining_to_render}.")
+            messages.info(request, f"Added {to_add} QR(s). Rendered now: {done}. Remaining: {remaining_to_render}.")
         else:
             messages.success(request, f"Se agregaron y renderizaron {to_add} QR(s) correctamente.")
 

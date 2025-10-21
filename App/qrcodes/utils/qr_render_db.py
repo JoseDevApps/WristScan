@@ -431,12 +431,46 @@ def draw_footer(canvas: Image.Image, qr_id_display: str, font_path: Optional[str
     draw.text((20, y0 + (h - lth) // 2), left_text, font=font_small, fill=white)
 
     # Centro (blanco para contrastar con el polígono negro)
+    # === Texto central (forzar >40 px) ===
     center_text = f"ID {qr_id_display}"
-    cb = draw.textbbox((0, 0), center_text, font=font_large)
+
+    MIN_ID_FONT_PX = 48                     # > 40 px (ajústalo si quieres)
+    MAX_ID_FONT_PX = int(h * 0.85)          # límite superior para que no se salga verticalmente
+    MARGIN_W = 40                           # margen horizontal de seguridad
+    MARGIN_H = 8                            # margen vertical de seguridad
+
+    def _load_font(sz: int):
+        try:
+            if font_path:
+                return ImageFont.truetype(font_path, sz)
+            # Fallback común si no hay font_path (puede no existir en todos los entornos)
+            return ImageFont.truetype("DejaVuSans.ttf", sz)
+        except Exception:
+            return ImageFont.load_default()
+
+    # Buscar el tamaño más grande que quepa, sin bajar de 48 px
+    avail_w = CANVAS_W - 2 * MARGIN_W
+    avail_h = h - 2 * MARGIN_H
+    size = max(MIN_ID_FONT_PX, min(MAX_ID_FONT_PX, 128))  # empieza grande pero con tope razonable
+
+    font_for_id = _load_font(size)
+    while size > MIN_ID_FONT_PX:
+        # Medir bbox
+        cb = draw.textbbox((0, 0), center_text, font=font_for_id)
+        ctw, cth = cb[2] - cb[0], cb[3] - cb[1]
+        if ctw <= avail_w and cth <= avail_h:
+            break
+        size -= 1
+        font_for_id = _load_font(size)
+
+    # Si el font por defecto es bitmap y no respeta tamaños, al menos intentamos el mínimo deseado
+    cb = draw.textbbox((0, 0), center_text, font=font_for_id)
     ctw, cth = cb[2] - cb[0], cb[3] - cb[1]
     cx = (CANVAS_W - ctw) // 2
     cy = y0 + (h - cth) // 2
-    draw.text((cx, cy), center_text, font=font_large, fill=black)
+
+    # Dibuja el ID (color según tu diseño; aquí en negro como en tu snippet)
+    draw.text((cx, cy), center_text, font=font_for_id, fill=black)
 
     # Derecha (blanco sobre negro)
     if valid_until:
