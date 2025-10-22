@@ -177,9 +177,6 @@
       <h4 class="fw-bold mb-1">Download PDF</h4>
       <p class="text-muted mb-3">Event: <strong>{{ event.name }}</strong></p>
 
-      <div class="alert alert-info mx-auto" style="max-width: 280px;">
-        Available to print: <strong>{{ available_count }}</strong>
-      </div>
 
       <form method="post" novalidate class="mx-auto" style="max-width: 300px;">
         {% csrf_token %}
