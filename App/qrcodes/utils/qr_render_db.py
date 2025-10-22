@@ -512,7 +512,7 @@ def draw_footer(canvas: Image.Image, qr_id_display: str, font_path: Optional[str
     cb = draw.textbbox((0, 0), center_text, font=font_large)
     ctw, cth = cb[2] - cb[0], cb[3] - cb[1]
     cx = (CANVAS_W - ctw) // 2
-    cy = y0 + (10+h - cth) // 2
+    cy = y0 + (h - cth-10) // 2
 
     # Contorno (stroke) si la versión de PIL lo soporta
     try:
