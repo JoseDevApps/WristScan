@@ -146,77 +146,87 @@ def create_temp_file(uploaded_file):
 #     })
 
 BATCH_SIZE = 200  # mismo espíritu que download_qr_batch
+CANVAS_W, CANVAS_H = 720, 1330  # px -> los usaremos como puntos (pt) 1:1
 
 @login_required
 def download_available_qr_pdf(request, event_id):
+    """
+    Genera un PDF donde cada página tiene tamaño EXACTO 720x1330 (pt),
+    y cada imagen PNG del QR se dibuja a 0,0 ocupando toda la página,
+    sin reescalar (asumiendo que los PNG son 720x1330).
+    """
     event = get_object_or_404(Event, id=event_id, created_by=request.user)
-    available_qs = event.qr_codes.filter(status_purchased='available')
-    available_count = available_qs.count()
+    base_qs = event.qr_codes.filter(status_purchased='available').order_by('id')
+    available_count = base_qs.count()
 
     if available_count == 0:
         return HttpResponse("No available QR codes to export.", status=404)
 
-    # —— GET con ?quantity=... → generar PDF —— 
-    if request.method == 'GET' and 'quantity' in request.GET:
-        qty = int(request.GET['quantity'])
-        qty = min(qty, available_count)
-        to_print = list(available_qs[:qty])
+    # 1) GET con ?quantity=... -> stream PDF
+    if request.method == "GET" and "quantity" in request.GET:
+        qty_raw = request.GET.get("quantity", "").strip()
+        if not qty_raw.isdigit():
+            return HttpResponse("Invalid quantity.", status=400)
 
-        # Preparamos PDF sin márgenes
-        pdf = FPDF(unit='pt')  # puntos
+        qty = max(1, min(int(qty_raw), available_count))
+        to_print_qs = base_qs[:qty]
+        ids_all = list(to_print_qs.values_list("id", flat=True))
+
+        # PDF en puntos (pt). Formato fijo 720x1330 pt (1:1 con px del canvas)
+        pdf = FPDF(unit="pt", format=(CANVAS_W, CANVAS_H))
         pdf.set_auto_page_break(False)
         pdf.set_margins(0, 0, 0)
         pdf.compress = True
 
-        for qr in to_print:
-            try:
-                img_path = qr.image.path
-                with Image.open(img_path) as im:
-                    w, h = im.size
+        printed_ids = []
 
-                # --- convertir píxeles a puntos (1 px = 0.75 pt aprox) ---
-                w_pt = w * 0.75
-                h_pt = h * 0.75
+        for start in range(0, len(ids_all), BATCH_SIZE):
+            chunk_ids = ids_all[start:start + BATCH_SIZE]
+            for qr in QRCode.objects.filter(id__in=chunk_ids).order_by("id"):
+                if qr.status_purchased != "available" or not qr.image:
+                    continue
 
-                # --- Crear página del tamaño exacto de la imagen ---
-                pdf.add_page()
-                # Sobrescribir tamaño de página directamente
-                pdf.w_pt = w_pt
-                pdf.h_pt = h_pt
-                pdf.set_auto_page_break(False, margin=0)
+                # (Opcional) Validar que la imagen es 720x1330; si no, igual se dibuja a tamaño hoja
+                try:
+                    with Image.open(qr.image.path) as im:
+                        iw, ih = im.size
+                except Exception:
+                    continue
 
-                # --- Dibujar imagen llenando toda la página ---
-                pdf.image(img_path, x=0, y=0, w=w_pt, h=h_pt)
+                pdf.add_page()  # cada página ya mide 720x1330 pt
+                # Dibuja la imagen ocupando toda la página, sin márgenes
+                # Asume que el PNG ya es 720x1330; si no lo fuera, se estiraría.
+                pdf.image(qr.image.path, x=0, y=0, w=CANVAS_W, h=CANVAS_H)
 
-            except Exception as e:
-                print(f"Error rendering QR {qr.id}: {e}")
-                continue
+                printed_ids.append(qr.id)
 
-        # Marcar los QR como "purchased"
-        QRCode.objects.filter(id__in=[qr.id for qr in to_print]) \
-            .update(status_purchased='purchased')
+        if not printed_ids:
+            return HttpResponse("No valid QR images to export.", status=404)
 
-        # Enviar PDF al navegador
-        pdf_bytes = pdf.output(dest='S').encode('latin1')
-        response = HttpResponse(pdf_bytes, content_type='application/pdf')
+        # Marcar como "purchased"
+        QRCode.objects.filter(id__in=printed_ids).update(status_purchased="purchased")
+
+        # Responder PDF
+        pdf_bytes = pdf.output(dest="S").encode("latin1")
+        response = HttpResponse(pdf_bytes, content_type="application/pdf")
         filename = f"qr_print_{event.name}.pdf"
-        response['Content-Disposition'] = f'attachment; filename="{filename}"'
+        response["Content-Disposition"] = f'attachment; filename="{filename}"'
         return response
 
-    # —— GET inicial o POST: mostrar formulario —— 
-    if request.method == 'POST':
+    # 2) Render del formulario (GET inicial o POST de validación)
+    if request.method == "POST":
         form = PrintQRForm(available_count, request.POST)
         if form.is_valid():
-            qty = min(form.cleaned_data['quantity'], available_count)
+            qty = min(form.cleaned_data["quantity"], available_count)
             url = f"{reverse('dashboard:print_qr_pdf', args=[event.id])}?quantity={qty}"
             return redirect(url)
     else:
-        form = PrintQRForm(available_count, initial={'quantity': available_count})
+        form = PrintQRForm(available_count, initial={"quantity": available_count})
 
-    return render(request, 'dashboard/print_qr_form2.html', {
-        'event': event,
-        'form': form,
-        'available_count': available_count,
+    return render(request, "dashboard/print_qr_form2.html", {
+        "event": event,
+        "form": form,
+        "available_count": available_count,
     })
 ################################################
 #   Compartir QR
