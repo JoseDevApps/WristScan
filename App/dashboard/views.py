@@ -227,12 +227,10 @@ def download_available_qr_pdf(request, event_id):
     if request.method == "POST":
         form = PrintQRForm(available_count, request.POST)
         if form.is_valid():
-            qty = form.cleaned_data["quantity"]
-            # Redirigir a GET de descarga (patrón: submit->descarga->regresar)
-            return render(request, "dashboard/print_qr_launch.html", {
-                "event": event,
-                "quantity": min(qty, available_count),
-            })
+            qty = min(form.cleaned_data["quantity"], available_count)
+            # ✅ Redirige directo al GET que genera el PDF
+            url = f"{reverse('dashboard:print_qr_pdf', args=[event.id])}?quantity={qty}"
+            return redirect(url)
     else:
         form = PrintQRForm(available_count, initial={"quantity": available_count})
 
