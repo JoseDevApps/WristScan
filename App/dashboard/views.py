@@ -156,40 +156,54 @@ def download_available_qr_pdf(request, event_id):
     if available_count == 0:
         return HttpResponse("No available QR codes to export.", status=404)
 
-    # —— GET con ?quantity=... → generar y descargar PDF ——
+    # —— GET con ?quantity=... → generar PDF —— 
     if request.method == 'GET' and 'quantity' in request.GET:
         qty = int(request.GET['quantity'])
         qty = min(qty, available_count)
         to_print = list(available_qs[:qty])
 
-        # Usamos puntos (pt) para que página = tamaño de imagen (px) 1:1
-        pdf = FPDF(unit='pt')
+        # Preparamos PDF sin márgenes
+        pdf = FPDF(unit='pt')  # puntos
         pdf.set_auto_page_break(False)
         pdf.set_margins(0, 0, 0)
-        pdf.compress = True  # archivos más livianos
+        pdf.compress = True
 
         for qr in to_print:
-            img_path = qr.image.path
-            # Leemos tamaño real de la imagen
-            with Image.open(img_path) as im:
-                w, h = im.size  # en píxeles
+            try:
+                img_path = qr.image.path
+                with Image.open(img_path) as im:
+                    w, h = im.size
 
-            # Página con exactamente el mismo tamaño de la imagen
-            pdf.add_page(format=(w, h))
-            # Colocar la imagen llenando la página completa (sin reescalar)
-            pdf.image(img_path, x=0, y=0, w=w, h=h)
+                # --- convertir píxeles a puntos (1 px = 0.75 pt aprox) ---
+                w_pt = w * 0.75
+                h_pt = h * 0.75
 
-        # Marcar los usados como 'purchased'
+                # --- Crear página del tamaño exacto de la imagen ---
+                pdf.add_page()
+                # Sobrescribir tamaño de página directamente
+                pdf.w_pt = w_pt
+                pdf.h_pt = h_pt
+                pdf.set_auto_page_break(False, margin=0)
+
+                # --- Dibujar imagen llenando toda la página ---
+                pdf.image(img_path, x=0, y=0, w=w_pt, h=h_pt)
+
+            except Exception as e:
+                print(f"Error rendering QR {qr.id}: {e}")
+                continue
+
+        # Marcar los QR como "purchased"
         QRCode.objects.filter(id__in=[qr.id for qr in to_print]) \
-                      .update(status_purchased='purchased')
+            .update(status_purchased='purchased')
 
+        # Enviar PDF al navegador
         pdf_bytes = pdf.output(dest='S').encode('latin1')
         response = HttpResponse(pdf_bytes, content_type='application/pdf')
         filename = f"qr_print_{event.name}.pdf"
         response['Content-Disposition'] = f'attachment; filename="{filename}"'
         return response
 
-    # —— GET inicial / POST (mostrar formulario) ——
+    # —— GET inicial o POST: mostrar formulario —— 
     if request.method == 'POST':
         form = PrintQRForm(available_count, request.POST)
         if form.is_valid():
@@ -199,7 +213,7 @@ def download_available_qr_pdf(request, event_id):
     else:
         form = PrintQRForm(available_count, initial={'quantity': available_count})
 
-    return render(request, 'dashboard/print_qr_form2.html', {
+    return render(request, 'dashboard/print_qr_form.html', {
         'event': event,
         'form': form,
         'available_count': available_count,
