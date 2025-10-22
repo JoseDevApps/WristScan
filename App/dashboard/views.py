@@ -99,6 +99,51 @@ def create_temp_file(uploaded_file):
 #   Compartir pdf
 ################################################
 
+# @login_required
+# def download_available_qr_pdf(request, event_id):
+#     event = get_object_or_404(Event, id=event_id, created_by=request.user)
+#     available_qs = event.qr_codes.filter(status_purchased='available')
+#     available_count = available_qs.count()
+
+#     if available_count == 0:
+#         return HttpResponse("No available QR codes to export.", status=404)
+
+#     # —— If this is a GET with ?quantity=… we stream the PDF —— 
+#     if request.method == 'GET' and 'quantity' in request.GET:
+#         qty = int(request.GET['quantity'])
+#         # clamp to available
+#         qty = min(qty, available_count)
+#         to_print = list(available_qs[:qty])
+
+#         pdf = FPDF(unit='cm', format=(8, 8))
+#         for qr in to_print:
+#             pdf.add_page()
+#             pdf.image(qr.image.path, x=0, y=0, w=8, h=8)
+
+#         # mark them purchased
+#         QRCode.objects.filter(id__in=[qr.id for qr in to_print]) \
+#                         .update(status_purchased='purchased')
+
+#         pdf_bytes = pdf.output(dest='S').encode('latin1')
+#         response = HttpResponse(pdf_bytes, content_type='application/pdf')
+#         filename = f"qr_print_{event.name}.pdf"
+#         response['Content-Disposition'] = f'attachment; filename="{filename}"'
+#         return response
+
+#     # —— Otherwise POST or initial GET: show form only —— 
+#     if request.method == 'POST':
+#         # we don’t actually need to do anything here,
+#         # JS will trigger the GET-download+redirect
+#         form = PrintQRForm(available_count, request.POST)
+#     else:
+#         form = PrintQRForm(available_count, initial={'quantity': available_count})
+
+#     return render(request, 'dashboard/print_qr_form.html', {
+#         'event': event,
+#         'form': form,
+#         'available_count': available_count,
+#     })
+
 @login_required
 def download_available_qr_pdf(request, event_id):
     event = get_object_or_404(Event, id=event_id, created_by=request.user)
@@ -108,21 +153,56 @@ def download_available_qr_pdf(request, event_id):
     if available_count == 0:
         return HttpResponse("No available QR codes to export.", status=404)
 
-    # —— If this is a GET with ?quantity=… we stream the PDF —— 
+    # —— Stream del PDF con ?quantity=… ——
     if request.method == 'GET' and 'quantity' in request.GET:
         qty = int(request.GET['quantity'])
-        # clamp to available
         qty = min(qty, available_count)
         to_print = list(available_qs[:qty])
 
-        pdf = FPDF(unit='cm', format=(8, 8))
+        # Página cuadrada de 8x8 cm (como ya tenías)
+        PAGE_W = 8.0
+        PAGE_H = 8.0
+        # Margen opcional (deja 0 si quieres ocupar todo)
+        MARGIN = 0.0  
+        BOX_W = PAGE_W - 2 * MARGIN
+        BOX_H = PAGE_H - 2 * MARGIN
+
+        pdf = FPDF(unit='cm', format=(PAGE_W, PAGE_H))
+
         for qr in to_print:
             pdf.add_page()
-            pdf.image(qr.image.path, x=0, y=0, w=8, h=8)
 
-        # mark them purchased
+            # Leer dimensiones reales de la imagen
+            try:
+                with Image.open(qr.image.path) as im:
+                    iw, ih = im.size  # px
+            except Exception:
+                # Si algo falla al abrir, saltamos este QR
+                continue
+
+            # Mantener proporción: ajustar para encajar en BOX_W x BOX_H
+            ratio_img = iw / ih
+            ratio_box = BOX_W / BOX_H
+
+            if ratio_img >= ratio_box:
+                # Imagen más "ancha": ocupa todo el ancho de la caja
+                target_w = BOX_W
+                target_h = BOX_W / ratio_img
+            else:
+                # Imagen más "alta": ocupa toda la altura de la caja
+                target_h = BOX_H
+                target_w = BOX_H * ratio_img
+
+            # Centrar en la página
+            x = (PAGE_W - target_w) / 2.0
+            y = (PAGE_H - target_h) / 2.0
+
+            # Colocar sin deformar (proporción intacta)
+            pdf.image(qr.image.path, x=x, y=y, w=target_w, h=target_h)
+
+        # Marcar como "purchased"
         QRCode.objects.filter(id__in=[qr.id for qr in to_print]) \
-                        .update(status_purchased='purchased')
+                      .update(status_purchased='purchased')
 
         pdf_bytes = pdf.output(dest='S').encode('latin1')
         response = HttpResponse(pdf_bytes, content_type='application/pdf')
@@ -130,10 +210,8 @@ def download_available_qr_pdf(request, event_id):
         response['Content-Disposition'] = f'attachment; filename="{filename}"'
         return response
 
-    # —— Otherwise POST or initial GET: show form only —— 
+    # —— GET inicial (sin quantity) o POST: solo mostrar form ——
     if request.method == 'POST':
-        # we don’t actually need to do anything here,
-        # JS will trigger the GET-download+redirect
         form = PrintQRForm(available_count, request.POST)
     else:
         form = PrintQRForm(available_count, initial={'quantity': available_count})
