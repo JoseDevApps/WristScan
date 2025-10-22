@@ -4,6 +4,21 @@ from django.core.exceptions import ValidationError
 from django.utils.safestring import mark_safe
 from django.contrib.auth.models import User
 
+class PrintQRForm(forms.Form):
+    quantity = forms.IntegerField(
+        min_value=1,
+        label="Quantity to print",
+        widget=forms.NumberInput(attrs={
+            "class": "form-control",
+            "placeholder": "Quantity",
+        })
+    )
+
+    def __init__(self, available_count: int, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Ayuda y límite superior “virtual” (validaremos en la vista también)
+        self.fields["quantity"].help_text = f"Available: {available_count}"
+
 
 class DownloadQRCodeForm(forms.Form):
     quantity = forms.IntegerField(

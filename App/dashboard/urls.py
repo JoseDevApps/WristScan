@@ -4,6 +4,7 @@ from . import views
 app_name = 'dashboard'
 urlpatterns = [
     path('', views.inicio, name="inicio"),
+    path("events/<int:event_id>/print-pdf/", views.download_available_qr_pdf, name="print_qr_pdf"),
     path("profile/edit/", views.update_profile, name="update_profile"),
     path('export_qr_summary/', views.export_qr_summary_to_excel, name="export_qr_summary"),
     path("events/<int:event_id>/download-batch/", views.download_qr_batch, name="download_qr_batch"),
