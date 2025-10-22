@@ -502,7 +502,7 @@ def draw_footer(canvas: Image.Image, qr_id_display: str, font_path: Optional[str
 
     # --------- Textos ---------
     # Izquierda (blanco sobre negro)
-    left_text = "Uniqbo.com"
+    left_text = "   Uniqbo.com"
     lb = draw.textbbox((0, 0), left_text, font=font_small)
     lth = lb[3] - lb[1]
     draw.text((20, y0 + (h - lth) // 2), left_text, font=font_small, fill=white)
