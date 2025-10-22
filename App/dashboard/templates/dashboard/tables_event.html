@@ -233,6 +233,7 @@
        style="border-radius: 8px; overflow: visible;">
             <thead class="table-dark" style="background-color: #0f141a; color: white;">
                 <tr>
+                    <th style="display:none;">Created</th>  <!-- oculta -->
                     <th scope="col" data-i18n="th_event" style="font-weight: normal !important;">Event</th>
                     <th scope="col" data-i18n="th_performance" style="font-weight: normal !important;  width: 120px;">Sent</th>
                     <th scope="col" data-i18n="th_actions" style="font-weight: normal !important;  width: 120px;">Actions</th>
@@ -241,6 +242,7 @@
             <tbody>
                 {% for qrcode in events %}
                 <tr class="{% if qrcode.recycled_count > 0 %}recycled-row{% endif %}" style="transition: background-color 0.2s;">
+                    <td style="display:none;">{{ qrcode.id }}</td>  <!-- para orden descendente -->
                     <td style="font-weight: normal !important;">{{ qrcode.name }}</td>
                     <td style="font-weight: normal !important;">{{ qrcode.shared_count }}/{{ qrcode.qr_code_count }}</td>
                     <td>
