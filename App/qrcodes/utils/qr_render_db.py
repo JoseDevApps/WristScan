@@ -494,7 +494,7 @@ def draw_footer(canvas: Image.Image, qr_id_display: str, font_path: Optional[str
         resolved = _find_static(static_rel)
         font_path = resolved or font_path  # si resolved es None, seguimos con fallbacks
 
-    ID_FONT_SIZE  = 70   # ID grande para impresión
+    ID_FONT_SIZE  = 30   # ID grande para impresión
     AUX_FONT_SIZE = 30   # “Uniqbo.com” y fecha
 
     font_large = _safe_truetype(font_path, ID_FONT_SIZE)
@@ -520,8 +520,8 @@ def draw_footer(canvas: Image.Image, qr_id_display: str, font_path: Optional[str
             (cx, cy),
             center_text,
             font=font_large,
-            fill="white",
-            stroke_width=2,
+            fill="black",
+            stroke_width=1,
             stroke_fill="black"
         )
     except TypeError:
