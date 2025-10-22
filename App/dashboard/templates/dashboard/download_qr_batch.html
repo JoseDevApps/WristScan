@@ -175,13 +175,8 @@
   <div class="card shadow-sm text-center" style="max-width: 480px; width: 100%;">
     <div class="card-body">
       <!-- Título -->
-      <h4 class="fw-bold mb-1">Download QR Batches</h4>
+      <h4 class="fw-bold mb-1">Download jpg ZIP</h4>
       <p class="text-muted mb-3">Event: <strong>{{ event.name }}</strong></p>
-
-      <!-- Disponibles -->
-      <div class="alert alert-info mx-auto" style="max-width: 280px;">
-        Available QR codes: <strong>{{ available_count }}</strong>
-      </div>
 
       <!-- Mensajes -->
       {% if messages %}
@@ -218,7 +213,7 @@
             <div class="invalid-feedback d-block">{{ form.quantity.errors|striptags }}</div>
           {% else %}
             <div class="form-text text-muted">
-              Enter how many QR codes you want to download as a ZIP. Selected codes will be marked as <strong>purchased</strong>.
+              Available: <strong>{{ available_count }}</strong>
             </div>
           {% endif %}
         </div>
