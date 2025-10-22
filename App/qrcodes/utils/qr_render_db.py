@@ -304,6 +304,37 @@ QR_SIZE = 330
 UTC_MINUS_4 = timezone(timedelta(hours=-4))
 ISO_LOCAL_FMT = "%Y-%m-%dT%H:%M:%S"
 
+try:
+    from django.contrib.staticfiles import finders
+except Exception:
+    finders = None
+def load_static_font(static_rel_path: str, size: int):
+    """
+    Carga una fuente TTF/OTF ubicada en /static/ usando staticfiles finders.
+    Ej: static_rel_path='fonts/Inter-SemiBold.ttf'
+    """
+    # 1) Resolver con staticfiles (dev y prod con collectstatic)
+    if finders:
+        abs_path = finders.find(static_rel_path)
+        if abs_path:
+            try:
+                return ImageFont.truetype(abs_path, size)
+            except Exception:
+                pass
+
+    # 2) Fallback a STATIC_ROOT (por si finders no está disponible)
+    if getattr(settings, "STATIC_ROOT", None):
+        import os
+        abs_path = os.path.join(settings.STATIC_ROOT, static_rel_path)
+        if os.path.exists(abs_path):
+            try:
+                return ImageFont.truetype(abs_path, size)
+            except Exception:
+                pass
+
+    # 3) Último recurso
+    return ImageFont.load_default()
+
 def parse_iso_utc_minus4(s: Optional[str]) -> Optional[datetime]:
     if not s:
         return None
@@ -418,16 +449,11 @@ def _safe_truetype(path_or_name: str, size: int):
 
 def draw_footer(canvas: Image.Image, qr_id_display: str, font_path: Optional[str], valid_until: Optional[datetime]):
     draw = ImageDraw.Draw(canvas)
-    BASE_DIR = Path(__file__).resolve().parent.parent
-    font_path = BASE_DIR / "static/fonts/fontawesome/fa-regular-400.ttf"
     y0, y1, h = CANVAS_H - FOOTER_H, CANVAS_H, FOOTER_H
     black, white = (0, 0, 0, 255), (255, 255, 255, 255)
 
-    # === Fondo blanco completo del footer ===
+    # Fondo blanco + polígono negro (tal como ya tienes)
     draw.rectangle([0, y0, CANVAS_W, y1], fill=white)
-
-    # === Polígono negro con la forma solicitada ===
-    # Mantengo exactamente las dimensiones/relaciones que pasaste.
     design = [
         (0,            CANVAS_H - FOOTER_H),
         (195,          CANVAS_H - FOOTER_H),
@@ -440,30 +466,43 @@ def draw_footer(canvas: Image.Image, qr_id_display: str, font_path: Optional[str
     ]
     draw.polygon(design, fill=black)
 
-    # === Tipografías ===
-    try:
-        font_large = ImageFont.truetype(font_path, 42) if font_path else ImageFont.load_default()
-    except Exception:
-        font_large = ImageFont.load_default()
-    try:
-        font_small = ImageFont.truetype(font_path, 42) if font_path else ImageFont.load_default()
-    except Exception:
-        font_small = ImageFont.load_default()
+    # --- Tipografías ---
+    # Si te pasan font_path (ruta directa), úsala. Si no, carga desde /static/.
+    ID_FONT_SIZE = 64        # más grande para el ID
+    AUX_FONT_SIZE = 28       # para Uniqbo.com y la hora
 
-    # === Textos ===
+    if font_path:
+        try:
+            font_large = ImageFont.truetype(font_path, ID_FONT_SIZE)
+            font_small = ImageFont.truetype(font_path, AUX_FONT_SIZE)
+        except Exception:
+            font_large = ImageFont.load_default()
+            font_small = ImageFont.load_default()
+    else:
+        # Cambia el nombre del archivo a tu fuente real en /static/
+        static_font_name = "fonts/Inter-SemiBold.ttf"
+        font_large = load_static_font(static_font_name, ID_FONT_SIZE)
+        font_small = load_static_font(static_font_name, AUX_FONT_SIZE)
+
+    # --- Textos ---
     # Izquierda (blanco sobre negro)
     left_text = "Uniqbo.com"
     lb = draw.textbbox((0, 0), left_text, font=font_small)
-    ltw, lth = lb[2] - lb[0], lb[3] - lb[1]
+    lth = lb[3] - lb[1]
     draw.text((20, y0 + (h - lth) // 2), left_text, font=font_small, fill=white)
 
-    # Centro (blanco para contrastar con el polígono negro)
+    # Centro (ID) – blanco con contorno para contraste sobre negro
     center_text = f"ID {qr_id_display}"
     cb = draw.textbbox((0, 0), center_text, font=font_large)
     ctw, cth = cb[2] - cb[0], cb[3] - cb[1]
     cx = (CANVAS_W - ctw) // 2
     cy = y0 + (h - cth) // 2
-    draw.text((cx, cy), center_text, font=font_large, fill=black)
+    try:
+        draw.text((cx, cy), center_text, font=font_large, fill=white, stroke_width=1, stroke_fill=black)
+    except TypeError:
+        # PIL antiguo: sombra simple
+        draw.text((cx+1, cy+1), center_text, font=font_large, fill=black)
+        draw.text((cx, cy), center_text, font=font_large, fill=white)
 
     # Derecha (blanco sobre negro)
     if valid_until:
@@ -526,7 +565,7 @@ def compose_qr_from_db(
     canvas.paste(qr_img, (qr_x, qr_y), qr_img)
 
     # ---- FOOTER ----
-    draw_footer(canvas, str(qr.id), None, valid_until=valid_until)
+    draw_footer(canvas, str(qr.id), font_path, valid_until=valid_until)
 
     # ---- GUARDAR PNG ----
     out_rgb = Image.new("RGB", (CANVAS_W, CANVAS_H), (255, 255, 255))
