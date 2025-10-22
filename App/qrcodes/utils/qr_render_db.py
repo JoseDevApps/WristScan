@@ -494,8 +494,8 @@ def draw_footer(canvas: Image.Image, qr_id_display: str, font_path: Optional[str
         resolved = _find_static(static_rel)
         font_path = resolved or font_path  # si resolved es None, seguimos con fallbacks
 
-    ID_FONT_SIZE  = 15   # ID grande para impresión
-    AUX_FONT_SIZE = 30   # “Uniqbo.com” y fecha
+    ID_FONT_SIZE  = 30   # ID grande para impresión
+    AUX_FONT_SIZE = 15   # “Uniqbo.com” y fecha
 
     font_large = _safe_truetype(font_path, ID_FONT_SIZE)
     font_small = _safe_truetype(font_path, AUX_FONT_SIZE)
