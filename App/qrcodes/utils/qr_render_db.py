@@ -308,32 +308,59 @@ try:
     from django.contrib.staticfiles import finders
 except Exception:
     finders = None
-def load_static_font(static_rel_path: str, size: int):
+def _find_static(path_rel: str) -> Optional[str]:
     """
-    Carga una fuente TTF/OTF ubicada en /static/ usando staticfiles finders.
-    Ej: static_rel_path='fonts/Inter-SemiBold.ttf'
+    Devuelve una ruta absoluta a un archivo dentro de /static/ si existe.
+    Intenta con django staticfiles finders y como fallback usa STATIC_ROOT.
     """
-    # 1) Resolver con staticfiles (dev y prod con collectstatic)
+    # 1) staticfiles finders (ideal en dev o con collectstatic configurado)
     if finders:
-        abs_path = finders.find(static_rel_path)
-        if abs_path:
-            try:
-                return ImageFont.truetype(abs_path, size)
-            except Exception:
-                pass
-
-    # 2) Fallback a STATIC_ROOT (por si finders no está disponible)
+        found = finders.find(path_rel)
+        if found:
+            return found
+    # 2) STATIC_ROOT (cuando ya corriste collectstatic)
     if getattr(settings, "STATIC_ROOT", None):
-        import os
-        abs_path = os.path.join(settings.STATIC_ROOT, static_rel_path)
-        if os.path.exists(abs_path):
-            try:
-                return ImageFont.truetype(abs_path, size)
-            except Exception:
-                pass
+        candidate = Path(settings.STATIC_ROOT) / path_rel
+        if candidate.exists():
+            return str(candidate)
+    # 3) STATICFILES_DIRS (proyectos sin collectstatic en dev)
+    for d in getattr(settings, "STATICFILES_DIRS", []):
+        candidate = Path(d) / path_rel
+        if candidate.exists():
+            return str(candidate)
+    return None
 
-    # 3) Último recurso
+
+def _safe_truetype(path_or_name: Optional[str], size: int) -> ImageFont.FreeTypeFont | ImageFont.ImageFont:
+    """
+    Carga una TTF de forma robusta. Si falla, usa una serie de rutas comunes
+    y finalmente ImageFont.load_default().
+    """
+    # Intento directo si nos pasaron una ruta válida
+    if path_or_name:
+        try:
+            return ImageFont.truetype(path_or_name, size)
+        except Exception:
+            pass
+
+    # Fallbacks de sistema comunes
+    for cand in (
+        "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+        "/usr/share/fonts/truetype/noto/NotoSans-Regular.ttf",
+        "/Library/Fonts/Arial.ttf",
+        "C:\\Windows\\Fonts\\arial.ttf",
+        "DejaVuSans.ttf",
+    ):
+        try:
+            return ImageFont.truetype(cand, size)
+        except Exception:
+            continue
+
+    # Último recurso (bitmap)
     return ImageFont.load_default()
+
+
+# ---------------- función principal ----------------
 
 def parse_iso_utc_minus4(s: Optional[str]) -> Optional[datetime]:
     if not s:
@@ -425,35 +452,26 @@ try:
 except Exception:
     finders = None
 
-def _safe_truetype(path_or_name: str, size: int):
-    """Carga una TTF de forma robusta con fallbacks."""
-    # 1) Intento directo
-    try:
-        return ImageFont.truetype(path_or_name, size)
-    except Exception:
-        pass
-    # 2) Fallbacks de sistema comunes
-    for cand in (
-        "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
-        "/usr/share/fonts/truetype/noto/NotoSans-Regular.ttf",
-        "/Library/Fonts/Arial.ttf",
-        "C:\\Windows\\Fonts\\arial.ttf",
-        "DejaVuSans.ttf",  # por nombre si existe en el sistema
-    ):
-        try:
-            return ImageFont.truetype(cand, size)
-        except Exception:
-            continue
-    # 3) Último recurso (bitmap, no escala bien)
-    return ImageFont.load_default() 
+
 
 def draw_footer(canvas: Image.Image, qr_id_display: str, font_path: Optional[str], valid_until: Optional[datetime]):
+    """
+    Footer con fondo blanco y polígono negro central. Usa la tipografía
+    Protest Strike desde /static/fonts/ProtestStrike-Regular.ttf para
+    el ID grande y textos auxiliares.
+
+    - Izquierda: "Uniqbo.com" (blanco sobre negro)
+    - Centro: "ID <id>" en grande (blanco con contorno negro para legibilidad)
+    - Derecha: timestamp DD/MM HH:MM (blanco sobre negro) si valid_until existe
+    """
     draw = ImageDraw.Draw(canvas)
     y0, y1, h = CANVAS_H - FOOTER_H, CANVAS_H, FOOTER_H
     black, white = (0, 0, 0, 255), (255, 255, 255, 255)
 
-    # Fondo blanco + polígono negro (tal como ya tienes)
+    # Fondo blanco
     draw.rectangle([0, y0, CANVAS_W, y1], fill=white)
+
+    # Polígono negro (diseño central con “muesca”)
     design = [
         (0,            CANVAS_H - FOOTER_H),
         (195,          CANVAS_H - FOOTER_H),
@@ -466,45 +484,52 @@ def draw_footer(canvas: Image.Image, qr_id_display: str, font_path: Optional[str
     ]
     draw.polygon(design, fill=black)
 
-    # --- Tipografías ---
-    # Si te pasan font_path (ruta directa), úsala. Si no, carga desde /static/.
-    ID_FONT_SIZE = 64        # más grande para el ID
-    AUX_FONT_SIZE = 28       # para Uniqbo.com y la hora
+    # --------- Fuentes (Protest Strike) ----------
+    # Prioridad:
+    #   1) font_path si se pasa
+    #   2) /static/fonts/ProtestStrike-Regular.ttf (finders/STATIC_ROOT)
+    #   3) fallbacks del sistema
+    if not font_path:
+        static_rel = "fonts/ProtestStrike-Regular.ttf"  # pon el archivo aquí: /static/fonts/ProtestStrike-Regular.ttf
+        resolved = _find_static(static_rel)
+        font_path = resolved or font_path  # si resolved es None, seguimos con fallbacks
 
-    if font_path:
-        try:
-            font_large = ImageFont.truetype(font_path, ID_FONT_SIZE)
-            font_small = ImageFont.truetype(font_path, AUX_FONT_SIZE)
-        except Exception:
-            font_large = ImageFont.load_default()
-            font_small = ImageFont.load_default()
-    else:
-        # Cambia el nombre del archivo a tu fuente real en /static/
-        static_font_name = "fonts/Inter-SemiBold.ttf"
-        font_large = load_static_font(static_font_name, ID_FONT_SIZE)
-        font_small = load_static_font(static_font_name, AUX_FONT_SIZE)
+    ID_FONT_SIZE  = 70   # ID grande para impresión
+    AUX_FONT_SIZE = 30   # “Uniqbo.com” y fecha
 
-    # --- Textos ---
+    font_large = _safe_truetype(font_path, ID_FONT_SIZE)
+    font_small = _safe_truetype(font_path, AUX_FONT_SIZE)
+
+    # --------- Textos ---------
     # Izquierda (blanco sobre negro)
     left_text = "Uniqbo.com"
     lb = draw.textbbox((0, 0), left_text, font=font_small)
     lth = lb[3] - lb[1]
     draw.text((20, y0 + (h - lth) // 2), left_text, font=font_small, fill=white)
 
-    # Centro (ID) – blanco con contorno para contraste sobre negro
+    # Centro: ID <id> (blanco con contorno negro para contraste)
     center_text = f"ID {qr_id_display}"
     cb = draw.textbbox((0, 0), center_text, font=font_large)
     ctw, cth = cb[2] - cb[0], cb[3] - cb[1]
     cx = (CANVAS_W - ctw) // 2
     cy = y0 + (h - cth) // 2
-    try:
-        draw.text((cx, cy), center_text, font=font_large, fill=white, stroke_width=1, stroke_fill=black)
-    except TypeError:
-        # PIL antiguo: sombra simple
-        draw.text((cx+1, cy+1), center_text, font=font_large, fill=black)
-        draw.text((cx, cy), center_text, font=font_large, fill=white)
 
-    # Derecha (blanco sobre negro)
+    # Contorno (stroke) si la versión de PIL lo soporta
+    try:
+        draw.text(
+            (cx, cy),
+            center_text,
+            font=font_large,
+            fill="white",
+            stroke_width=2,
+            stroke_fill="black"
+        )
+    except TypeError:
+        # Fallback para PIL antiguo: sombra ligera + texto
+        draw.text((cx+1, cy+1), center_text, font=font_large, fill="black")
+        draw.text((cx, cy),     center_text, font=font_large, fill="white")
+
+    # Derecha: fecha/hora (si hay)
     if valid_until:
         right_text = valid_until.strftime("%d/%m %H:%M")
         rb = draw.textbbox((0, 0), right_text, font=font_small)
