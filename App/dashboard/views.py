@@ -213,7 +213,7 @@ def download_available_qr_pdf(request, event_id):
     else:
         form = PrintQRForm(available_count, initial={'quantity': available_count})
 
-    return render(request, 'dashboard/print_qr_form.html', {
+    return render(request, 'dashboard/print_qr_form2.html', {
         'event': event,
         'form': form,
         'available_count': available_count,
