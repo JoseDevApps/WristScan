@@ -174,8 +174,8 @@
 <div class="container py-4" style="max-width:620px;">
   <div class="card shadow-sm">
     <div class="card-body">
-      <h4 class="mb-1">Print QR Codes</h4>
-      <p class="text-muted mb-3">Event: “{{ event.name }}”</p>
+      <h4 class="mb-1">Download PDF</h4>
+      <p class="text-muted mb-3">Event: {{ event.name }}</p>
 
       <div class="alert alert-info">
         Available to print: <strong>{{ available_count }}</strong>
@@ -201,7 +201,6 @@
       </form>
 
       <p class="text-muted mt-3 mb-0">
-        Each page is 8×8&nbsp;cm. Images keep their original proportions (no stretching).
       </p>
     </div>
   </div>
