@@ -171,36 +171,54 @@
 <!-- Cuerpo del Dashboard -->
 <!-- ******************** -->
 
-<div class="container py-4" style="max-width:620px;">
-  <div class="card shadow-sm">
+<div class="container py-4 d-flex justify-content-center">
+  <div class="card shadow-sm text-center" style="max-width: 480px; width: 100%;">
     <div class="card-body">
-      <h4 class="mb-1">Download PDF</h4>
-      <p class="text-muted mb-3">Event: {{ event.name }}</p>
+      <h4 class="fw-bold mb-1">Download PDF</h4>
+      <p class="text-muted mb-3">Event: <strong>{{ event.name }}</strong></p>
 
-      <div class="alert alert-info">
+      <div class="alert alert-info mx-auto" style="max-width: 280px;">
         Available to print: <strong>{{ available_count }}</strong>
       </div>
 
-      <form method="post" novalidate>
+      <form method="post" novalidate class="mx-auto" style="max-width: 300px;">
         {% csrf_token %}
-        <div class="mb-3">
-          <label for="{{ form.quantity.id_for_label }}" class="form-label">Quantity</label>
-          {{ form.quantity }}
+        
+        <!-- Campo Quantity -->
+        <div class="mb-3 text-center">
+          <label for="{{ form.quantity.id_for_label }}" class="form-label fw-semibold">
+            Quantity
+          </label>
+          <input
+            type="number"
+            name="{{ form.quantity.name }}"
+            id="{{ form.quantity.id_for_label }}"
+            class="form-control text-center"
+            min="1"
+            max="{{ available_count }}"
+            value="{% if available_count > 0 %}1{% else %}0{% endif %}"
+            required
+          >
           {% if form.quantity.help_text %}
-            <div class="form-text">{{ form.quantity.help_text }}</div>
+            <div class="form-text text-muted">{{ form.quantity.help_text }}</div>
           {% endif %}
           {% if form.quantity.errors %}
             <div class="invalid-feedback d-block">{{ form.quantity.errors|striptags }}</div>
           {% endif %}
         </div>
 
-        <div class="d-flex gap-2">
-          <a href="{% url 'dashboard:tables' %}" class="btn btn-outline-secondary">Back</a>
-          <button class="btn btn-primary" type="submit">Download PDF</button>
+        <!-- Botones -->
+        <div class="d-flex justify-content-center gap-3 mt-4">
+          <a href="{% url 'dashboard:tables' %}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i> Back
+          </a>
+          <button class="btn btn-primary" type="submit">
+            <i class="fas fa-file-pdf me-1"></i> Download PDF
+          </button>
         </div>
       </form>
 
-      <p class="text-muted mt-3 mb-0">
+      <p class="text-muted mt-3 mb-0 small">
       </p>
     </div>
   </div>
