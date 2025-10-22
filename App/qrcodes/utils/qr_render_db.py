@@ -495,7 +495,7 @@ def draw_footer(canvas: Image.Image, qr_id_display: str, font_path: Optional[str
         font_path = resolved or font_path  # si resolved es None, seguimos con fallbacks
 
     ID_FONT_SIZE  = 30   # ID grande para impresión
-    AUX_FONT_SIZE = 15   # “Uniqbo.com” y fecha
+    AUX_FONT_SIZE = 20   # “Uniqbo.com” y fecha
 
     font_large = _safe_truetype(font_path, ID_FONT_SIZE)
     font_small = _safe_truetype(font_path, AUX_FONT_SIZE)
@@ -512,7 +512,7 @@ def draw_footer(canvas: Image.Image, qr_id_display: str, font_path: Optional[str
     cb = draw.textbbox((0, 0), center_text, font=font_large)
     ctw, cth = cb[2] - cb[0], cb[3] - cb[1]
     cx = (CANVAS_W - ctw) // 2
-    cy = y0 + (h - cth) // 2
+    cy = y0 + (10+h - cth) // 2
 
     # Contorno (stroke) si la versión de PIL lo soporta
     try:
